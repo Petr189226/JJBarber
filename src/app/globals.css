@@ -1,26 +1,104 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #0a0f1a;
+  --card: #141b2b;
+  --border: #1f2937;
+  --accent: #fbbf24;
+  --accent-hover: #f59e0b;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--bg);
+  --color-foreground: #f3f4f6;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg);
+  color: #f3f4f6;
+}
+
+/* Čisté tmavé pozadí, jen jemný teplý přechod shora */
+.barbershop-bg {
+  background-color: var(--bg);
+  background-image: linear-gradient(
+    180deg,
+    rgba(251, 191, 36, 0.04) 0%,
+    transparent 25%,
+    transparent 100%
+  );
+}
+
+.section-alt {
+  background-color: rgba(20, 27, 43, 0.5);
+}
+
+/* Hero: subtle zoom on load for depth (reduced motion respected) */
+@media (prefers-reduced-motion: no-preference) {
+  .animate-hero-zoom {
+    animation: hero-zoom 20s ease-out forwards;
+  }
+}
+@keyframes hero-zoom {
+  from {
+    transform: scale(1.05);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* Safe area for sticky CTA on notched devices */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* Hero content fade-in + slide-up, 0.5s; badges stagger; reduced motion respected */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-fade-in {
+    animation: hero-fade-in 0.5s ease-out forwards;
+  }
+  .hero-fade-in-delay-1 {
+    animation: hero-fade-in 0.5s ease-out 0.08s forwards;
+    opacity: 0;
+  }
+  .hero-fade-in-delay-2 {
+    animation: hero-fade-in 0.5s ease-out 0.2s forwards;
+    opacity: 0;
+  }
+  .hero-badge-stagger-0 { animation: hero-fade-in 0.5s ease-out 0.32s forwards; opacity: 0; }
+  .hero-badge-stagger-1 { animation: hero-fade-in 0.5s ease-out 0.4s forwards; opacity: 0; }
+  .hero-badge-stagger-2 { animation: hero-fade-in 0.5s ease-out 0.48s forwards; opacity: 0; }
+  .hero-fade-in-delay-3 {
+    animation: hero-fade-in 0.5s ease-out 0.56s forwards;
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-badge-stagger-0, .hero-badge-stagger-1, .hero-badge-stagger-2 { opacity: 1; }
+}
+@keyframes hero-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* CTA hover: scale 1.02, elevate + gold glow (non-blocking: transform only) */
+.cta-primary-hero {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+.cta-primary-hero:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.35), 0 0 0 1px rgba(251,191,36,0.3);
+}
+.cta-secondary-hero {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+.cta-secondary-hero:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.25), 0 0 0 1px rgba(251,191,36,0.4);
 }

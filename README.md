@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# J&J Barber Shop – web
 
-## Getting Started
+Prezentační web: hero, pobočky (s fotkami), služby, ceník, tým, recenze, dárkový poukaz, kontakt. Všechny odkazy na rezervaci vedou na [Reservio](https://j-j-barbershop.reservio.com/).
 
-First, run the development server:
+Žádná administrace, žádná databáze.
+
+## Spuštění
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Otevřete [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Build
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+```
 
-## Learn More
+Vznikne složka `out/` se statickými soubory (HTML, CSS, JS, obrázky).
 
-To learn more about Next.js, take a look at the following resources:
+## Nasazení na web
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 1) Vercel (doporučeno)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Nahraj projekt na [GitHub](https://github.com).
+2. Jdi na [vercel.com](https://vercel.com), přihlas se (např. přes GitHub).
+3. **Add New** → **Project** → vyber repozitář.
+4. **Root Directory** nech prázdné, **Framework** Next.js. Klikni **Deploy**.
+5. Po nasazení dostaneš adresu typu `tvoj-projekt.vercel.app`. V nastavení můžeš přidat vlastní doménu.
 
-## Deploy on Vercel
+Žádné nastavování serveru, Vercel se postará o build i hostování.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 2) Klasický hosting (FTP / správce souborů)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Lokálně spusť: `npm run build`.
+2. Do kořene webu na hostingu nahraj **celý obsah složky `out/`** (všechny soubory a složky z `out`, včetně `_next`, `barbers`, `branches` atd.).
+3. Nastav na hostingu výchozí soubor na `index.html` (většinou už je).
+4. Pokud máš doménu (např. `jjbarber.cz`), nasměruj ji na tento hosting.
+
+### 3) Netlify
+
+1. Účet na [netlify.com](https://netlify.com).
+2. **Sites** → **Add new site** → **Import an existing project** → připoj GitHub.
+3. **Build command:** `npm run build`  
+   **Publish directory:** `out`  
+4. **Deploy**. Netlify ti dá adresu a můžeš připojit vlastní doménu.
