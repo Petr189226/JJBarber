@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Menu, X } from "lucide-react";
 import { useLanguage, type Lang } from "../i18n";
-
-const RESERVIO_URL = "https://j-j-barbershop.reservio.com/";
+import { BookButton } from "./BookButton";
+import { CTA_SCROLL_THRESHOLD, RESERVIO_URL } from "../cta-config";
 
 function FlagCZ({ size = 20 }: { size?: number }) {
   return (
@@ -43,7 +43,7 @@ function LanguageSwitcher() {
   return (
     <button
       onClick={toggle}
-      className="relative flex items-center gap-2 px-3 py-2 border border-[#2A2A2A] hover:border-[#C9A84C]/40 rounded-sm transition-all duration-300 group"
+      className="relative flex items-center gap-2 px-3 py-2 border border-[#2A2A2A] hover:border-white/15 rounded-sm transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none group"
       aria-label={`Switch language to ${lang === "cs" ? "English" : "Czech"}`}
     >
       <AnimatePresence mode="wait">
@@ -57,7 +57,7 @@ function LanguageSwitcher() {
         >
           <CurrentFlag size={18} />
           <span
-            className="text-[#A89880] group-hover:text-[#E8DCC8] transition-colors duration-200"
+            className="text-[#8A8580] group-hover:text-[#E8E0D4] transition-colors duration-[180ms]"
             style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.72rem", letterSpacing: "0.1em" }}
           >
             {current.label}
@@ -82,7 +82,7 @@ export function Navbar() {
   ];
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () => setScrolled(window.scrollY > CTA_SCROLL_THRESHOLD);
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -99,9 +99,9 @@ export function Navbar() {
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-[250ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
           scrolled
-            ? "bg-[#0A0A0A]/95 backdrop-blur-md border-b border-[#C9A84C]/20 shadow-2xl"
+            ? "bg-[#0A0A0A]/95 backdrop-blur-md border-b border-white/[0.06] shadow-[0_4px_24px_rgba(0,0,0,0.3)]"
             : "bg-transparent"
         }`}
       >
@@ -127,11 +127,11 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
-                  className="text-[#A89880] hover:text-[#E8DCC8] transition-colors duration-300 tracking-widest uppercase relative group"
-                  style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: "0.72rem", letterSpacing: "0.12em" }}
+                  className="group text-[#8A8580] hover:text-[#E8E0D4] transition-colors duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] tracking-[0.12em] uppercase relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:rounded-sm"
+                  style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: "0.72rem" }}
                 >
                   {link.label}
-                  <span className="absolute -bottom-1 left-0 w-0 h-px bg-[#C9A84C] group-hover:w-full transition-all duration-300" />
+                  <span className="absolute -bottom-1 left-0 w-0 h-px bg-white/30 group-hover:w-full transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]" />
                 </a>
               ))}
             </nav>
@@ -139,17 +139,16 @@ export function Navbar() {
             {/* CTA + Language + Mobile toggle */}
             <div className="flex items-center gap-3">
               <LanguageSwitcher />
-              <a
+              <BookButton
                 href={RESERVIO_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-sm transition-all duration-300 hover:shadow-[0_0_20px_rgba(201,168,76,0.3)] active:scale-95"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.82rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
-              >
-                {t("nav.book")}
-              </a>
+                label={t("nav.book")}
+                size="sm"
+                variant={scrolled ? "primary" : "ghost"}
+                showIcon={false}
+                className="hidden sm:inline-flex"
+              />
               <button
-                className="lg:hidden text-[#E8DCC8] hover:text-[#C9A84C] transition-colors p-1"
+                className="lg:hidden text-[#E8E0D4] hover:text-[#B5AEA4] transition-colors duration-[180ms] p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:rounded-sm"
                 onClick={() => setMobileOpen(!mobileOpen)}
                 aria-label="Toggle menu"
               >
@@ -168,7 +167,7 @@ export function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="fixed top-20 left-0 right-0 z-40 bg-[#0A0A0A]/98 backdrop-blur-xl border-b border-[#C9A84C]/20 lg:hidden"
+            className="fixed top-20 left-0 right-0 z-40 bg-[#0A0A0A]/98 backdrop-blur-xl border-b border-white/[0.06] lg:hidden"
           >
             <nav className="flex flex-col px-6 py-6 gap-2">
               {navLinks.map((link, i) => (
@@ -179,21 +178,20 @@ export function Navbar() {
                   transition={{ delay: i * 0.07 }}
                   href={link.href}
                   onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
-                  className="text-[#A89880] hover:text-[#E8DCC8] py-3 border-b border-[#1A1A1A] transition-colors"
+                  className="text-[#8A8580] hover:text-[#E8E0D4] py-3 border-b border-[#1A1A1A] transition-colors duration-[180ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-inset"
                   style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "1.1rem", letterSpacing: "0.15em", textTransform: "uppercase" }}
                 >
                   {link.label}
                 </motion.a>
               ))}
-              <a
+              <BookButton
                 href={RESERVIO_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-4 text-center px-5 py-3 bg-[#C9A84C] text-[#0A0A0A] rounded-sm"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "1rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
-              >
-                {t("nav.book")}
-              </a>
+                label={t("nav.book")}
+                size="md"
+                variant={scrolled ? "primary" : "ghost"}
+                showIcon={false}
+                className="mt-4 w-full justify-center"
+              />
             </nav>
           </motion.div>
         )}

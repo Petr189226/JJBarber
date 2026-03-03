@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { ChevronDown } from "lucide-react";
 import { useLanguage } from "../i18n";
@@ -17,9 +17,22 @@ const BRANCH_LABELS: Record<string, string> = {
 
 export function Hero() {
   const { t } = useLanguage();
-  const [branch, setBranch] = useState("");
+  const [branch, setBranch] = useState(() => {
+    try {
+      const saved = localStorage.getItem("jj-branch");
+      return saved && (saved === "vrsovice" || saved === "strasnice") ? saved : "";
+    } catch {
+      return "";
+    }
+  });
   const [error, setError] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
+
+  useEffect(() => {
+    if (branch) {
+      try { localStorage.setItem("jj-branch", branch); } catch { /* noop */ }
+    }
+  }, [branch]);
 
   const scrollToServices = () => {
     const el = document.querySelector("#services");
@@ -67,13 +80,13 @@ export function Hero() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
+            transition={{ duration: 0.55, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
             className="flex items-center gap-3 mb-6"
           >
-            <div className="w-8 h-px bg-[#C9A84C]" />
+            <div className="w-8 h-px bg-[#8A8580]" />
             <span
-              className="text-[#C9A84C] tracking-[0.3em] uppercase"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.78rem" }}
+              className="text-[#8A8580] tracking-[0.25em] uppercase"
+              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.75rem" }}
             >
               {t("hero.label")}
             </span>
@@ -102,9 +115,9 @@ export function Hero() {
           <motion.p
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.75 }}
-            className="text-[#A89880] mb-10 max-w-md"
-            style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "1.05rem", lineHeight: 1.7 }}
+            transition={{ duration: 0.55, delay: 0.75, ease: [0.22, 1, 0.36, 1] }}
+            className="text-[#B5AEA4] mb-10 max-w-md"
+            style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "1rem", lineHeight: 1.8 }}
           >
             {t("hero.sub")}
           </motion.p>
@@ -120,19 +133,19 @@ export function Hero() {
                 <select
                   value={branch}
                   onChange={(e) => { setBranch(e.target.value); setError(false); }}
-                  className={`appearance-none bg-[#111111] border ${error ? "border-[#C9A84C]" : "border-[#2A2A2A]"} focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/40 focus:shadow-[0_0_12px_rgba(201,168,76,0.2)] text-[#E8DCC8] rounded-sm pl-4 pr-10 py-4 outline-none transition-all duration-300 w-full sm:w-60 cursor-pointer backdrop-blur-sm`}
+                  className={`appearance-none bg-[#111111] border ${error ? "border-[#C9A84C]" : "border-[#2A2A2A]"} focus-visible:border-white/30 focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:outline-none text-[#E8E0D4] rounded-sm pl-4 pr-10 py-4 outline-none transition-all duration-[180ms] w-full sm:w-60 cursor-pointer backdrop-blur-sm`}
                   style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.9rem" }}
                 >
                   <option value="" disabled style={{ color: "#3A3A3A" }}>{t("hero.selectPlaceholder")}</option>
                   <option value="vrsovice" style={{ background: "#111111", color: "#E8DCC8" }}>Vršovice</option>
                   <option value="strasnice" style={{ background: "#111111", color: "#E8DCC8" }}>Strašnice</option>
                 </select>
-                <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6B6B6B] pointer-events-none" />
+                <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8A8580] pointer-events-none" />
               </div>
               <button
                 onClick={handleReservation}
                 disabled={!branch || redirecting}
-                className={`px-8 py-4 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-sm transition-all duration-300 hover:shadow-[0_0_30px_rgba(201,168,76,0.4)] focus:ring-2 focus:ring-[#C9A84C]/50 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:hover:bg-[#C9A84C] ${redirecting ? "scale-[0.98]" : "active:scale-95"}`}
+                className={`px-8 py-4 bg-gradient-to-b from-[#D4B85A] to-[#C9A84C] hover:from-[#DDC268] hover:to-[#D4B85A] text-[#0A0A0A] rounded-sm transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_4px_24px_rgba(201,168,76,0.3)] focus-visible:ring-2 focus-visible:ring-[#C9A84C]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:hover:translate-y-0 ${redirecting ? "scale-[0.98] opacity-90" : "active:scale-[0.98]"}`}
                 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.95rem", letterSpacing: "0.15em", textTransform: "uppercase" }}
               >
                 {redirecting ? t("cta.redirecting") : branch ? `${t("hero.bookBranch")} – ${BRANCH_LABELS[branch]}` : t("hero.book")}
@@ -148,17 +161,17 @@ export function Hero() {
             )}
           </motion.div>
 
-          {/* Secondary CTA */}
+          {/* Secondary CTA – text link, minimal prominence */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.15 }}
-            className="mt-4"
+            transition={{ duration: 0.55, delay: 1.15, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-6"
           >
             <button
               onClick={scrollToServices}
-              className="px-8 py-4 border border-[#E8DCC8]/30 hover:border-[#C9A84C]/60 text-[#E8DCC8] hover:text-[#C9A84C] rounded-sm transition-all duration-300 backdrop-blur-sm"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.95rem", letterSpacing: "0.15em", textTransform: "uppercase" }}
+              className="text-[#8A8580] hover:text-[#B5AEA4] transition-colors duration-[180ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:rounded-sm"
+              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 400, fontSize: "0.9rem" }}
             >
               {t("hero.pricelist")}
             </button>
@@ -178,14 +191,14 @@ export function Hero() {
             ].map((stat) => (
               <div key={stat.label}>
                 <div
-                  className="text-[#C9A84C]"
-                  style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 800, fontSize: "1.6rem", lineHeight: 1 }}
+                  className="text-[#E8E0D4]"
+                  style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "1.5rem", lineHeight: 1 }}
                 >
                   {stat.value}
                 </div>
                 <div
-                  className="text-[#6B6B6B] mt-1"
-                  style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.72rem", letterSpacing: "0.05em" }}
+                  className="text-[#8A8580] mt-1"
+                  style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem", letterSpacing: "0.04em" }}
                 >
                   {stat.label}
                 </div>
@@ -201,7 +214,7 @@ export function Hero() {
         animate={{ opacity: 1 }}
         transition={{ delay: 1.6, duration: 0.6 }}
         onClick={scrollToServices}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[#6B6B6B] hover:text-[#C9A84C] transition-colors group"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[#8A8580] hover:text-[#B5AEA4] transition-colors duration-[180ms] group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent focus-visible:rounded-sm"
       >
         <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.65rem", letterSpacing: "0.2em", textTransform: "uppercase" }}>{t("hero.scrollDown")}</span>
         <motion.div

@@ -18,7 +18,7 @@ function StarRating({ rating }: { rating: number }) {
   return (
     <div className="flex gap-0.5">
       {Array.from({ length: 5 }).map((_, i) => (
-        <Star key={i} size={14} className={i < rating ? "text-[#C9A84C] fill-[#C9A84C]" : "text-[#333]"} />
+        <Star key={i} size={14} className={i < rating ? "text-[#C9A84C] fill-[#C9A84C]" : "text-[#2A2A2A]"} />
       ))}
     </div>
   );
@@ -34,18 +34,18 @@ export function Reviews() {
   const next = () => setActive((a) => (a + 1) % reviews.length);
 
   return (
-    <section id="reviews" className="py-24 bg-[#0D0D0D] overflow-hidden">
+    <section id="reviews" className="py-32 bg-[#0A0A0A] overflow-hidden scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div ref={ref} className="mb-16">
+        <div ref={ref} className="mb-20">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6 }}
-            className="flex items-center gap-3 mb-4"
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            className="flex items-center gap-3 mb-5"
           >
-            <div className="w-8 h-px bg-[#C9A84C]" />
+            <div className="w-8 h-px bg-[#8A8580]" />
             <span
-              className="text-[#C9A84C] tracking-[0.3em] uppercase"
+              className="text-[#8A8580] tracking-[0.25em] uppercase"
               style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.75rem" }}
             >
               {t("rev.label")}
@@ -55,9 +55,9 @@ export function Reviews() {
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.7, delay: 0.1 }}
-              className="text-[#E8DCC8]"
-              style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.15 }}
+              transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="text-[#E8E0D4] mb-6"
+              style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.2 }}
             >
               {t("rev.heading")}
             </motion.h2>
@@ -68,14 +68,14 @@ export function Reviews() {
               className="flex items-center gap-2 shrink-0"
             >
               <div
-                className="text-[#C9A84C]"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 800, fontSize: "2.5rem", lineHeight: 1 }}
+                className="text-[#E8E0D4]"
+                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "2.25rem", lineHeight: 1 }}
               >
                 4.9
               </div>
               <div>
                 <StarRating rating={5} />
-                <div className="text-[#6B6B6B] mt-1" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem" }}>
+                <div className="text-[#8A8580] mt-1" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem" }}>
                   {t("rev.google")}
                 </div>
               </div>
@@ -91,27 +91,27 @@ export function Reviews() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.6, delay: i * 0.1 }}
-              className="bg-[#111111] border border-[#1F1F1F] hover:border-[#C9A84C]/20 rounded-sm p-6 transition-all duration-400 group hover:-translate-y-1 flex flex-col"
+              transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="bg-[#111111] border border-[#1F1F1F] hover:border-white/[0.08] rounded-sm p-6 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] group hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)] flex flex-col"
             >
-              <Quote size={22} className="text-[#C9A84C]/40 mb-4" />
+              <Quote size={22} className="text-[#8A8580]/60 mb-4" />
               <p
-                className="text-[#A89880] mb-6 leading-relaxed flex-1"
-                style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.875rem", lineHeight: 1.75 }}
+                className="text-[#B5AEA4] mb-6 leading-relaxed flex-1"
+                style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.875rem", lineHeight: 1.9 }}
               >
                 "{review.text}"
               </p>
               <div className="flex items-center gap-3 pt-4 border-t border-[#1F1F1F] mt-auto">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#C9A84C]/30 to-[#C9A84C]/10 border border-[#C9A84C]/30 flex items-center justify-center flex-shrink-0">
-                  <span className="text-[#C9A84C]" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.8rem" }}>
+                <div className="w-10 h-10 rounded-full bg-[#1A1A1A] border border-[#2A2A2A] flex items-center justify-center flex-shrink-0">
+                  <span className="text-[#B5AEA4]" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.8rem" }}>
                     {review.initials}
                   </span>
                 </div>
                 <div className="min-w-0">
-                  <div className="text-[#E8DCC8] truncate" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "0.9rem" }}>
+                  <div className="text-[#E8E0D4] truncate" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "0.9rem" }}>
                     {review.name}
                   </div>
-                  <div className="text-[#6B6B6B] truncate" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem" }}>
+                  <div className="text-[#8A8580] truncate" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem" }}>
                     {t("rev.role")}
                   </div>
                 </div>
@@ -132,24 +132,24 @@ export function Reviews() {
               transition={{ duration: 0.4 }}
               className="bg-[#111111] border border-[#1F1F1F] rounded-sm p-6"
             >
-              <Quote size={22} className="text-[#C9A84C]/40 mb-4" />
+              <Quote size={22} className="text-[#8A8580]/60 mb-4" />
               <p
-                className="text-[#A89880] mb-6 leading-relaxed"
-                style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.9rem", lineHeight: 1.75 }}
+                className="text-[#B5AEA4] mb-6 leading-relaxed"
+                style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.9rem", lineHeight: 1.9 }}
               >
                 "{reviews[active].text}"
               </p>
               <div className="flex items-center gap-3 pt-4 border-t border-[#1F1F1F]">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#C9A84C]/30 to-[#C9A84C]/10 border border-[#C9A84C]/30 flex items-center justify-center">
-                  <span className="text-[#C9A84C]" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.8rem" }}>
+                <div className="w-10 h-10 rounded-full bg-[#1A1A1A] border border-[#2A2A2A] flex items-center justify-center">
+                  <span className="text-[#B5AEA4]" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.8rem" }}>
                     {reviews[active].initials}
                   </span>
                 </div>
                 <div>
-                  <div className="text-[#E8DCC8]" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "0.9rem" }}>
+                  <div className="text-[#E8E0D4]" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "0.9rem" }}>
                     {reviews[active].name}
                   </div>
-                  <div className="text-[#6B6B6B]" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem" }}>
+                  <div className="text-[#8A8580]" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem" }}>
                     {t("rev.role")}
                   </div>
                 </div>
@@ -159,7 +159,7 @@ export function Reviews() {
           </AnimatePresence>
 
           <div className="flex items-center justify-between mt-6">
-            <button onClick={prev} className="w-10 h-10 border border-[#2A2A2A] hover:border-[#C9A84C]/50 rounded-sm flex items-center justify-center text-[#E8DCC8] transition-colors">
+            <button onClick={prev} className="w-10 h-10 border border-[#2A2A2A] hover:border-white/15 rounded-sm flex items-center justify-center text-[#E8E0D4] transition-all duration-[180ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]">
               <ChevronLeft size={18} />
             </button>
             <div className="flex gap-2">
@@ -167,11 +167,11 @@ export function Reviews() {
                 <button
                   key={i}
                   onClick={() => setActive(i)}
-                  className={`h-1 rounded-full transition-all duration-300 ${i === active ? "w-8 bg-[#C9A84C]" : "w-3 bg-[#2A2A2A]"}`}
+                  className={`h-1 rounded-full transition-all duration-[180ms] ${i === active ? "w-8 bg-[#8A8580]" : "w-3 bg-[#2A2A2A]"}`}
                 />
               ))}
             </div>
-            <button onClick={next} className="w-10 h-10 border border-[#2A2A2A] hover:border-[#C9A84C]/50 rounded-sm flex items-center justify-center text-[#E8DCC8] transition-colors">
+            <button onClick={next} className="w-10 h-10 border border-[#2A2A2A] hover:border-white/15 rounded-sm flex items-center justify-center text-[#E8E0D4] transition-all duration-[180ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]">
               <ChevronRight size={18} />
             </button>
           </div>

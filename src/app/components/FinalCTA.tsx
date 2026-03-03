@@ -1,6 +1,7 @@
 import { motion, useInView } from "motion/react";
 import { useRef } from "react";
 import { useLanguage } from "../i18n";
+import { BookButton } from "./BookButton";
 
 export function FinalCTA() {
   const ref = useRef(null);
@@ -39,24 +40,19 @@ export function FinalCTA() {
           {t("cta.sub")}
         </motion.p>
 
-        <motion.a
+        <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.3 }}
-          href="https://j-j-barbershop.reservio.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex px-10 py-5 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-sm hover:shadow-[0_0_40px_rgba(201,168,76,0.35)] transition-all duration-300 active:scale-95"
-          style={{
-            fontFamily: "'Barlow Condensed', sans-serif",
-            fontWeight: 700,
-            fontSize: "1rem",
-            letterSpacing: "0.15em",
-            textTransform: "uppercase",
-          }}
         >
-          {t("cta.button")}
-        </motion.a>
+          <BookButton
+            href="#booking"
+            label={t("cta.button")}
+            variant="textLink"
+            action="scroll"
+            showIcon
+          />
+        </motion.div>
       </div>
     </section>
   );

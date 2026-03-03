@@ -5,7 +5,6 @@ import { Locations } from "./components/Locations";
 import { Team } from "./components/Team";
 import { Reviews } from "./components/Reviews";
 import { Booking } from "./components/Booking";
-import { FinalCTA } from "./components/FinalCTA";
 import { Footer } from "./components/Footer";
 import { StickyBookBar } from "./components/StickyBookBar";
 import { LanguageProvider } from "./i18n";
@@ -13,7 +12,7 @@ import { LanguageProvider } from "./i18n";
 export default function App() {
   return (
     <LanguageProvider>
-      <div className="min-h-screen" style={{ background: "#0A0A0A" }}>
+      <div className="min-h-screen bg-[#0A0A0A]">
         <Navbar />
         <main>
           <Hero />
@@ -22,11 +21,10 @@ export default function App() {
           <Services />
           <Reviews />
           <Booking />
-          <FinalCTA />
         </main>
-      <Footer />
-      <StickyBookBar />
-    </div>
+        <Footer />
+        <StickyBookBar />
+      </div>
     </LanguageProvider>
   );
 }

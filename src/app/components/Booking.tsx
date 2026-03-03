@@ -3,10 +3,8 @@ import { motion, useInView } from "motion/react";
 import { Phone, ExternalLink, Gift } from "lucide-react";
 import { VoucherModal } from "./VoucherModal";
 import { useLanguage } from "../i18n";
-
-const RESERVIO_URL = "https://j-j-barbershop.reservio.com/";
-const RESERVIO_VRSOVICE = "https://j-j-barbershop.reservio.com/j-j-barber-shop";
-const RESERVIO_STRASNICE = "https://j-j-barbershop.reservio.com/j-j-barber-shop-strasnice";
+import { BookButton } from "./BookButton";
+import { RESERVIO_URL, RESERVIO_VRSOVICE, RESERVIO_STRASNICE } from "../cta-config";
 
 export function Booking() {
   const ref = useRef(null);
@@ -15,7 +13,7 @@ export function Booking() {
   const { t } = useLanguage();
 
   return (
-    <section id="booking" className="py-24 bg-[#0A0A0A]">
+    <section id="booking" className="py-32 bg-[#0E0E0E] scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           {/* Left column */}
@@ -23,12 +21,12 @@ export function Booking() {
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.6 }}
-              className="flex items-center gap-3 mb-4"
+              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+              className="flex items-center gap-3 mb-5"
             >
-              <div className="w-8 h-px bg-[#C9A84C]" />
+              <div className="w-8 h-px bg-[#8A8580]" />
               <span
-                className="text-[#C9A84C] tracking-[0.3em] uppercase"
+                className="text-[#8A8580] tracking-[0.25em] uppercase"
                 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.75rem" }}
               >
                 {t("book.label")}
@@ -38,9 +36,9 @@ export function Booking() {
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.7, delay: 0.1 }}
-              className="text-[#E8DCC8] mb-6"
-              style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 1.15 }}
+              transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="text-[#E8E0D4] mb-8"
+              style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 1.2 }}
             >
               {t("book.heading1")}
               <br />
@@ -50,9 +48,9 @@ export function Booking() {
             <motion.p
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="text-[#6B6B6B] mb-10"
-              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.95rem", lineHeight: 1.8 }}
+              transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="text-[#8A8278] mb-10"
+              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.9rem", lineHeight: 1.9 }}
             >
               {t("book.description")}
             </motion.p>
@@ -64,24 +62,24 @@ export function Booking() {
               className="space-y-4"
             >
               <div className="flex items-start gap-4">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#C9A84C] flex-shrink-0 mt-1.5" />
+                <div className="w-1.5 h-1.5 rounded-full bg-[#8A8580] flex-shrink-0 mt-1.5" />
                 <div>
-                  <span className="text-[#6B6B6B]" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.85rem" }}>Vršovice: </span>
-                  <span className="text-[#A89880]" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: "0.85rem" }}>Vršovická 7/27, 101 00 Praha 10</span>
+                  <span className="text-[#8A8580]" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.85rem" }}>Vršovice: </span>
+                  <span className="text-[#B5AEA4]" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: "0.85rem" }}>Vršovická 7/27, 101 00 Praha 10</span>
                 </div>
               </div>
               <div className="flex items-start gap-4">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#C9A84C] flex-shrink-0 mt-1.5" />
+                <div className="w-1.5 h-1.5 rounded-full bg-[#8A8580] flex-shrink-0 mt-1.5" />
                 <div>
-                  <span className="text-[#6B6B6B]" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.85rem" }}>Strašnice: </span>
-                  <span className="text-[#A89880]" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: "0.85rem" }}>Černokostelecká 830/23, 100 00 Praha 10</span>
+                  <span className="text-[#8A8580]" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.85rem" }}>Strašnice: </span>
+                  <span className="text-[#B5AEA4]" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: "0.85rem" }}>Černokostelecká 830/23, 100 00 Praha 10</span>
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#C9A84C] flex-shrink-0" />
+                <div className="w-1.5 h-1.5 rounded-full bg-[#8A8580] flex-shrink-0" />
                 <div className="flex gap-2 flex-wrap items-center">
-                  <Phone size={14} className="text-[#C9A84C]" />
-                  <a href="tel:+420777507662" className="text-[#A89880] hover:text-[#C9A84C] transition-colors" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: "0.85rem" }}>
+                  <Phone size={14} className="text-[#8A8580]" />
+                  <a href="tel:+420777507662" className="text-[#B5AEA4] hover:text-[#E8E0D4] transition-colors duration-[180ms]" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: "0.85rem" }}>
                     777 507 662
                   </a>
                 </div>
@@ -92,8 +90,8 @@ export function Booking() {
               onClick={() => setVoucherOpen(true)}
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.6, delay: 0.45 }}
-              className="mt-8 inline-flex items-center gap-2 text-[#C9A84C] hover:text-[#D4B85A] transition-colors cursor-pointer"
+              transition={{ duration: 0.55, delay: 0.45 }}
+              className="mt-8 inline-flex items-center gap-2 text-[#8A8580] hover:text-[#B5AEA4] transition-colors duration-[180ms] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:rounded-sm"
               style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.85rem", letterSpacing: "0.1em" }}
             >
               <Gift size={18} />
@@ -104,18 +102,18 @@ export function Booking() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.8, delay: 0.5 }}
-              className="mt-12 pl-6 border-l-2 border-[#C9A84C]/40"
+              transition={{ duration: 0.55, delay: 0.5 }}
+              className="mt-12 pl-6 border-l-2 border-[#2A2A2A]"
             >
               <p
-                className="text-[#4A4A4A] italic"
-                style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400, fontSize: "1.05rem", lineHeight: 1.7 }}
+                className="text-[#6B6660] italic"
+                style={{ fontFamily: "'Playfair Display', serif", fontWeight: 400, fontSize: "1rem", lineHeight: 1.75 }}
               >
                 "{t("book.quote")}"
               </p>
               <span
-                className="text-[#C9A84C] mt-2 block"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.78rem", letterSpacing: "0.15em" }}
+                className="text-[#8A8580] mt-2 block"
+                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.75rem", letterSpacing: "0.12em" }}
               >
                 — J&amp;J BARBER SHOP
               </span>
@@ -134,7 +132,7 @@ export function Booking() {
               href={RESERVIO_VRSOVICE}
               target="_blank"
               rel="noopener noreferrer"
-              className="block bg-[#111111] border border-[#1F1F1F] hover:border-[#C9A84C]/40 rounded-sm p-8 transition-all duration-300 group"
+              className="block bg-[#111111] border border-[#1F1F1F] hover:border-[#C9A84C]/40 hover:-translate-y-0.5 rounded-sm p-8 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] group focus-visible:ring-2 focus-visible:ring-[#C9A84C]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none"
             >
               <h3 className="text-[#E8DCC8] mb-2" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.35rem" }}>
                 JJ Barber shop – Vršovice
@@ -146,7 +144,7 @@ export function Booking() {
                 className="inline-flex items-center gap-2 text-[#C9A84C] group-hover:gap-3 transition-all"
                 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.9rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
               >
-                {t("book.reserve")}
+                {t("book.reserve")} – Vršovice
                 <ExternalLink size={16} />
               </span>
             </a>
@@ -154,7 +152,7 @@ export function Booking() {
               href={RESERVIO_STRASNICE}
               target="_blank"
               rel="noopener noreferrer"
-              className="block bg-[#111111] border border-[#1F1F1F] hover:border-[#C9A84C]/40 rounded-sm p-8 transition-all duration-300 group"
+              className="block bg-[#111111] border border-[#1F1F1F] hover:border-[#C9A84C]/40 hover:-translate-y-0.5 rounded-sm p-8 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] group focus-visible:ring-2 focus-visible:ring-[#C9A84C]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none"
             >
               <h3 className="text-[#E8DCC8] mb-2" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.35rem" }}>
                 JJ Barber shop – Strašnice
@@ -166,20 +164,16 @@ export function Booking() {
                 className="inline-flex items-center gap-2 text-[#C9A84C] group-hover:gap-3 transition-all"
                 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.9rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
               >
-                {t("book.reserve")}
+                {t("book.reserve")} – Strašnice
                 <ExternalLink size={16} />
               </span>
             </a>
-            <a
-              href={RESERVIO_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex w-full items-center justify-center gap-3 py-4 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-sm transition-all duration-300 hover:shadow-[0_0_30px_rgba(201,168,76,0.3)] active:scale-[0.98]"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "1rem", letterSpacing: "0.15em", textTransform: "uppercase" }}
+            <p
+              className="text-[#6B6660] text-[0.7rem] mt-2 text-right"
+              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 400 }}
             >
-              {t("book.openReservio")}
-              <ExternalLink size={18} />
-            </a>
+              {t("book.reservioNote")}
+            </p>
           </motion.div>
         </div>
       </div>

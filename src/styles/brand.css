@@ -1,0 +1,19 @@
+/**
+ * Brand utility classes – unified motion, focus, card hover.
+ */
+
+.transition-brand {
+  transition: all 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.transition-brand-slow {
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.focus-ring-neutral:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #0A0A0A, 0 0 0 4px rgba(255,255,255,0.2);
+}
+.focus-ring-gold:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #0A0A0A, 0 0 0 4px rgba(201,168,76,0.5);
+}

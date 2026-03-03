@@ -1,6 +1,7 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
+@import './brand.css';
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
@@ -32,4 +33,20 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 select option {
   background-color: #111111;
   color: #E8DCC8;
+}
+
+/* Global focus: neutral ring fallback (components override with gold for CTA) */
+:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.25);
+  outline-offset: 2px;
+}
+
+/* Reduced motion: disable transitions & animations for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

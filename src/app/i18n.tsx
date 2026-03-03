@@ -23,8 +23,8 @@ const translations: Record<string, Record<Lang, string>> = {
   "hero.headline2": { cs: "na", en: "in" },
   "hero.headline3": { cs: "Praze 10", en: "Prague 10" },
   "hero.sub": {
-    cs: "Lokální barber shop s přátelskou atmosférou – Vršovice a Strašnice.",
-    en: "Local barber shop with a friendly atmosphere – Vršovice & Strašnice.",
+    cs: "Vršovice a Strašnice. Lokální barber s charakterem.",
+    en: "Vršovice & Strašnice. A local barber with character.",
   },
   "hero.selectPlaceholder": { cs: "Vyber pobočku", en: "Select branch" },
   "hero.book": { cs: "Rezervovat termín", en: "Book Now" },
@@ -41,11 +41,11 @@ const translations: Record<string, Record<Lang, string>> = {
   "loc.label": { cs: "Kde nás najdete", en: "Where to find us" },
   "loc.heading": { cs: "Pobočky", en: "Locations" },
   "loc.description": {
-    cs: "Na našich pobočkách ve Vršovicích a Strašnicích tě čeká tým zkušených profesionálů, kteří mají vášeň pro své řemeslo. Kdykoliv přijdeš, očekávej profesionální službu ve veselé a přátelské atmosféře.",
-    en: "At our branches in Vršovice and Strašnice, a team of experienced professionals with a passion for their craft awaits you. Whenever you visit, expect professional service in a cheerful and friendly atmosphere.",
+    cs: "Dvě pobočky v Praze 10. Tým, který zná řemeslo.",
+    en: "Two branches in Prague 10. A team that knows the craft.",
   },
-  "loc.reserve": { cs: "Vytvořit rezervaci", en: "Make a Reservation" },
-  "loc.openMaps": { cs: "Otevřít v Google Maps", en: "Open in Google Maps" },
+  "loc.reserve": { cs: "Rezervovat", en: "Book" },
+  "loc.openMaps": { cs: "Zobrazit na mapě", en: "View on map" },
   "loc.mon-fri": { cs: "Pondělí — Pátek 9:00 — 21:00", en: "Monday — Friday 9:00 — 21:00" },
   "loc.sat": { cs: "Sobota 10:00 — 17:00", en: "Saturday 10:00 — 17:00" },
   "loc.sun.vrsovice": { cs: "Neděle 10:00 — 17:00", en: "Sunday 10:00 — 17:00" },
@@ -55,22 +55,22 @@ const translations: Record<string, Record<Lang, string>> = {
   "team.label": { cs: "Kdo vás ostříhá", en: "Who will cut your hair" },
   "team.heading": { cs: "tým", en: "Team" },
   "team.description": {
-    cs: "Pepa a Kuba založili barber v roce 2020. Od té doby pracují na jeho rozvoji a budování dobrého jména. Dnes je součástí týmu již 8 barberů, kteří dohromady tvoří sehranou partu.",
-    en: "Pepa and Kuba founded the barbershop in 2020. Since then, they have been working on its growth and building a great reputation. Today, the team includes 8 barbers who together form a well-coordinated crew.",
+    cs: "Pepa a Kuba založili barber v roce 2020. Dnes 8 barberů, jedna parta.",
+    en: "Pepa and Kuba founded the barbershop in 2020. Today 8 barbers, one crew.",
   },
 
   // ── Services ──
   "svc.label": { cs: "Ceník služeb", en: "Our Services" },
   "svc.heading": { cs: "Ceník", en: "Pricing" },
   "svc.description": {
-    cs: "Každá služba je prováděna s maximální precizností a péčí.",
-    en: "Every service is performed with maximum precision and care.",
+    cs: "Precizní práce. Transparentní ceny.",
+    en: "Precise work. Transparent prices.",
   },
   "svc.popular": { cs: "Nejoblíbenější", en: "Most Popular" },
   "svc.currency": { cs: "Kč", en: "CZK" },
   "svc.onRequest": { cs: "Na vyžádání", en: "On request" },
   "svc.orderVoucher": { cs: "Objednat poukaz →", en: "Order voucher →" },
-  "svc.book": { cs: "Rezervovat termín", en: "Book Now" },
+  "svc.book": { cs: "Rezervace", en: "Booking" },
 
   "svc.classic.name": { cs: "Klasický střih", en: "Classic Haircut" },
   "svc.classic.desc": {
@@ -104,13 +104,13 @@ const translations: Record<string, Record<Lang, string>> = {
   },
   "svc.voucher.name": { cs: "Voucher", en: "Gift Voucher" },
   "svc.voucher.desc": {
-    cs: "Darujte voucher na jednu z našich služeb. Voucher je nutné telefonicky objednat a vyzvednout na jedné z našich poboček.",
-    en: "Give the gift of a voucher for any of our services. The voucher must be ordered by phone and picked up at one of our branches.",
+    cs: "Voucher na libovolnou službu. Objednání a vyzvednutí na pobočce.",
+    en: "Voucher for any service. Order and pick up at the branch.",
   },
 
   // ── Reviews ──
   "rev.label": { cs: "Recenze", en: "Reviews" },
-  "rev.heading": { cs: "Co říkají naši klienti", en: "What our clients say" },
+  "rev.heading": { cs: "Recenze", en: "Reviews" },
   "rev.google": { cs: "Google recenze", en: "Google reviews" },
   "rev.role": { cs: "Zákazník", en: "Customer" },
 
@@ -119,13 +119,14 @@ const translations: Record<string, Record<Lang, string>> = {
   "book.heading1": { cs: "Rezervuj si", en: "Book your" },
   "book.heading2": { cs: "termín", en: "appointment" },
   "book.description": {
-    cs: "Rezervace probíhá online přes Reservio. Vyber si pobočku, službu a volný termín. Potvrzení přijde na e-mail nebo SMS.",
-    en: "Booking is done online via Reservio. Choose your branch, service, and available time slot. Confirmation will be sent via email or SMS.",
+    cs: "Vyber pobočku a zarezervuj si termín online.",
+    en: "Choose a branch and book your appointment online.",
   },
   "book.voucher": { cs: "Dárkový poukaz", en: "Gift Voucher" },
   "book.quote": { cs: "Tvůj barber shop na Praze 10.", en: "Your barber shop in Prague 10." },
-  "book.reserve": { cs: "Vytvořit rezervaci", en: "Make a Reservation" },
-  "book.openReservio": { cs: "Otevřít Reservio", en: "Open Reservio" },
+  "book.reserve": { cs: "Rezervovat", en: "Book" },
+  "book.openReservio": { cs: "Rezervovat termín", en: "Book Now" },
+  "book.reservioNote": { cs: "Online rezervace.", en: "Online booking." },
 
   // ── Final CTA ──
   "cta.heading1": { cs: "Rezervuj si termín", en: "Book your appointment" },
@@ -150,8 +151,8 @@ const translations: Record<string, Record<Lang, string>> = {
 
   // ── Footer ──
   "footer.brand": {
-    cs: "Lokální barber shop s přátelskou atmosférou – Vršovice a Strašnice, Praha 10.",
-    en: "Local barber shop with a friendly atmosphere – Vršovice & Strašnice, Prague 10.",
+    cs: "J&J Barber Shop. Vršovice a Strašnice, Praha 10.",
+    en: "J&J Barber Shop. Vršovice & Strašnice, Prague 10.",
   },
   "footer.nav": { cs: "Navigace", en: "Navigation" },
   "footer.services": { cs: "Služby", en: "Services" },
@@ -168,8 +169,8 @@ const translations: Record<string, Record<Lang, string>> = {
   "voucher.title": { cs: "Dárkový poukaz", en: "Gift Voucher" },
   "voucher.close": { cs: "Zavřít", en: "Close" },
   "voucher.intro": {
-    cs: "Darujte voucher na jednu z našich služeb. Voucher je nutné vyzvednout a zaplatit na vybrané pobočce.",
-    en: "Give the gift of a voucher for any of our services. The voucher must be picked up and paid for at the selected branch.",
+    cs: "Darujte voucher na službu dle výběru. Vyzvednutí a platba na pobočce.",
+    en: "Give a voucher for any service. Pick up and pay at the branch.",
   },
   "voucher.name": { cs: "Jméno", en: "First Name" },
   "voucher.surname": { cs: "Příjmení", en: "Last Name" },
