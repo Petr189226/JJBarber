@@ -120,7 +120,7 @@ export function Hero() {
             }}
           >
             <span>{t("hero.headline1")}</span>
-            <span>{t("hero.headline2")} <em style={{ fontStyle: "italic", color: "#C9A84C", letterSpacing: "0.02em" }}>{t("hero.headline3")}</em></span>
+            <span><em style={{ fontStyle: "italic", color: "#C9A84C", letterSpacing: "0.02em" }}>{t("hero.headline2")} {t("hero.headline3")}</em></span>
           </motion.h1>
 
           {/* Subheadline */}
