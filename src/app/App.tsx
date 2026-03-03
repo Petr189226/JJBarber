@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from "react";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
 import { LanguageProvider } from "./i18n";
@@ -16,29 +16,43 @@ function SectionFallback({ minH = "40vh" }: { minH?: string }) {
   return <div style={{ minHeight: minH }} aria-hidden />;
 }
 
-export default function App() {
-  const [showBelowFold, setShowBelowFold] = useState(false);
-  const [showFooterExtras, setShowFooterExtras] = useState(false);
+/** Renders children (lazy chunk) only when the sentinel is near the viewport. */
+function LazySection({ children, minH = "40vh" }: { children: ReactNode; minH?: string }) {
+  const [inView, setInView] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    const el = sentinelRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => {
+        if (e?.isIntersecting) setInView(true);
+      },
+      { rootMargin: "120px", threshold: 0 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
-    const schedule = (cb: () => void, delay: number) => {
-      if ("requestIdleCallback" in window) {
-        (window as any).requestIdleCallback(cb);
-      } else {
-        return window.setTimeout(cb, delay);
-      }
-      return undefined;
-    };
+  if (!inView) return <div ref={sentinelRef} style={{ minHeight: minH }} aria-hidden />;
+  return <Suspense fallback={<SectionFallback minH={minH} />}>{children}</Suspense>;
+}
 
-    const belowFoldId = schedule(() => setShowBelowFold(true), 1200);
-    const footerId = schedule(() => setShowFooterExtras(true), 2000);
+export default function App() {
+  const [showFooterExtras, setShowFooterExtras] = useState(false);
+  const footerSentinelRef = useRef<HTMLDivElement>(null);
 
-    return () => {
-      if (belowFoldId) window.clearTimeout(belowFoldId);
-      if (footerId) window.clearTimeout(footerId);
-    };
+  useEffect(() => {
+    const el = footerSentinelRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([e]) => {
+        if (e?.isIntersecting) setShowFooterExtras(true);
+      },
+      { rootMargin: "100px", threshold: 0 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
   }, []);
 
   return (
@@ -47,16 +61,13 @@ export default function App() {
         <Navbar />
         <main>
           <Hero />
-          {showBelowFold && (
-            <>
-              <Suspense fallback={<SectionFallback />}><Locations /></Suspense>
-              <Suspense fallback={<SectionFallback />}><Team /></Suspense>
-              <Suspense fallback={<SectionFallback />}><Services /></Suspense>
-              <Suspense fallback={<SectionFallback />}><Reviews /></Suspense>
-              <Suspense fallback={<SectionFallback />}><Booking /></Suspense>
-            </>
-          )}
+          <LazySection><Locations /></LazySection>
+          <LazySection><Team /></LazySection>
+          <LazySection><Services /></LazySection>
+          <LazySection><Reviews /></LazySection>
+          <LazySection><Booking /></LazySection>
         </main>
+        <div ref={footerSentinelRef} style={{ minHeight: 1 }} aria-hidden />
         {showFooterExtras && (
           <Suspense fallback={null}>
             <Footer />

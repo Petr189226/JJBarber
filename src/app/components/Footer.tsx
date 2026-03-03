@@ -58,10 +58,11 @@ export function Footer() {
             >
               <picture>
                 <source
-                  srcSet="/logo-240.webp 1x, /logo-480.webp 2x"
+                  srcSet="/logo-240.webp 240w, /logo-480.webp 480w"
+                  sizes="(max-width: 768px) 120px, 135px"
                   type="image/webp"
                 />
-                <img src="/logo-480.png" alt="J&J Barber Shop" width={480} height={145} className="h-10 w-auto object-contain" />
+                <img src="/logo-480.webp" alt="J&J Barber Shop" width={480} height={145} className="h-10 w-auto object-contain" />
               </picture>
             </a>
             <p

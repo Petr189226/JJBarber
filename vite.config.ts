@@ -3,12 +3,29 @@ import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 
+/** Make Vite-injected CSS load async so it doesn't block FCP/LCP. */
+function nonBlockingCss() {
+  return {
+    name: 'non-blocking-css',
+    transformIndexHtml: {
+      order: 'post',
+      handler(html) {
+        return html.replace(
+          /<link rel="stylesheet"([^>]*?)href="(\/assets\/[^"]+\.css)"([^>]*)>/g,
+          (_, before, href, after) =>
+            `<link rel="stylesheet" href="${href}" media="print" onload="this.media='all'">` +
+            `<noscript><link rel="stylesheet" href="${href}"></noscript>`
+        )
+      },
+    },
+  }
+}
+
 export default defineConfig({
   plugins: [
-    // The React and Tailwind plugins are both required for Make, even if
-    // Tailwind is not being actively used – do not remove them
     react(),
     tailwindcss(),
+    nonBlockingCss(),
   ],
   resolve: {
     alias: {

@@ -137,11 +137,12 @@ export function Navbar() {
             >
               <picture>
                 <source
-                  srcSet="/logo-240.webp 1x, /logo-480.webp 2x"
+                  srcSet="/logo-240.webp 240w, /logo-480.webp 480w"
+                  sizes="(max-width: 768px) 120px, 135px"
                   type="image/webp"
                 />
                 <img
-                  src="/logo-480.png"
+                  src="/logo-480.webp"
                   alt="J&J Barber Shop"
                   width={480}
                   height={145}
