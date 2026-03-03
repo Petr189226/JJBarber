@@ -34,13 +34,13 @@ export function Reviews() {
   const next = () => setActive((a) => (a + 1) % reviews.length);
 
   return (
-    <section id="reviews" className="py-32 bg-[#0A0A0A] overflow-hidden scroll-mt-24">
+    <section id="reviews" className="py-8 md:py-12 lg:py-20 bg-[#0F0F0F] overflow-hidden scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div ref={ref} className="mb-20">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.55, ease: "easeOut" }}
             className="flex items-center gap-3 mb-5"
           >
             <div className="w-8 h-px bg-[#8A8580]" />
@@ -51,12 +51,12 @@ export function Reviews() {
               {t("rev.label")}
             </span>
           </motion.div>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="text-[#C4BEB4] mb-6"
+              transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+              className="text-[#C4BEB4] mb-4"
               style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.2 }}
             >
               {t("rev.heading")}
@@ -69,7 +69,7 @@ export function Reviews() {
             >
               <div
                 className="text-[#C4BEB4]"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "2.25rem", lineHeight: 1 }}
+                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "2.5rem", lineHeight: 1 }}
               >
                 4.9
               </div>
@@ -88,11 +88,11 @@ export function Reviews() {
           {reviews.map((review, i) => (
             <motion.div
               key={review.name}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="bg-[#111111] border border-[#1F1F1F] hover:border-white/[0.08] rounded-sm p-6 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] group hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)] flex flex-col"
+              transition={{ duration: 0.6, delay: i * 0.1, ease: "easeOut" }}
+              className="bg-[#111111] border border-[#1F1F1F] hover:border-white/[0.08] rounded-xl p-6 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)] flex flex-col"
             >
               <Quote size={22} className="text-[#8A8580]/60 mb-4" />
               <p
@@ -130,12 +130,12 @@ export function Reviews() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -30 }}
               transition={{ duration: 0.4 }}
-              className="bg-[#111111] border border-[#1F1F1F] rounded-sm p-6"
+              className="bg-[#111111] border border-[#1F1F1F] rounded-xl p-6"
             >
               <Quote size={22} className="text-[#8A8580]/60 mb-4" />
               <p
                 className="text-[#B5AEA4] mb-6 leading-relaxed"
-                style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.9rem", lineHeight: 1.9 }}
+                style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.9rem", lineHeight: 1.6 }}
               >
                 "{reviews[active].text}"
               </p>
@@ -159,7 +159,7 @@ export function Reviews() {
           </AnimatePresence>
 
           <div className="flex items-center justify-between mt-6">
-            <button onClick={prev} className="w-10 h-10 border border-[#2A2A2A] hover:border-white/15 rounded-sm flex items-center justify-center text-[#C4BEB4] transition-all duration-[180ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]">
+            <button onClick={prev} className="w-10 h-10 border border-[#2A2A2A] hover:border-white/15 rounded-xl flex items-center justify-center text-[#C4BEB4] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]">
               <ChevronLeft size={18} />
             </button>
             <div className="flex gap-2">
@@ -167,11 +167,11 @@ export function Reviews() {
                 <button
                   key={i}
                   onClick={() => setActive(i)}
-                  className={`h-1 rounded-full transition-all duration-[180ms] ${i === active ? "w-8 bg-[#8A8580]" : "w-3 bg-[#2A2A2A]"}`}
+                  className={`h-1 rounded-full transition-all duration-200 cursor-pointer ${i === active ? "w-8 bg-[#8A8580]" : "w-3 bg-[#2A2A2A]"}`}
                 />
               ))}
             </div>
-            <button onClick={next} className="w-10 h-10 border border-[#2A2A2A] hover:border-white/15 rounded-sm flex items-center justify-center text-[#C4BEB4] transition-all duration-[180ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]">
+            <button onClick={next} className="w-10 h-10 border border-[#2A2A2A] hover:border-white/15 rounded-xl flex items-center justify-center text-[#C4BEB4] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]">
               <ChevronRight size={18} />
             </button>
           </div>

@@ -11,29 +11,29 @@ function MiniMap({ loc, openLabel }: { loc: { name: string; mapImage: string; ma
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`Otevřít mapu pobočky ${loc.name}`}
-      className="block relative w-full h-[120px] md:h-[130px] rounded-sm overflow-hidden border border-[#1F1F1F] hover:border-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] transition-all duration-[180ms] group/map cursor-pointer"
+      className="block relative w-full h-[120px] md:h-[130px] rounded-xl overflow-hidden border border-[#1F1F1F] hover:border-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] transition-all duration-200 group/map cursor-pointer"
     >
       <img
         src={loc.mapImage}
         alt={`Mapa – ${loc.name}`}
         loading="lazy"
-        className="w-full h-full object-cover brightness-[0.4] group-hover/map:brightness-[0.55] transition-all duration-300"
+        className="w-full h-full object-cover brightness-[0.48] group-hover/map:brightness-[0.6] transition-all duration-300"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/70 via-transparent to-[#0A0A0A]/20" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/62 via-transparent to-[#0A0A0A]/14" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full z-10">
         <svg width="20" height="28" viewBox="0 0 20 28" fill="none" className="drop-shadow-[0_2px_6px_rgba(201,168,76,0.5)] group-hover/map:scale-110 transition-transform duration-200">
           <path d="M10 0C4.477 0 0 4.477 0 10c0 7.5 10 18 10 18s10-10.5 10-18c0-5.523-4.477-10-10-10z" fill="#8A8580" />
           <circle cx="10" cy="10" r="4" fill="#0A0A0A" />
         </svg>
       </div>
-      <div className="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-[#0A0A0A]/90 to-transparent flex items-center justify-between">
+      <div className="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-[#0A0A0A]/82 to-transparent flex items-center justify-between">
         <span
-          className="text-[#8A8580] group-hover/map:text-[#B5AEA4] transition-colors duration-[180ms] truncate"
+          className="text-[#8A8580] group-hover/map:text-[#B5AEA4] transition-colors duration-200 truncate"
           style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.7rem" }}
         >
           {openLabel}
         </span>
-        <ExternalLink size={11} className="text-[#8A8580] group-hover/map:text-[#B5AEA4] transition-colors duration-[180ms] flex-shrink-0 ml-2" />
+        <ExternalLink size={11} className="text-[#8A8580] group-hover/map:text-[#B5AEA4] transition-colors duration-200 flex-shrink-0 ml-2" />
       </div>
     </a>
   );
@@ -53,7 +53,7 @@ function ReserveLink({ href, label, redirectLabel }: { href: string; label: stri
     <a
       href={href}
       onClick={handleClick}
-      className={`inline-flex items-center gap-2 px-6 py-3 border border-[#3A3A3A] text-[#B5AEA4] bg-transparent hover:border-white/20 hover:text-[#C4BEB4] hover:bg-white/[0.03] hover:-translate-y-0.5 rounded-sm transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none ${clicked ? "scale-[0.98] opacity-90 pointer-events-none" : "active:scale-[0.98]"}`}
+      className={`inline-flex items-center gap-2 px-6 py-3 border border-[#3A3A3A] text-[#B5AEA4] bg-transparent hover:border-white/20 hover:text-[#C4BEB4] hover:bg-white/[0.03] hover:-translate-y-0.5 rounded-xl transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none ${clicked ? "scale-[0.98] opacity-90 pointer-events-none" : "active:scale-[0.98]"}`}
       style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
     >
       {clicked ? redirectLabel : label}
@@ -89,13 +89,13 @@ export function Locations() {
   ];
 
   return (
-    <section id="locations" className="py-32 bg-[#0E0E0E] overflow-hidden scroll-mt-24">
+    <section id="locations" className="py-8 md:py-12 lg:py-20 bg-[#0B0B0B] overflow-hidden scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div ref={ref} className="mb-20">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.55, ease: "easeOut" }}
             className="flex items-center gap-3 mb-5"
           >
             <div className="w-8 h-px bg-[#8A8580]" />
@@ -109,7 +109,7 @@ export function Locations() {
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
             className="text-[#C4BEB4] mb-8"
             style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 1.2 }}
           >
@@ -118,7 +118,7 @@ export function Locations() {
           <motion.p
             initial={{ opacity: 0 }}
             animate={inView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
             className="text-[#B5AEA4] max-w-2xl"
             style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.9rem", lineHeight: 1.8 }}
           >
@@ -133,8 +133,8 @@ export function Locations() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="bg-[#111111] border border-[#1F1F1F] hover:border-white/[0.08] rounded-sm overflow-hidden transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)] group"
+              transition={{ duration: 0.6, delay: i * 0.1, ease: "easeOut" }}
+              className="bg-[#111111] border border-white/[0.05] hover:border-white/[0.08] rounded-xl overflow-hidden transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:shadow-[0_8px_32px_rgba(0,0,0,0.35)] group"
             >
               <div className="aspect-[16/10] overflow-hidden">
                 <img

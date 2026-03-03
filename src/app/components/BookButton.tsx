@@ -81,7 +81,7 @@ export function BookButton({
       href={href}
       onClick={handleClick}
       aria-disabled={clicked}
-      className={`inline-flex items-center justify-center gap-2 rounded-sm transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none ${baseClasses} ${interactiveStateClasses} ${sizeClass} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-xl transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none ${baseClasses} ${interactiveStateClasses} ${sizeClass} ${className}`}
       style={{
         fontFamily: "'Barlow Condensed', sans-serif",
         fontWeight: 700,

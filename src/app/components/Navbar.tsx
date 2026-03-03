@@ -43,7 +43,7 @@ function LanguageSwitcher() {
   return (
     <button
       onClick={toggle}
-      className="relative flex items-center gap-2 px-3 py-2 border border-[#2A2A2A] hover:border-white/15 rounded-sm transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none group"
+      className="relative flex items-center gap-2 px-3 py-2 border border-[#2A2A2A] hover:border-white/15 rounded-xl transition-all duration-200 cursor-pointer ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none group"
       aria-label={`Switch language to ${lang === "cs" ? "English" : "Czech"}`}
     >
       <AnimatePresence mode="wait">
@@ -57,7 +57,7 @@ function LanguageSwitcher() {
         >
           <CurrentFlag size={18} />
           <span
-            className="text-[#8A8580] group-hover:text-[#C4BEB4] transition-colors duration-[180ms]"
+            className="text-[#8A8580] group-hover:text-[#C4BEB4] transition-colors duration-200"
             style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.72rem", letterSpacing: "0.1em" }}
           >
             {current.label}
@@ -127,11 +127,11 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
-                  className="group text-[#8A8580] hover:text-[#C4BEB4] transition-colors duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] tracking-[0.12em] uppercase relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:rounded-sm"
+                  className="group text-[#8A8580] hover:text-[#C4BEB4] transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] tracking-[0.12em] uppercase relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:rounded-xl"
                   style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: "0.72rem" }}
                 >
                   {link.label}
-                  <span className="absolute -bottom-1 left-0 w-0 h-px bg-white/30 group-hover:w-full transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]" />
+                  <span className="absolute -bottom-1 left-0 w-0 h-px bg-white/30 group-hover:w-full transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]" />
                 </a>
               ))}
             </nav>
@@ -148,7 +148,7 @@ export function Navbar() {
                 className="hidden sm:inline-flex"
               />
               <button
-                className="lg:hidden text-[#C4BEB4] hover:text-[#B5AEA4] transition-colors duration-[180ms] p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:rounded-sm"
+                className="lg:hidden text-[#C4BEB4] hover:text-[#B5AEA4] transition-colors duration-200 p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:rounded-xl"
                 onClick={() => setMobileOpen(!mobileOpen)}
                 aria-label="Toggle menu"
               >
@@ -178,7 +178,7 @@ export function Navbar() {
                   transition={{ delay: i * 0.07 }}
                   href={link.href}
                   onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
-                  className="text-[#8A8580] hover:text-[#C4BEB4] py-3 border-b border-[#1A1A1A] transition-colors duration-[180ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-inset"
+                  className="text-[#8A8580] hover:text-[#C4BEB4] py-3 border-b border-[#1A1A1A] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-inset"
                   style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "1.1rem", letterSpacing: "0.15em", textTransform: "uppercase" }}
                 >
                   {link.label}

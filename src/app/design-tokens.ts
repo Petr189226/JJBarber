@@ -58,6 +58,7 @@ export const TOKENS = {
   radius: {
     sm: "2px",
     md: "4px",
+    card: "12px",
   },
   shadow: {
     cardHover: "0 4px 20px rgba(0,0,0,0.2)",

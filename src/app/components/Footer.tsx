@@ -40,7 +40,7 @@ export function Footer() {
 
   return (
     <footer className="bg-[#080808] border-t border-[#1A1A1A]">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           <div className="lg:col-span-1">
             <a
@@ -57,10 +57,10 @@ export function Footer() {
               {t("footer.brand")}
             </p>
             <div className="flex gap-3">
-              <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="w-9 h-9 border border-[#222222] hover:border-white/15 rounded-sm flex items-center justify-center text-[#6B6660] hover:text-[#B5AEA4] transition-all duration-[180ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808]" aria-label="Instagram">
+              <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="w-9 h-9 border border-[#222222] hover:border-white/15 rounded-xl flex items-center justify-center text-[#6B6660] hover:text-[#B5AEA4] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808]" aria-label="Instagram">
                 <Instagram size={15} />
               </a>
-              <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" className="w-9 h-9 border border-[#222222] hover:border-white/15 rounded-sm flex items-center justify-center text-[#6B6660] hover:text-[#B5AEA4] transition-all duration-[180ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808]" aria-label="Facebook">
+              <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" className="w-9 h-9 border border-[#222222] hover:border-white/15 rounded-xl flex items-center justify-center text-[#6B6660] hover:text-[#B5AEA4] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808]" aria-label="Facebook">
                 <Facebook size={15} />
               </a>
             </div>
@@ -69,8 +69,8 @@ export function Footer() {
           {navColumns.map((col) => (
             <div key={col.title}>
               <h4
-                className="text-[#8A8580] mb-5 tracking-[0.15em] uppercase"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.72rem" }}
+                className="text-[#8A8580] mb-5 tracking-[0.2em] uppercase"
+                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.72rem" }}
               >
                 {col.title}
               </h4>
@@ -80,7 +80,7 @@ export function Footer() {
                     <a
                       href={link.href}
                       onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
-                      className="text-[#6B6660] hover:text-[#B5AEA4] transition-colors duration-[180ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808] focus-visible:rounded-sm"
+                      className="text-[#6B6660] hover:text-[#B5AEA4] transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808] focus-visible:rounded-xl"
                       style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.85rem" }}
                     >
                       {link.label}
@@ -93,8 +93,8 @@ export function Footer() {
 
           <div>
             <h4
-              className="text-[#C9A84C] mb-5 tracking-widest uppercase"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.72rem", letterSpacing: "0.2em" }}
+              className="text-[#C9A84C] mb-5 tracking-[0.22em] uppercase"
+              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.72rem" }}
             >
               {t("footer.contact")}
             </h4>
@@ -113,7 +113,7 @@ export function Footer() {
               </li>
               <li className="flex items-start gap-3">
                 <Phone size={14} className="text-[#8A8580] flex-shrink-0 mt-0.5" />
-                <a href="tel:+420777507662" className="text-[#6B6660] hover:text-[#B5AEA4] transition-colors duration-[180ms]" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.85rem", lineHeight: 1.6 }}>
+                <a href="tel:+420777507662" className="text-[#6B6660] hover:text-[#B5AEA4] transition-colors duration-200 cursor-pointer" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.85rem", lineHeight: 1.6 }}>
                   777 507 662
                 </a>
               </li>
@@ -138,7 +138,7 @@ export function Footer() {
               href={PRIVACY_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#3A3A3A] hover:text-[#6B6660] transition-colors duration-[180ms] focus-visible:outline-none"
+              className="text-[#3A3A3A] hover:text-[#6B6660] transition-colors duration-200 cursor-pointer focus-visible:outline-none"
               style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem" }}
             >
               {t("footer.privacy")}

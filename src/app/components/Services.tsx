@@ -18,7 +18,7 @@ const SERVICE_ICON_MAP: Record<string, LucideIcon> = {
 function ServiceIconBadge({ icon: Icon, popular }: { icon: LucideIcon; popular: boolean }) {
   return (
     <div
-      className={`w-12 h-12 min-w-12 min-h-12 flex-shrink-0 rounded-sm flex items-center justify-center mb-6 transition-colors duration-[180ms] ${
+      className={`w-12 h-12 min-w-12 min-h-12 flex-shrink-0 rounded-xl flex items-center justify-center mb-6 transition-colors duration-200 ${
         popular
           ? "bg-[#C9A84C]/12 border border-[#C9A84C]/25"
           : "bg-[#1A1A1A] border border-[#2A2A2A] group-hover:border-white/10"
@@ -29,7 +29,7 @@ function ServiceIconBadge({ icon: Icon, popular }: { icon: LucideIcon; popular: 
         className={
           popular
             ? "text-[#C9A84C]"
-            : "text-[#8A8580] group-hover:text-[#B5AEA4] transition-colors duration-[180ms]"
+            : "text-[#8A8580] group-hover:text-[#B5AEA4] transition-colors duration-200"
         }
       />
     </div>
@@ -62,11 +62,11 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }}
       onClick={onClick}
-      className={`relative group flex h-full flex-col rounded-sm border transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)] ${
+      className={`relative group flex h-full flex-col rounded-xl border transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)] ${
         service.popular
           ? "border-[#C9A84C]/40 bg-[#111111] hover:border-[#C9A84C]/50"
           : "border-[#1F1F1F] bg-[#111111] hover:border-white/[0.08]"
@@ -74,7 +74,7 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
     >
       {service.popular && (
         <div
-          className="absolute -top-2.5 left-6 px-2.5 py-1 bg-[#1A1A1A] border border-[#C9A84C]/30 text-[#C9A84C] text-[0.65rem] tracking-[0.15em] uppercase"
+          className="absolute -top-2.5 left-6 px-3 py-1.5 bg-[#1A1A1A] border border-[#C9A84C]/40 text-[#D4B85A] text-[0.65rem] tracking-[0.15em] uppercase shadow-[0_0_12px_rgba(201,168,76,0.15)]"
           style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600 }}
         >
           {t("svc.popular")}
@@ -102,7 +102,7 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
         {!service.hasDuration && <div className="mb-2" />}
 
         <p
-          className="text-[#B5AEA4] min-h-0 flex-1 leading-relaxed"
+          className="text-[#B5AEA4]/70 min-h-0 flex-1 leading-relaxed"
           style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.88rem", lineHeight: 1.8 }}
         >
           {t(`${service.descKey}.desc`)}
@@ -114,7 +114,7 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
               <>
                 <span
                   className="text-[#C9A84C]"
-                  style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 800, fontSize: "1.8rem", lineHeight: 1 }}
+                  style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: "2rem", lineHeight: 1 }}
                 >
                   {service.price}
                 </span>
@@ -138,7 +138,7 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
       </div>
 
       {service.popular && (
-        <div className="absolute inset-0 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity duration-[180ms] pointer-events-none"
+        <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
           style={{ boxShadow: "inset 0 0 0 1px rgba(201,168,76,0.15)" }} />
       )}
     </motion.div>
@@ -152,13 +152,13 @@ export function Services() {
   const { t } = useLanguage();
 
   return (
-    <section id="services" className="py-32 bg-[#0E0E0E] scroll-mt-24">
+    <section id="services" className="py-8 md:py-12 lg:py-20 bg-[#0B0B0B] scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div ref={ref} className="mb-20">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
             className="text-[#C4BEB4] mb-8"
             style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.2 }}
           >
@@ -167,7 +167,7 @@ export function Services() {
           <motion.p
             initial={{ opacity: 0 }}
             animate={inView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
             className="text-[#B5AEA4] mt-2 max-w-lg"
             style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.9rem", lineHeight: 1.8 }}
           >

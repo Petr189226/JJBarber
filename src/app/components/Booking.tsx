@@ -13,7 +13,7 @@ export function Booking() {
   const { t } = useLanguage();
 
   return (
-    <section id="booking" className="py-32 bg-[#0E0E0E] scroll-mt-24">
+    <section id="booking" className="py-8 md:py-12 lg:py-20 bg-[#0B0B0B] scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           {/* Left column */}
@@ -21,7 +21,7 @@ export function Booking() {
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.55, ease: "easeOut" }}
               className="flex items-center gap-3 mb-5"
             >
               <div className="w-8 h-px bg-[#8A8580]" />
@@ -36,19 +36,19 @@ export function Booking() {
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
               className="text-[#C4BEB4] mb-8"
-              style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 1.2 }}
+              style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 1.2, letterSpacing: "-0.01em" }}
             >
               {t("book.heading1")}
               <br />
-              <em style={{ fontStyle: "italic", color: "#C9A84C" }}>{t("book.heading2")}</em>
+              <em style={{ fontStyle: "italic", color: "#C9A84C", fontSize: "1.05em" }}>{t("book.heading2")}</em>
             </motion.h2>
 
             <motion.p
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
               className="text-[#8A8278] mb-10"
               style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.9rem", lineHeight: 1.9 }}
             >
@@ -79,7 +79,7 @@ export function Booking() {
                 <div className="w-1.5 h-1.5 rounded-full bg-[#8A8580] flex-shrink-0" />
                 <div className="flex gap-2 flex-wrap items-center">
                   <Phone size={14} className="text-[#8A8580]" />
-                  <a href="tel:+420777507662" className="text-[#B5AEA4] hover:text-[#C4BEB4] transition-colors duration-[180ms]" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: "0.85rem" }}>
+                  <a href="tel:+420777507662" className="text-[#B5AEA4] hover:text-[#C4BEB4] transition-colors duration-200" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: "0.85rem" }}>
                     777 507 662
                   </a>
                 </div>
@@ -91,7 +91,7 @@ export function Booking() {
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
               transition={{ duration: 0.55, delay: 0.45 }}
-              className="mt-8 inline-flex items-center gap-2 text-[#8A8580] hover:text-[#B5AEA4] transition-colors duration-[180ms] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:rounded-sm"
+              className="mt-8 inline-flex items-center gap-2 text-[#8A8580] hover:text-[#B5AEA4] transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:rounded-xl"
               style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.85rem", letterSpacing: "0.1em" }}
             >
               <Gift size={18} />
@@ -132,7 +132,7 @@ export function Booking() {
               href={RESERVIO_VRSOVICE}
               target="_blank"
               rel="noopener noreferrer"
-              className="block bg-[#111111] border border-[#1F1F1F] hover:border-[#C9A84C]/35 hover:-translate-y-0.5 rounded-sm p-8 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] group focus-visible:ring-2 focus-visible:ring-[#C9A84C]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none"
+              className="block bg-[#111111] border border-white/[0.06] hover:border-[#C9A84C]/40 hover:-translate-y-0.5 rounded-xl p-8 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group focus-visible:ring-2 focus-visible:ring-[#C9A84C]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none"
             >
               <h3 className="text-[#C4BEB4] mb-2" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.35rem" }}>
                 JJ Barber shop – Vršovice
@@ -152,7 +152,7 @@ export function Booking() {
               href={RESERVIO_STRASNICE}
               target="_blank"
               rel="noopener noreferrer"
-              className="block bg-[#111111] border border-[#1F1F1F] hover:border-[#C9A84C]/35 hover:-translate-y-0.5 rounded-sm p-8 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] group focus-visible:ring-2 focus-visible:ring-[#C9A84C]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none"
+              className="block bg-[#111111] border border-white/[0.06] hover:border-[#C9A84C]/40 hover:-translate-y-0.5 rounded-xl p-8 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group focus-visible:ring-2 focus-visible:ring-[#C9A84C]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none"
             >
               <h3 className="text-[#C4BEB4] mb-2" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.35rem" }}>
                 JJ Barber shop – Strašnice

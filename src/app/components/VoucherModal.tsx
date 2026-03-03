@@ -8,9 +8,9 @@ const WEB3FORMS_KEY = "023e0516-f33d-4063-b6dc-afba879de144";
 const BRANCHES = ["Vršovice", "Strašnice"];
 
 const inputClass =
-  "w-full bg-[#111111] border border-[#2A2A2A] focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/25 text-[#C4BEB4] rounded-sm px-4 py-3 outline-none transition-all duration-200 placeholder:text-[#3A3A3A]";
+  "w-full bg-[#111111] border border-[#2A2A2A] focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/25 text-[#C4BEB4] rounded-xl px-4 py-3 outline-none transition-all duration-200 placeholder:text-[#3A3A3A]";
 const selectClass =
-  "w-full appearance-none bg-[#111111] border border-[#2A2A2A] focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/25 text-[#C4BEB4] rounded-sm px-4 py-3 outline-none transition-all duration-200 cursor-pointer";
+  "w-full appearance-none bg-[#111111] border border-[#2A2A2A] focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/25 text-[#C4BEB4] rounded-xl px-4 py-3 outline-none transition-all duration-200 cursor-pointer";
 const labelClass = "block text-[#6B6B6B] mb-1.5";
 const labelStyle = { fontFamily: "'Inter', sans-serif", fontSize: "0.78rem", fontWeight: 500 } as const;
 const inputStyle = { fontFamily: "'Inter', sans-serif", fontSize: "0.9rem" } as const;
@@ -114,7 +114,7 @@ export function VoucherModal({ open, onClose }: Props) {
             exit={{ opacity: 0, y: 16, scale: 0.97 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-[#0D0D0D] border border-[#1F1F1F] rounded-sm shadow-2xl"
+            className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-[#0D0D0D] border border-[#1F1F1F] rounded-xl shadow-2xl"
           >
             <div className="sticky top-0 z-10 bg-[#0D0D0D] border-b border-[#1F1F1F] px-8 py-5 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -142,7 +142,7 @@ export function VoucherModal({ open, onClose }: Props) {
                   </p>
                   <button
                     onClick={handleClose}
-                    className="mt-8 px-8 py-3 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-sm transition-all duration-200"
+                    className="mt-8 px-8 py-3 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-xl transition-all duration-200"
                     style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
                   >
                     {t("voucher.close")}
@@ -194,7 +194,7 @@ export function VoucherModal({ open, onClose }: Props) {
                             key={b}
                             type="button"
                             onClick={() => update("branch", b)}
-                            className={`py-3 rounded-sm border transition-all duration-200 ${
+                            className={`py-3 rounded-xl border transition-all duration-200 ${
                               form.branch === b
                                 ? "border-[#C9A84C] bg-[#C9A84C]/8 text-[#C9A84C]"
                                 : "border-[#2A2A2A] bg-[#111111] text-[#6B6B6B] hover:border-[#3A3A3A]"
@@ -228,7 +228,7 @@ export function VoucherModal({ open, onClose }: Props) {
                     <button
                       type="submit"
                       disabled={!canSubmit}
-                      className="w-full flex items-center justify-center gap-2 py-4 mt-2 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-sm transition-all duration-200 hover:shadow-[0_0_20px_rgba(201,168,76,0.3)] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:hover:bg-[#C9A84C]"
+                      className="w-full flex items-center justify-center gap-2 py-4 mt-2 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-xl transition-all duration-200 hover:shadow-[0_0_20px_rgba(201,168,76,0.3)] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:hover:bg-[#C9A84C]"
                       style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.9rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
                     >
                       {sending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
