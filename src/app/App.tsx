@@ -16,7 +16,10 @@ function SectionFallback({ minH = "40vh" }: { minH?: string }) {
   return <div style={{ minHeight: minH }} aria-hidden />;
 }
 
-/** Renders children (lazy chunk) only when the sentinel is near the viewport. */
+/**
+ * Renders children (lazy chunk) only when the sentinel scrolls into view.
+ * Negative bottom rootMargin so we don't load until user has scrolled (keeps chunks off critical path).
+ */
 function LazySection({ children, minH = "40vh" }: { children: ReactNode; minH?: string }) {
   const [inView, setInView] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -28,7 +31,7 @@ function LazySection({ children, minH = "40vh" }: { children: ReactNode; minH?: 
       ([e]) => {
         if (e?.isIntersecting) setInView(true);
       },
-      { rootMargin: "120px", threshold: 0 }
+      { rootMargin: "0px 0px -25% 0px", threshold: 0 }
     );
     obs.observe(el);
     return () => obs.disconnect();
@@ -49,7 +52,7 @@ export default function App() {
       ([e]) => {
         if (e?.isIntersecting) setShowFooterExtras(true);
       },
-      { rootMargin: "100px", threshold: 0 }
+      { rootMargin: "0px 0px -20% 0px", threshold: 0 }
     );
     obs.observe(el);
     return () => obs.disconnect();
