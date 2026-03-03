@@ -135,13 +135,19 @@ export function Navbar() {
               onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
               className="flex items-center group transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
             >
-              <img
-                src="/logo-480.png"
-                alt="J&J Barber Shop"
-                width={480}
-                height={145}
-                className="h-9 w-auto object-contain"
-              />
+              <picture>
+                <source
+                  srcSet="/logo-240.webp 1x, /logo-480.webp 2x"
+                  type="image/webp"
+                />
+                <img
+                  src="/logo-480.png"
+                  alt="J&J Barber Shop"
+                  width={480}
+                  height={145}
+                  className="h-9 w-auto object-contain"
+                />
+              </picture>
             </a>
 
             {/* Desktop Nav */}

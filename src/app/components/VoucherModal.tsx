@@ -134,9 +134,9 @@ export function VoucherModal({ open, onClose }: Props) {
                   <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-[#C9A84C]/8 flex items-center justify-center">
                     <Gift size={28} className="text-[#C9A84C]" />
                   </div>
-                  <h4 className="text-[#C4BEB4] mb-3" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.3rem" }}>
+                  <h3 className="text-[#C4BEB4] mb-3" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.3rem" }}>
                     {t("voucher.thanks")}
-                  </h4>
+                  </h3>
                   <p className="text-[#6B6B6B] max-w-xs mx-auto" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.9rem", lineHeight: 1.7 }}>
                     {t("voucher.success")}
                   </p>

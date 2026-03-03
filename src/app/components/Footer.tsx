@@ -56,7 +56,13 @@ export function Footer() {
               onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
               className="inline-block mb-5"
             >
-              <img src="/logo-480.png" alt="J&J Barber Shop" width={480} height={145} className="h-10 w-auto object-contain" />
+              <picture>
+                <source
+                  srcSet="/logo-240.webp 1x, /logo-480.webp 2x"
+                  type="image/webp"
+                />
+                <img src="/logo-480.png" alt="J&J Barber Shop" width={480} height={145} className="h-10 w-auto object-contain" />
+              </picture>
             </a>
             <p
               className="text-[#8A8580] mb-6 leading-relaxed"
@@ -76,12 +82,12 @@ export function Footer() {
 
           {navColumns.map((col) => (
             <div key={col.title}>
-              <h4
+              <h3
                 className="text-[#B5AEA4] mb-5 tracking-[0.2em] uppercase"
                 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.72rem" }}
               >
                 {col.title}
-              </h4>
+              </h3>
               <ul className="space-y-3">
                 {col.links.map((link) => (
                   <li key={link.label}>
@@ -100,12 +106,12 @@ export function Footer() {
           ))}
 
           <div>
-            <h4
+            <h3
               className="text-[#C9A84C] mb-5 tracking-[0.22em] uppercase"
               style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.72rem" }}
             >
               {t("footer.contact")}
-            </h4>
+            </h3>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <MapPin size={14} className="text-[#8A8580] flex-shrink-0 mt-0.5" />
@@ -138,14 +144,14 @@ export function Footer() {
 
       <div className="border-t border-[#111111]">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <span className="text-[#3A3A3A]" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem" }}>
+          <span className="text-[#8A8580]" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem" }}>
             {t("footer.copyright")}
           </span>
           <div className="flex gap-6">
             <button
               type="button"
               onClick={() => setPrivacyOpen(true)}
-              className="text-[#5A5A5A] hover:text-[#8A8580] transition-colors duration-200 cursor-pointer focus-visible:outline-none"
+              className="text-[#8A8580] hover:text-[#B5AEA4] transition-colors duration-200 cursor-pointer focus-visible:outline-none"
               style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem" }}
             >
               {t("footer.privacy")}

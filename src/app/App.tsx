@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
 import { LanguageProvider } from "./i18n";
@@ -17,23 +17,53 @@ function SectionFallback({ minH = "40vh" }: { minH?: string }) {
 }
 
 export default function App() {
+  const [showBelowFold, setShowBelowFold] = useState(false);
+  const [showFooterExtras, setShowFooterExtras] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const schedule = (cb: () => void, delay: number) => {
+      if ("requestIdleCallback" in window) {
+        (window as any).requestIdleCallback(cb);
+      } else {
+        return window.setTimeout(cb, delay);
+      }
+      return undefined;
+    };
+
+    const belowFoldId = schedule(() => setShowBelowFold(true), 1200);
+    const footerId = schedule(() => setShowFooterExtras(true), 2000);
+
+    return () => {
+      if (belowFoldId) window.clearTimeout(belowFoldId);
+      if (footerId) window.clearTimeout(footerId);
+    };
+  }, []);
+
   return (
     <LanguageProvider>
       <div className="min-h-screen bg-[#0A0A0A]">
         <Navbar />
         <main>
           <Hero />
-          <Suspense fallback={<SectionFallback />}><Locations /></Suspense>
-          <Suspense fallback={<SectionFallback />}><Team /></Suspense>
-          <Suspense fallback={<SectionFallback />}><Services /></Suspense>
-          <Suspense fallback={<SectionFallback />}><Reviews /></Suspense>
-          <Suspense fallback={<SectionFallback />}><Booking /></Suspense>
+          {showBelowFold && (
+            <>
+              <Suspense fallback={<SectionFallback />}><Locations /></Suspense>
+              <Suspense fallback={<SectionFallback />}><Team /></Suspense>
+              <Suspense fallback={<SectionFallback />}><Services /></Suspense>
+              <Suspense fallback={<SectionFallback />}><Reviews /></Suspense>
+              <Suspense fallback={<SectionFallback />}><Booking /></Suspense>
+            </>
+          )}
         </main>
-        <Suspense fallback={null}>
-          <Footer />
-          <StickyBookBar />
-          <CookieBanner />
-        </Suspense>
+        {showFooterExtras && (
+          <Suspense fallback={null}>
+            <Footer />
+            <StickyBookBar />
+            <CookieBanner />
+          </Suspense>
+        )}
       </div>
     </LanguageProvider>
   );

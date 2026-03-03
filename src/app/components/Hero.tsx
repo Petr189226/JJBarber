@@ -5,6 +5,8 @@ import { useLanguage } from "../i18n";
 
 const HERO_IMAGES = {
   webp: [
+    { src: "/hero-480.webp", w: 480 },
+    { src: "/hero-768.webp", w: 768 },
     { src: "/hero-960.webp", w: 960 },
     { src: "/hero-1280.webp", w: 1280 },
     { src: "/hero-1920.webp", w: 1920 },
@@ -80,9 +82,9 @@ export function Hero() {
           />
         </picture>
         <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A]/85 via-[#0A0A0A]/55 to-[#0A0A0A]/20" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/90 via-transparent to-[#0A0A0A]/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/90 via-transparent to-[#0A0A0A]/30 hidden md:block" />
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 hidden md:block"
           style={{ background: "radial-gradient(ellipse 80% 70% at 20% 50%, rgba(10,10,10,0.45) 0%, transparent 55%)" }}
           aria-hidden
         />
@@ -142,9 +144,17 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.0 }}
           >
+            <label
+              htmlFor="hero-branch"
+              className="mb-2 text-[#B5AEA4] text-xs tracking-[0.18em] uppercase block"
+              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600 }}
+            >
+              {t("hero.selectPlaceholder")}
+            </label>
             <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
               <div className="relative">
                 <select
+                  id="hero-branch"
                   value={branch}
                   onChange={(e) => { setBranch(e.target.value); setError(false); }}
                   className={`appearance-none bg-[#111111] border ${error ? "border-[#C9A84C]" : "border-[#2A2A2A]"} focus-visible:border-white/25 focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:outline-none text-[#C4BEB4] rounded-xl pl-4 pr-10 py-4 outline-none transition-all duration-200 w-full sm:w-60 cursor-pointer backdrop-blur-sm`}
