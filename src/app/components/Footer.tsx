@@ -56,7 +56,7 @@ export function Footer() {
               onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
               className="inline-block mb-5"
             >
-              <img src="/logo.png" alt="J&J Barber Shop" className="h-10 w-auto object-contain" />
+              <img src="/logo-480.png" alt="J&J Barber Shop" width={480} height={145} className="h-10 w-auto object-contain" />
             </a>
             <p
               className="text-[#8A8580] mb-6 leading-relaxed"

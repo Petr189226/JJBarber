@@ -136,8 +136,10 @@ export function Navbar() {
               className="flex items-center group transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
             >
               <img
-                src="/logo.png"
+                src="/logo-480.png"
                 alt="J&J Barber Shop"
+                width={480}
+                height={145}
                 className="h-9 w-auto object-contain"
               />
             </a>

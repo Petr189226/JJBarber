@@ -72,6 +72,8 @@ export function Hero() {
           <img
             src={HERO_IMAGES.fallback}
             alt="Interiér J&J Barber Shop"
+            width={1920}
+            height={1080}
             className="w-full h-full object-cover object-center"
             fetchPriority="high"
             decoding="async"
