@@ -146,7 +146,9 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
 
 export function Services() {
   const ref = useRef(null);
+  const contentRef = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const contentInView = useInView(contentRef, { once: true, margin: "100px" });
   const [voucherOpen, setVoucherOpen] = useState(false);
   const { t } = useLanguage();
 
@@ -165,16 +167,20 @@ export function Services() {
           </motion.h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 [&>div]:h-full">
-          {services.map((service, i) => (
-            <ServiceCard
-              key={service.nameKey}
-              service={service}
-              index={i}
-              t={t}
-              onClick={service.nameKey === "svc.voucher" ? () => setVoucherOpen(true) : undefined}
-            />
-          ))}
+        <div ref={contentRef} style={{ minHeight: contentInView ? undefined : "480px" }} aria-hidden={!contentInView}>
+          {contentInView ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 [&>div]:h-full">
+              {services.map((service, i) => (
+                <ServiceCard
+                  key={service.nameKey}
+                  service={service}
+                  index={i}
+                  t={t}
+                  onClick={service.nameKey === "svc.voucher" ? () => setVoucherOpen(true) : undefined}
+                />
+              ))}
+            </div>
+          ) : null}
         </div>
       </div>
 

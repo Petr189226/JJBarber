@@ -46,7 +46,9 @@ function TeamCard({ barber, index }: { barber: typeof barbers[0]; index: number 
 
 export function Team() {
   const ref = useRef(null);
+  const contentRef = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const contentInView = useInView(contentRef, { once: true, margin: "100px" });
   const { t } = useLanguage();
 
   return (
@@ -87,10 +89,14 @@ export function Team() {
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
-          {barbers.map((barber, i) => (
-            <TeamCard key={barber.name} barber={barber} index={i} />
-          ))}
+        <div ref={contentRef} style={{ minHeight: contentInView ? undefined : "480px" }} aria-hidden={!contentInView}>
+          {contentInView ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
+              {barbers.map((barber, i) => (
+                <TeamCard key={barber.name} barber={barber} index={i} />
+              ))}
+            </div>
+          ) : null}
         </div>
       </div>
     </section>

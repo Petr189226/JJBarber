@@ -7,7 +7,9 @@ import { RESERVIO_URL, RESERVIO_VRSOVICE, RESERVIO_STRASNICE } from "../cta-conf
 
 export function Booking() {
   const ref = useRef(null);
+  const rightRef = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const rightInView = useInView(rightRef, { once: true, margin: "100px" });
   const { t } = useLanguage();
 
   return (
@@ -105,11 +107,12 @@ export function Booking() {
             </motion.div>
           </div>
 
-          {/* Right column */}
+          {/* Right column – lazy to reduce initial DOM */}
+          <div ref={rightRef} style={{ minHeight: rightInView ? undefined : "320px" }} aria-hidden={!rightInView}>
+            {rightInView ? (
           <motion.div
             initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-80px" }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
             className="space-y-6"
           >
@@ -154,6 +157,8 @@ export function Booking() {
               </span>
             </a>
           </motion.div>
+            ) : null}
+          </div>
         </div>
       </div>
     </section>

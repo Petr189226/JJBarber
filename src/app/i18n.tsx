@@ -109,6 +109,9 @@ const translations: Record<string, Record<Lang, string>> = {
   "rev.heading": { cs: "Recenze", en: "Reviews" },
   "rev.google": { cs: "Google recenze", en: "Google reviews" },
   "rev.role": { cs: "Zákazník", en: "Customer" },
+  "rev.prev": { cs: "Předchozí recenze", en: "Previous review" },
+  "rev.next": { cs: "Další recenze", en: "Next review" },
+  "rev.goTo": { cs: "Přejít na recenzi", en: "Go to review" },
 
   // ── Booking ──
   "book.label": { cs: "Rezervace", en: "Booking" },

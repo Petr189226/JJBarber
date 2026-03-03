@@ -26,7 +26,9 @@ function StarRating({ rating }: { rating: number }) {
 
 export function Reviews() {
   const ref = useRef(null);
+  const contentRef = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const contentInView = useInView(contentRef, { once: true, margin: "100px" });
   const [active, setActive] = useState(0);
   const { t } = useLanguage();
 
@@ -83,6 +85,9 @@ export function Reviews() {
           </div>
         </div>
 
+        <div ref={contentRef} style={{ minHeight: contentInView ? undefined : "400px" }} aria-hidden={!contentInView}>
+          {contentInView ? (
+        <>
         {/* Desktop grid */}
         <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-5">
           {reviews.map((review, i) => (
@@ -159,22 +164,37 @@ export function Reviews() {
           </AnimatePresence>
 
           <div className="flex items-center justify-between mt-6">
-            <button onClick={prev} className="w-10 h-10 border border-[#2A2A2A] hover:border-white/15 rounded-xl flex items-center justify-center text-[#C4BEB4] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]">
-              <ChevronLeft size={18} />
+            <button
+              type="button"
+              onClick={prev}
+              className="w-10 h-10 border border-[#2A2A2A] hover:border-white/15 rounded-xl flex items-center justify-center text-[#C4BEB4] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]"
+              aria-label={t("rev.prev")}
+            >
+              <ChevronLeft size={18} aria-hidden />
             </button>
             <div className="flex gap-2">
               {reviews.map((_, i) => (
                 <button
                   key={i}
+                  type="button"
                   onClick={() => setActive(i)}
+                  aria-label={`${t("rev.goTo")} ${i + 1}`}
                   className={`h-1 rounded-full transition-all duration-200 cursor-pointer ${i === active ? "w-8 bg-[#8A8580]" : "w-3 bg-[#2A2A2A]"}`}
                 />
               ))}
             </div>
-            <button onClick={next} className="w-10 h-10 border border-[#2A2A2A] hover:border-white/15 rounded-xl flex items-center justify-center text-[#C4BEB4] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]">
-              <ChevronRight size={18} />
+            <button
+              type="button"
+              onClick={next}
+              className="w-10 h-10 border border-[#2A2A2A] hover:border-white/15 rounded-xl flex items-center justify-center text-[#C4BEB4] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]"
+              aria-label={t("rev.next")}
+            >
+              <ChevronRight size={18} aria-hidden />
             </button>
           </div>
+        </div>
+        </>
+          ) : null}
         </div>
       </div>
     </section>

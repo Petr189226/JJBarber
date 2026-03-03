@@ -20,12 +20,17 @@ function MiniMap({ loc, openLabel }: { loc: { name: string; mapImage: string; ma
         className="w-full h-full object-cover brightness-[0.6] group-hover/map:brightness-[0.75] transition-all duration-300"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/50 via-transparent to-[#0A0A0A]/8" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full z-10">
-        <svg width="20" height="28" viewBox="0 0 20 28" fill="none" className="drop-shadow-[0_2px_6px_rgba(201,168,76,0.5)] group-hover/map:scale-110 transition-transform duration-200">
-          <path d="M10 0C4.477 0 0 4.477 0 10c0 7.5 10 18 10 18s10-10.5 10-18c0-5.523-4.477-10-10-10z" fill="#8A8580" />
-          <circle cx="10" cy="10" r="4" fill="#0A0A0A" />
-        </svg>
-      </div>
+      <svg
+        width="20"
+        height="28"
+        viewBox="0 0 20 28"
+        fill="none"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full z-10 drop-shadow-[0_2px_6px_rgba(201,168,76,0.5)] group-hover/map:scale-110 transition-transform duration-200"
+        aria-hidden
+      >
+        <path d="M10 0C4.477 0 0 4.477 0 10c0 7.5 10 18 10 18s10-10.5 10-18c0-5.523-4.477-10-10-10z" fill="#8A8580" />
+        <circle cx="10" cy="10" r="4" fill="#0A0A0A" />
+      </svg>
       <div className="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-[#0A0A0A]/70 to-transparent flex items-center justify-between">
         <span
           className="text-[#B5AEA4] group-hover/map:text-[#C4BEB4] transition-colors duration-200 truncate"
@@ -64,7 +69,9 @@ function ReserveLink({ href, label, redirectLabel }: { href: string; label: stri
 
 export function Locations() {
   const ref = useRef(null);
+  const contentRef = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const contentInView = useInView(contentRef, { once: true, margin: "100px" });
   const { t } = useLanguage();
 
   const locations = [
@@ -126,6 +133,8 @@ export function Locations() {
           </motion.p>
         </div>
 
+        <div ref={contentRef} style={{ minHeight: contentInView ? undefined : "520px" }} aria-hidden={!contentInView}>
+          {contentInView ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {locations.map((loc, i) => (
             <motion.div
@@ -179,6 +188,8 @@ export function Locations() {
               </div>
             </motion.div>
           ))}
+        </div>
+          ) : null}
         </div>
       </div>
     </section>
