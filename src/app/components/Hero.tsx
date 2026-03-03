@@ -141,6 +141,7 @@ export function Hero() {
                   id="hero-branch"
                   value={branch}
                   onChange={(e) => { setBranch(e.target.value); setError(false); }}
+                  aria-label={t("hero.selectPlaceholder")}
                   className={`appearance-none bg-[#111111] border ${error ? "border-[#C9A84C]" : "border-[#2A2A2A]"} focus-visible:border-white/25 focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:outline-none text-[#C4BEB4] rounded-xl pl-4 pr-10 py-4 outline-none transition-all duration-200 w-full sm:w-60 cursor-pointer backdrop-blur-sm`}
                   style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.9rem" }}
                 >

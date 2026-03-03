@@ -145,15 +145,18 @@ export function Footer() {
 
       <div className="border-t border-[#111111]">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <span className="text-[#8A8580]" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem" }}>
+          <span
+            className="hover:opacity-90"
+            style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem", color: "#A5A09A" }}
+          >
             {t("footer.copyright")}
           </span>
           <div className="flex gap-6">
             <button
               type="button"
               onClick={() => setPrivacyOpen(true)}
-              className="text-[#8A8580] hover:text-[#B5AEA4] transition-colors duration-200 cursor-pointer focus-visible:outline-none"
-              style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem" }}
+              className="hover:text-[#B5AEA4] transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808] rounded"
+              style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem", color: "#A5A09A" }}
             >
               {t("footer.privacy")}
             </button>
