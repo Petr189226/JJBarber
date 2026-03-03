@@ -74,12 +74,12 @@ function GalleryItem({ item, index, onClick }: {
           className="flex items-center justify-between"
         >
           <span
-            className="text-[#E8DCC8]"
+            className="text-[#C4BEB4]"
             style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "1rem" }}
           >
             {item.label}
           </span>
-          <div className="w-8 h-8 rounded-sm border border-[#C9A84C]/60 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-sm border border-[#C9A84C]/50 flex items-center justify-center">
             <ZoomIn size={14} className="text-[#C9A84C]" />
           </div>
         </motion.div>
@@ -116,7 +116,7 @@ export function Gallery() {
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-[#E8DCC8]"
+            className="text-[#C4BEB4]"
             style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.15 }}
           >
             Naše práce mluví za vše
@@ -171,7 +171,7 @@ export function Gallery() {
                 <X size={18} />
               </button>
               <div
-                className="absolute bottom-4 left-4 text-[#E8DCC8] bg-[#0A0A0A]/80 px-4 py-2 rounded-sm"
+                className="absolute bottom-4 left-4 text-[#C4BEB4] bg-[#0A0A0A]/80 px-4 py-2 rounded-sm"
                 style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "0.95rem" }}
               >
                 {lightbox.label}

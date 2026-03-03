@@ -8,9 +8,9 @@ const WEB3FORMS_KEY = "023e0516-f33d-4063-b6dc-afba879de144";
 const BRANCHES = ["Vršovice", "Strašnice"];
 
 const inputClass =
-  "w-full bg-[#111111] border border-[#2A2A2A] focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/30 text-[#E8DCC8] rounded-sm px-4 py-3 outline-none transition-all duration-200 placeholder:text-[#3A3A3A]";
+  "w-full bg-[#111111] border border-[#2A2A2A] focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/25 text-[#C4BEB4] rounded-sm px-4 py-3 outline-none transition-all duration-200 placeholder:text-[#3A3A3A]";
 const selectClass =
-  "w-full appearance-none bg-[#111111] border border-[#2A2A2A] focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/30 text-[#E8DCC8] rounded-sm px-4 py-3 outline-none transition-all duration-200 cursor-pointer";
+  "w-full appearance-none bg-[#111111] border border-[#2A2A2A] focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/25 text-[#C4BEB4] rounded-sm px-4 py-3 outline-none transition-all duration-200 cursor-pointer";
 const labelClass = "block text-[#6B6B6B] mb-1.5";
 const labelStyle = { fontFamily: "'Inter', sans-serif", fontSize: "0.78rem", fontWeight: 500 } as const;
 const inputStyle = { fontFamily: "'Inter', sans-serif", fontSize: "0.9rem" } as const;
@@ -119,11 +119,11 @@ export function VoucherModal({ open, onClose }: Props) {
             <div className="sticky top-0 z-10 bg-[#0D0D0D] border-b border-[#1F1F1F] px-8 py-5 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Gift size={20} className="text-[#C9A84C]" />
-                <h3 className="text-[#E8DCC8]" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.3rem" }}>
+                <h3 className="text-[#C4BEB4]" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.3rem" }}>
                   {t("voucher.title")}
                 </h3>
               </div>
-              <button onClick={handleClose} className="text-[#6B6B6B] hover:text-[#E8DCC8] transition-colors p-1" aria-label={t("voucher.close")}>
+              <button onClick={handleClose} className="text-[#6B6B6B] hover:text-[#C4BEB4] transition-colors p-1" aria-label={t("voucher.close")}>
                 <X size={20} />
               </button>
             </div>
@@ -131,10 +131,10 @@ export function VoucherModal({ open, onClose }: Props) {
             <div className="px-8 py-6">
               {sent ? (
                 <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="text-center py-10">
-                  <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-[#C9A84C]/10 flex items-center justify-center">
+                  <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-[#C9A84C]/8 flex items-center justify-center">
                     <Gift size={28} className="text-[#C9A84C]" />
                   </div>
-                  <h4 className="text-[#E8DCC8] mb-3" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.3rem" }}>
+                  <h4 className="text-[#C4BEB4] mb-3" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.3rem" }}>
                     {t("voucher.thanks")}
                   </h4>
                   <p className="text-[#6B6B6B] max-w-xs mx-auto" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.9rem", lineHeight: 1.7 }}>
@@ -181,7 +181,7 @@ export function VoucherModal({ open, onClose }: Props) {
                       <select required value={form.service} onChange={(e) => update("service", e.target.value)} className={selectClass} style={inputStyle}>
                         <option value="" disabled>{t("voucher.servicePlaceholder")}</option>
                         {services.map((s) => (
-                          <option key={s} value={s} style={{ background: "#111111", color: "#E8DCC8" }}>{s}</option>
+                          <option key={s} value={s} style={{ background: "#111111", color: "#C4BEB4" }}>{s}</option>
                         ))}
                       </select>
                     </div>
@@ -196,7 +196,7 @@ export function VoucherModal({ open, onClose }: Props) {
                             onClick={() => update("branch", b)}
                             className={`py-3 rounded-sm border transition-all duration-200 ${
                               form.branch === b
-                                ? "border-[#C9A84C] bg-[#C9A84C]/10 text-[#C9A84C]"
+                                ? "border-[#C9A84C] bg-[#C9A84C]/8 text-[#C9A84C]"
                                 : "border-[#2A2A2A] bg-[#111111] text-[#6B6B6B] hover:border-[#3A3A3A]"
                             }`}
                             style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.88rem", fontWeight: 500 }}

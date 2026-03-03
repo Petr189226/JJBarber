@@ -19,7 +19,7 @@ export const TOKENS = {
       focus: "rgba(201,168,76,0.5)",
     },
     text: {
-      primary: "#E8E0D4",
+      primary: "#C4BEB4",
       secondary: "#B5AEA4",
       muted: "#8A8580",
       subtle: "#6B6660",

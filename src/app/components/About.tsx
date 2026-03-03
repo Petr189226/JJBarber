@@ -81,7 +81,7 @@ export function About() {
             </motion.div>
 
             {/* BG decoration */}
-            <div className="absolute -top-6 -left-6 w-48 h-48 border border-[#C9A84C]/10 rounded-sm -z-10" />
+            <div className="absolute -top-6 -left-6 w-48 h-48 border border-[#C9A84C]/8 rounded-sm -z-10" />
             <div className="absolute -bottom-3 -left-3 w-32 h-32 border border-[#C9A84C]/5 rounded-sm -z-10" />
           </div>
 
@@ -106,7 +106,7 @@ export function About() {
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.7, delay: 0.1 }}
-              className="text-[#E8DCC8] mb-6"
+              className="text-[#C4BEB4] mb-6"
               style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 1.15 }}
             >
               Kde tradice
@@ -150,12 +150,12 @@ export function About() {
                     transition={{ duration: 0.5, delay: i * 0.12 }}
                     className="flex items-start gap-4 group"
                   >
-                    <div className="w-10 h-10 rounded-sm bg-[#1A1A1A] border border-[#2A2A2A] group-hover:border-[#C9A84C]/40 flex items-center justify-center flex-shrink-0 transition-colors duration-300">
+                    <div className="w-10 h-10 rounded-sm bg-[#1A1A1A] border border-[#2A2A2A] group-hover:border-[#C9A84C]/35 flex items-center justify-center flex-shrink-0 transition-colors duration-300">
                       <Icon size={16} className="text-[#C9A84C]" />
                     </div>
                     <div>
                       <div
-                        className="text-[#E8DCC8] mb-1"
+                        className="text-[#C4BEB4] mb-1"
                         style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "1rem" }}
                       >
                         {pillar.title}

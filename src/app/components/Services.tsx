@@ -85,7 +85,7 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
         <ServiceIconBadge icon={icon} popular={service.popular} />
 
         <h3
-          className="text-[#E8E0D4] mb-1"
+          className="text-[#C4BEB4] mb-1"
           style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.25rem" }}
         >
           {t(`${service.nameKey}.name`)}
@@ -155,25 +155,11 @@ export function Services() {
     <section id="services" className="py-32 bg-[#0E0E0E] scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div ref={ref} className="mb-20">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            className="flex items-center gap-3 mb-5"
-          >
-            <div className="w-8 h-px bg-[#8A8580]" />
-            <span
-              className="text-[#8A8580] tracking-[0.25em] uppercase"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.75rem" }}
-            >
-              {t("svc.label")}
-            </span>
-          </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="text-[#E8E0D4] mb-8"
+            className="text-[#C4BEB4] mb-8"
             style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.2 }}
           >
             {t("svc.heading")}

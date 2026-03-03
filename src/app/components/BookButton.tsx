@@ -58,9 +58,9 @@ export function BookButton({
     primary:
       "bg-gradient-to-b from-[#D4B85A] to-[#C9A84C] hover:from-[#DDC268] hover:to-[#D4B85A] text-[#0A0A0A] hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(201,168,76,0.2)] focus-visible:ring-[#C9A84C]/50",
     secondary:
-      "border border-[#3A3A3A] text-[#B5AEA4] bg-transparent hover:border-white/20 hover:text-[#E8E0D4] hover:bg-white/[0.03] focus-visible:ring-white/20",
+      "border border-[#3A3A3A] text-[#B5AEA4] bg-transparent hover:border-white/20 hover:text-[#C4BEB4] hover:bg-white/[0.03] focus-visible:ring-white/20",
     ghost:
-      "border border-[#2A2A2A] text-[#8A8580] bg-transparent hover:border-white/15 hover:text-[#E8E0D4] focus-visible:ring-white/20",
+      "border border-[#2A2A2A] text-[#8A8580] bg-transparent hover:border-white/15 hover:text-[#C4BEB4] focus-visible:ring-white/20",
     textLink:
       "bg-transparent text-[#8A8580] hover:text-[#B5AEA4] px-0 py-0 border-none focus-visible:ring-white/20",
   };

@@ -57,7 +57,7 @@ function LanguageSwitcher() {
         >
           <CurrentFlag size={18} />
           <span
-            className="text-[#8A8580] group-hover:text-[#E8E0D4] transition-colors duration-[180ms]"
+            className="text-[#8A8580] group-hover:text-[#C4BEB4] transition-colors duration-[180ms]"
             style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.72rem", letterSpacing: "0.1em" }}
           >
             {current.label}
@@ -127,7 +127,7 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
-                  className="group text-[#8A8580] hover:text-[#E8E0D4] transition-colors duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] tracking-[0.12em] uppercase relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:rounded-sm"
+                  className="group text-[#8A8580] hover:text-[#C4BEB4] transition-colors duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] tracking-[0.12em] uppercase relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:rounded-sm"
                   style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: "0.72rem" }}
                 >
                   {link.label}
@@ -148,7 +148,7 @@ export function Navbar() {
                 className="hidden sm:inline-flex"
               />
               <button
-                className="lg:hidden text-[#E8E0D4] hover:text-[#B5AEA4] transition-colors duration-[180ms] p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:rounded-sm"
+                className="lg:hidden text-[#C4BEB4] hover:text-[#B5AEA4] transition-colors duration-[180ms] p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:rounded-sm"
                 onClick={() => setMobileOpen(!mobileOpen)}
                 aria-label="Toggle menu"
               >
@@ -178,7 +178,7 @@ export function Navbar() {
                   transition={{ delay: i * 0.07 }}
                   href={link.href}
                   onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
-                  className="text-[#8A8580] hover:text-[#E8E0D4] py-3 border-b border-[#1A1A1A] transition-colors duration-[180ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-inset"
+                  className="text-[#8A8580] hover:text-[#C4BEB4] py-3 border-b border-[#1A1A1A] transition-colors duration-[180ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-inset"
                   style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "1.1rem", letterSpacing: "0.15em", textTransform: "uppercase" }}
                 >
                   {link.label}

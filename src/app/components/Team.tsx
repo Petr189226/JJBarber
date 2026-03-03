@@ -33,7 +33,7 @@ function TeamCard({ barber, index }: { barber: typeof barbers[0]; index: number 
         <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
         <div className="absolute bottom-0 left-0 right-0 p-5">
           <span
-            className="text-[#E8E0D4] group-hover:text-[#B5AEA4] transition-colors duration-[180ms]"
+            className="text-[#C4BEB4] group-hover:text-[#B5AEA4] transition-colors duration-[180ms]"
             style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "1.25rem" }}
           >
             {barber.name}
@@ -71,7 +71,7 @@ export function Team() {
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="text-[#E8E0D4] mb-8"
+            className="text-[#C4BEB4] mb-8"
             style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.2 }}
           >
             J<span className="text-[#C9A84C]">&</span>J {t("team.heading")}

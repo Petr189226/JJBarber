@@ -97,7 +97,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.5, ease: "easeOut" }}
-            className="text-[#E8DCC8] mb-4 leading-none"
+            className="text-[#C4BEB4] mb-4 leading-none"
             style={{
               fontFamily: "'Playfair Display', serif",
               fontWeight: 900,
@@ -133,12 +133,12 @@ export function Hero() {
                 <select
                   value={branch}
                   onChange={(e) => { setBranch(e.target.value); setError(false); }}
-                  className={`appearance-none bg-[#111111] border ${error ? "border-[#C9A84C]" : "border-[#2A2A2A]"} focus-visible:border-white/30 focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:outline-none text-[#E8E0D4] rounded-sm pl-4 pr-10 py-4 outline-none transition-all duration-[180ms] w-full sm:w-60 cursor-pointer backdrop-blur-sm`}
+                  className={`appearance-none bg-[#111111] border ${error ? "border-[#C9A84C]" : "border-[#2A2A2A]"} focus-visible:border-white/25 focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:outline-none text-[#C4BEB4] rounded-sm pl-4 pr-10 py-4 outline-none transition-all duration-[180ms] w-full sm:w-60 cursor-pointer backdrop-blur-sm`}
                   style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.9rem" }}
                 >
                   <option value="" disabled style={{ color: "#3A3A3A" }}>{t("hero.selectPlaceholder")}</option>
-                  <option value="vrsovice" style={{ background: "#111111", color: "#E8DCC8" }}>Vršovice</option>
-                  <option value="strasnice" style={{ background: "#111111", color: "#E8DCC8" }}>Strašnice</option>
+                  <option value="vrsovice" style={{ background: "#111111", color: "#C4BEB4" }}>Vršovice</option>
+                  <option value="strasnice" style={{ background: "#111111", color: "#C4BEB4" }}>Strašnice</option>
                 </select>
                 <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8A8580] pointer-events-none" />
               </div>
@@ -162,27 +162,12 @@ export function Hero() {
           </motion.div>
 
           {/* Secondary CTA – text link, minimal prominence */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: 1.15, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-6"
-          >
-            <button
-              onClick={scrollToServices}
-              className="text-[#8A8580] hover:text-[#B5AEA4] transition-colors duration-[180ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:rounded-sm"
-              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 400, fontSize: "0.9rem" }}
-            >
-              {t("hero.pricelist")}
-            </button>
-          </motion.div>
-
           {/* Stats */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 1.3 }}
-            className="flex gap-10 mt-16 pt-8 border-t border-[#E8DCC8]/10"
+            className="flex gap-10 mt-16 pt-8 border-t border-white/[0.06]"
           >
             {[
               { value: t("hero.stat1value"), label: t("hero.stat1label") },
@@ -191,7 +176,7 @@ export function Hero() {
             ].map((stat) => (
               <div key={stat.label}>
                 <div
-                  className="text-[#E8E0D4]"
+                  className="text-[#C4BEB4]"
                   style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "1.5rem", lineHeight: 1 }}
                 >
                   {stat.value}

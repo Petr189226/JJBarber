@@ -53,7 +53,7 @@ function ReserveLink({ href, label, redirectLabel }: { href: string; label: stri
     <a
       href={href}
       onClick={handleClick}
-      className={`inline-flex items-center gap-2 px-6 py-3 border border-[#3A3A3A] text-[#B5AEA4] bg-transparent hover:border-white/20 hover:text-[#E8E0D4] hover:bg-white/[0.03] hover:-translate-y-0.5 rounded-sm transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none ${clicked ? "scale-[0.98] opacity-90 pointer-events-none" : "active:scale-[0.98]"}`}
+      className={`inline-flex items-center gap-2 px-6 py-3 border border-[#3A3A3A] text-[#B5AEA4] bg-transparent hover:border-white/20 hover:text-[#C4BEB4] hover:bg-white/[0.03] hover:-translate-y-0.5 rounded-sm transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none ${clicked ? "scale-[0.98] opacity-90 pointer-events-none" : "active:scale-[0.98]"}`}
       style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
     >
       {clicked ? redirectLabel : label}
@@ -110,7 +110,7 @@ export function Locations() {
             initial={{ opacity: 0, y: 20 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="text-[#E8DCC8] mb-8"
+            className="text-[#C4BEB4] mb-8"
             style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 1.2 }}
           >
             {t("loc.heading")}
@@ -145,7 +145,7 @@ export function Locations() {
               </div>
               <div className="p-8">
                 <h3
-                  className="text-[#E8DCC8] mb-6"
+                  className="text-[#C4BEB4] mb-6"
                   style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.5rem" }}
                 >
                   JJ Barber shop – {loc.name}

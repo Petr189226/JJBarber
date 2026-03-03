@@ -37,7 +37,7 @@ export function Booking() {
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="text-[#E8E0D4] mb-8"
+              className="text-[#C4BEB4] mb-8"
               style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 1.2 }}
             >
               {t("book.heading1")}
@@ -79,7 +79,7 @@ export function Booking() {
                 <div className="w-1.5 h-1.5 rounded-full bg-[#8A8580] flex-shrink-0" />
                 <div className="flex gap-2 flex-wrap items-center">
                   <Phone size={14} className="text-[#8A8580]" />
-                  <a href="tel:+420777507662" className="text-[#B5AEA4] hover:text-[#E8E0D4] transition-colors duration-[180ms]" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: "0.85rem" }}>
+                  <a href="tel:+420777507662" className="text-[#B5AEA4] hover:text-[#C4BEB4] transition-colors duration-[180ms]" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: "0.85rem" }}>
                     777 507 662
                   </a>
                 </div>
@@ -132,9 +132,9 @@ export function Booking() {
               href={RESERVIO_VRSOVICE}
               target="_blank"
               rel="noopener noreferrer"
-              className="block bg-[#111111] border border-[#1F1F1F] hover:border-[#C9A84C]/40 hover:-translate-y-0.5 rounded-sm p-8 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] group focus-visible:ring-2 focus-visible:ring-[#C9A84C]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none"
+              className="block bg-[#111111] border border-[#1F1F1F] hover:border-[#C9A84C]/35 hover:-translate-y-0.5 rounded-sm p-8 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] group focus-visible:ring-2 focus-visible:ring-[#C9A84C]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none"
             >
-              <h3 className="text-[#E8DCC8] mb-2" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.35rem" }}>
+              <h3 className="text-[#C4BEB4] mb-2" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.35rem" }}>
                 JJ Barber shop – Vršovice
               </h3>
               <p className="text-[#6B6B6B] mb-6" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.9rem" }}>
@@ -152,9 +152,9 @@ export function Booking() {
               href={RESERVIO_STRASNICE}
               target="_blank"
               rel="noopener noreferrer"
-              className="block bg-[#111111] border border-[#1F1F1F] hover:border-[#C9A84C]/40 hover:-translate-y-0.5 rounded-sm p-8 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] group focus-visible:ring-2 focus-visible:ring-[#C9A84C]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none"
+              className="block bg-[#111111] border border-[#1F1F1F] hover:border-[#C9A84C]/35 hover:-translate-y-0.5 rounded-sm p-8 transition-all duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)] group focus-visible:ring-2 focus-visible:ring-[#C9A84C]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none"
             >
-              <h3 className="text-[#E8DCC8] mb-2" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.35rem" }}>
+              <h3 className="text-[#C4BEB4] mb-2" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.35rem" }}>
                 JJ Barber shop – Strašnice
               </h3>
               <p className="text-[#6B6B6B] mb-6" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.9rem" }}>

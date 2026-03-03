@@ -56,7 +56,7 @@ export function Reviews() {
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-              className="text-[#E8E0D4] mb-6"
+              className="text-[#C4BEB4] mb-6"
               style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.2 }}
             >
               {t("rev.heading")}
@@ -68,7 +68,7 @@ export function Reviews() {
               className="flex items-center gap-2 shrink-0"
             >
               <div
-                className="text-[#E8E0D4]"
+                className="text-[#C4BEB4]"
                 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "2.25rem", lineHeight: 1 }}
               >
                 4.9
@@ -108,7 +108,7 @@ export function Reviews() {
                   </span>
                 </div>
                 <div className="min-w-0">
-                  <div className="text-[#E8E0D4] truncate" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "0.9rem" }}>
+                  <div className="text-[#C4BEB4] truncate" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "0.9rem" }}>
                     {review.name}
                   </div>
                   <div className="text-[#8A8580] truncate" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem" }}>
@@ -146,7 +146,7 @@ export function Reviews() {
                   </span>
                 </div>
                 <div>
-                  <div className="text-[#E8E0D4]" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "0.9rem" }}>
+                  <div className="text-[#C4BEB4]" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "0.9rem" }}>
                     {reviews[active].name}
                   </div>
                   <div className="text-[#8A8580]" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem" }}>
@@ -159,7 +159,7 @@ export function Reviews() {
           </AnimatePresence>
 
           <div className="flex items-center justify-between mt-6">
-            <button onClick={prev} className="w-10 h-10 border border-[#2A2A2A] hover:border-white/15 rounded-sm flex items-center justify-center text-[#E8E0D4] transition-all duration-[180ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]">
+            <button onClick={prev} className="w-10 h-10 border border-[#2A2A2A] hover:border-white/15 rounded-sm flex items-center justify-center text-[#C4BEB4] transition-all duration-[180ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]">
               <ChevronLeft size={18} />
             </button>
             <div className="flex gap-2">
@@ -171,7 +171,7 @@ export function Reviews() {
                 />
               ))}
             </div>
-            <button onClick={next} className="w-10 h-10 border border-[#2A2A2A] hover:border-white/15 rounded-sm flex items-center justify-center text-[#E8E0D4] transition-all duration-[180ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]">
+            <button onClick={next} className="w-10 h-10 border border-[#2A2A2A] hover:border-white/15 rounded-sm flex items-center justify-center text-[#C4BEB4] transition-all duration-[180ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]">
               <ChevronRight size={18} />
             </button>
           </div>

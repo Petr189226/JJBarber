@@ -17,7 +17,7 @@ export function FinalCTA() {
           initial={{ opacity: 0, y: 24 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7 }}
-          className="text-[#E8DCC8]"
+          className="text-[#C4BEB4]"
           style={{
             fontFamily: "'Playfair Display', serif",
             fontWeight: 700,
