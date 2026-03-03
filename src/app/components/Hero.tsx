@@ -172,36 +172,6 @@ export function Hero() {
               </p>
             )}
           </motion.div>
-
-          {/* Secondary CTA – text link, minimal prominence */}
-          {/* Stats */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1.3 }}
-            className="flex gap-10 mt-20 pt-10 border-t border-white/[0.06]"
-          >
-            {[
-              { value: t("hero.stat1value"), label: t("hero.stat1label") },
-              { value: "8", label: t("hero.stat2label") },
-              { value: "2", label: t("hero.stat3label") },
-            ].map((stat) => (
-              <div key={stat.label}>
-                <div
-                  className="text-[#C4BEB4]"
-                  style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "1.625rem", lineHeight: 1 }}
-                >
-                  {stat.value}
-                </div>
-                <div
-                  className="text-[#B5AEA4] mt-1"
-                  style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem", letterSpacing: "0.04em" }}
-                >
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </motion.div>
         </div>
       </div>
 
