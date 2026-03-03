@@ -1,6 +1,6 @@
 import { useRef } from "react";
-import { motion, useInView } from "motion/react";
 import { Phone, ExternalLink } from "lucide-react";
+import { useInView } from "../hooks/useInView";
 import { useLanguage } from "../i18n";
 import { BookButton } from "./BookButton";
 import { RESERVIO_URL, RESERVIO_VRSOVICE, RESERVIO_STRASNICE } from "../cta-config";
@@ -18,11 +18,8 @@ export function Booking() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           {/* Left column */}
           <div ref={ref}>
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.55, ease: "easeOut" }}
-              className="flex items-center gap-3 mb-5"
+            <div
+              className={`flex items-center gap-3 mb-5 transition-all duration-500 ease-out ${inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-5"}`}
             >
               <div className="w-8 h-px bg-[#8A8580]" />
               <span
@@ -31,35 +28,27 @@ export function Booking() {
               >
                 {t("book.label")}
               </span>
-            </motion.div>
+            </div>
 
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-              className="text-[#C4BEB4] mb-8"
-              style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 1.2, letterSpacing: "-0.01em" }}
+            <h2
+              className={`text-[#C4BEB4] mb-8 transition-all duration-500 ease-out ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
+              style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 1.2, letterSpacing: "-0.01em", transitionDelay: inView ? "50ms" : undefined }}
             >
               {t("book.heading1")}
               <br />
               <em style={{ fontStyle: "italic", color: "#C9A84C", fontSize: "1.12em" }}>{t("book.heading2")}</em>
-            </motion.h2>
+            </h2>
 
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={inView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-              className="text-[#8A8278] mb-10"
-              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.9rem", lineHeight: 1.9 }}
+            <p
+              className={`text-[#8A8278] mb-10 transition-all duration-500 ease-out ${inView ? "opacity-100" : "opacity-0"}`}
+              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.9rem", lineHeight: 1.9, transitionDelay: inView ? "100ms" : undefined }}
             >
               {t("book.description")}
-            </motion.p>
+            </p>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.35 }}
-              className="space-y-4"
+            <div
+              className={`space-y-4 transition-all duration-500 ease-out ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
+              style={{ transitionDelay: inView ? "150ms" : undefined }}
             >
               <div className="flex items-start gap-4">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#8A8580] flex-shrink-0 mt-1.5" />
@@ -84,13 +73,11 @@ export function Booking() {
                   </a>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={inView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.55, delay: 0.5 }}
-              className="mt-12 pl-6 border-l-2 border-[#2A2A2A]"
+            <div
+              className={`mt-12 pl-6 border-l-2 border-[#2A2A2A] transition-all duration-500 ease-out ${inView ? "opacity-100" : "opacity-0"}`}
+              style={{ transitionDelay: inView ? "200ms" : undefined }}
             >
               <p
                 className="text-[#6B6660] italic"
@@ -104,18 +91,13 @@ export function Booking() {
               >
                 — J&amp;J BARBER SHOP
               </span>
-            </motion.div>
+            </div>
           </div>
 
           {/* Right column – lazy to reduce initial DOM */}
           <div ref={rightRef} style={{ minHeight: rightInView ? undefined : "320px" }} aria-hidden={!rightInView}>
             {rightInView ? (
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="space-y-6"
-          >
+          <div className="space-y-6 opacity-100 translate-x-0 transition-all duration-500 ease-out">
             <a
               href={RESERVIO_VRSOVICE}
               target="_blank"
@@ -156,7 +138,7 @@ export function Booking() {
                 <ExternalLink size={16} />
               </span>
             </a>
-          </motion.div>
+          </div>
             ) : null}
           </div>
         </div>

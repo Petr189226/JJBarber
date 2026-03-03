@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
-import { motion, useInView, AnimatePresence } from "motion/react";
 import { Quote, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { useInView } from "../hooks/useInView";
 import { useLanguage } from "../i18n";
 
 const reviews = [
@@ -39,11 +39,8 @@ export function Reviews() {
     <section id="reviews" className="py-8 md:py-12 lg:py-20 bg-[#0F0F0F] overflow-hidden scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div ref={ref} className="mb-20">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.55, ease: "easeOut" }}
-            className="flex items-center gap-3 mb-5"
+          <div
+            className={`flex items-center gap-3 mb-5 transition-all duration-500 ease-out ${inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-5"}`}
           >
             <div className="w-8 h-px bg-[#8A8580]" />
             <span
@@ -52,22 +49,17 @@ export function Reviews() {
             >
               {t("rev.label")}
             </span>
-          </motion.div>
+          </div>
           <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6 gap-3">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-              className="text-[#C4BEB4] mb-0"
-              style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.2 }}
+            <h2
+              className={`text-[#C4BEB4] mb-0 transition-all duration-500 ease-out ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
+              style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.2, transitionDelay: inView ? "50ms" : undefined }}
             >
               {t("rev.heading")}
-            </motion.h2>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={inView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex items-center gap-2 shrink-0"
+            </h2>
+            <div
+              className={`flex items-center gap-2 shrink-0 transition-all duration-500 ease-out ${inView ? "opacity-100" : "opacity-0"}`}
+              style={{ transitionDelay: inView ? "150ms" : undefined }}
             >
               <div
                 className="text-[#C4BEB4]"
@@ -81,7 +73,7 @@ export function Reviews() {
                   {t("rev.google")}
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
 
@@ -91,13 +83,9 @@ export function Reviews() {
         {/* Desktop grid */}
         <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-5">
           {reviews.map((review, i) => (
-            <motion.div
+            <div
               key={review.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.6, delay: i * 0.1, ease: "easeOut" }}
-              className="bg-[#111111] border border-[#1F1F1F] hover:border-white/[0.08] rounded-xl p-6 transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)] flex flex-col"
+              className="bg-[#111111] border border-[#1F1F1F] hover:border-white/[0.08] rounded-xl p-6 transition-all duration-500 ease-out group hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)] flex flex-col opacity-100 translate-y-0"
             >
               <Quote size={22} className="text-[#8A8580]/60 mb-4" />
               <p
@@ -122,21 +110,16 @@ export function Reviews() {
                 </div>
               </div>
               <StarRating rating={review.rating} />
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* Mobile carousel */}
         <div className="md:hidden">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={active}
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -30 }}
-              transition={{ duration: 0.4 }}
-              className="bg-[#111111] border border-[#1F1F1F] rounded-xl p-6"
-            >
+          <div
+            key={active}
+            className="bg-[#111111] border border-[#1F1F1F] rounded-xl p-6 transition-opacity duration-300"
+          >
               <Quote size={22} className="text-[#8A8580]/60 mb-4" />
               <p
                 className="text-[#B5AEA4] mb-6 leading-relaxed"
@@ -160,8 +143,7 @@ export function Reviews() {
                 </div>
               </div>
               <StarRating rating={reviews[active].rating} />
-            </motion.div>
-          </AnimatePresence>
+            </div>
 
           <div className="flex items-center justify-between mt-6">
             <button

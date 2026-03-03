@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { X, Gift, Send, Loader2 } from "lucide-react";
 import { useLanguage } from "../i18n";
 
@@ -95,27 +94,19 @@ export function VoucherModal({ open, onClose }: Props) {
     }, 300);
   };
 
-  return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          onClick={handleClose}
-        >
-          <div className="absolute inset-0 bg-[#0A0A0A]/85 backdrop-blur-sm" />
+  if (!open) return null;
 
-          <motion.div
-            initial={{ opacity: 0, y: 24, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.97 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-[#0D0D0D] border border-[#1F1F1F] rounded-xl shadow-2xl"
-          >
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      onClick={handleClose}
+    >
+      <div className="absolute inset-0 bg-[#0A0A0A]/85 backdrop-blur-sm" />
+
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-[#0D0D0D] border border-[#1F1F1F] rounded-xl shadow-2xl"
+      >
             <div className="sticky top-0 z-10 bg-[#0D0D0D] border-b border-[#1F1F1F] px-8 py-5 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Gift size={20} className="text-[#C9A84C]" />
@@ -130,7 +121,7 @@ export function VoucherModal({ open, onClose }: Props) {
 
             <div className="px-8 py-6">
               {sent ? (
-                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="text-center py-10">
+                <div className="text-center py-10">
                   <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-[#C9A84C]/8 flex items-center justify-center">
                     <Gift size={28} className="text-[#C9A84C]" />
                   </div>
@@ -147,7 +138,7 @@ export function VoucherModal({ open, onClose }: Props) {
                   >
                     {t("voucher.close")}
                   </button>
-                </motion.div>
+                </div>
               ) : (
                 <>
                   <p className="text-[#6B6B6B] mb-6" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.85rem", lineHeight: 1.7 }}>
@@ -238,9 +229,7 @@ export function VoucherModal({ open, onClose }: Props) {
                 </>
               )}
             </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      </div>
+    </div>
   );
 }

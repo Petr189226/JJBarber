@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion } from "motion/react";
 import { Instagram, Facebook, MapPin, Phone, Clock } from "lucide-react";
 import { useLanguage } from "../i18n";
 import { PrivacyModal } from "./PrivacyModal";

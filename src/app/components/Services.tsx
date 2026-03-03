@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
-import { motion, useInView } from "motion/react";
 import { Scissors, ScissorsLineDashed, Slice, Star, Baby, Gift, Clock, type LucideIcon } from "lucide-react";
+import { useInView } from "../hooks/useInView";
 import { VoucherModal } from "./VoucherModal";
 import { useLanguage } from "../i18n";
 
@@ -59,13 +59,11 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
   const icon = SERVICE_ICON_MAP[service.nameKey] ?? Scissors;
 
   return (
-    <motion.div
+    <div
       ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }}
       onClick={onClick}
-      className={`relative group flex h-full flex-col rounded-xl border transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)] ${
+      style={{ transitionDelay: inView ? `${index * 80}ms` : undefined }}
+      className={`relative group flex h-full flex-col rounded-xl border transition-all duration-500 ease-out hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)] ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"} ${
         service.popular
           ? "border-[#C9A84C]/40 bg-[#111111] hover:border-[#C9A84C]/50"
           : "border-[#1F1F1F] bg-[#111111] hover:border-white/[0.08]"
@@ -140,7 +138,7 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
         <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
           style={{ boxShadow: "inset 0 0 0 1px rgba(201,168,76,0.15)" }} />
       )}
-    </motion.div>
+    </div>
   );
 }
 
@@ -156,15 +154,12 @@ export function Services() {
     <section id="services" className="py-8 md:py-12 lg:py-20 bg-[#0B0B0B] scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div ref={ref} className="mb-20">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-            className="text-[#C4BEB4] mb-8"
-            style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.2 }}
+          <h2
+            className={`text-[#C4BEB4] mb-8 transition-all duration-500 ease-out ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
+            style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.2, transitionDelay: inView ? "50ms" : undefined }}
           >
             {t("svc.heading")}
-          </motion.h2>
+          </h2>
         </div>
 
         <div ref={contentRef} style={{ minHeight: contentInView ? undefined : "480px" }} aria-hidden={!contentInView}>

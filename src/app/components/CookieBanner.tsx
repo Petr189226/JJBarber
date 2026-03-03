@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { useLanguage } from "../i18n";
 
 const STORAGE_KEY = "jj-cookie-consent";
@@ -26,18 +25,14 @@ export function CookieBanner() {
     setVisible(false);
   };
 
+  if (!visible) return null;
+
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.div
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-          className="fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6"
-          style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
-        >
-          <div className="max-w-4xl mx-auto bg-[#111111] border border-white/[0.08] rounded-xl shadow-[0_-4px_24px_rgba(0,0,0,0.4)] px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div
+      className="fixed bottom-0 left-0 right-0 z-50 p-4 sm:p-6"
+      style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
+    >
+      <div className="max-w-4xl mx-auto bg-[#111111] border border-white/[0.08] rounded-xl shadow-[0_-4px_24px_rgba(0,0,0,0.4)] px-6 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <p
               className="text-[#B5AEA4] text-sm sm:text-base leading-relaxed"
               style={{ fontFamily: "'Inter', sans-serif", lineHeight: 1.6 }}
@@ -61,8 +56,6 @@ export function CookieBanner() {
               {t("cookie.accept")}
             </button>
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    </div>
   );
 }

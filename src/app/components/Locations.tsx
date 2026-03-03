@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
-import { motion, useInView } from "motion/react";
 import { MapPin, Clock, ExternalLink } from "lucide-react";
+import { useInView } from "../hooks/useInView";
 import { useLanguage } from "../i18n";
 import { RESERVIO_VRSOVICE, RESERVIO_STRASNICE } from "../cta-config";
 
@@ -72,6 +72,7 @@ export function Locations() {
   const contentRef = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const contentInView = useInView(contentRef, { once: true, margin: "100px" });
+  const anim = "transition-all duration-500 ease-out";
   const { t } = useLanguage();
 
   const locations = [
@@ -99,11 +100,8 @@ export function Locations() {
     <section id="locations" className="py-8 md:py-12 lg:py-20 bg-[#0B0B0B] overflow-hidden scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div ref={ref} className="mb-20">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.55, ease: "easeOut" }}
-            className="flex items-center gap-3 mb-5"
+          <div
+            className={`flex items-center gap-3 mb-5 ${anim} ${inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-5"}`}
           >
             <div className="w-8 h-px bg-[#8A8580]" />
             <span
@@ -112,38 +110,29 @@ export function Locations() {
             >
               {t("loc.label")}
             </span>
-          </motion.div>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-            className="text-[#C4BEB4] mb-8"
-            style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 1.2 }}
+          </div>
+          <h2
+            className={`text-[#C4BEB4] mb-8 ${anim} ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
+            style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 1.2, transitionDelay: inView ? "50ms" : undefined }}
           >
             {t("loc.heading")}
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={inView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-            className="text-[#B5AEA4] max-w-2xl"
-            style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.9rem", lineHeight: 1.8 }}
+          </h2>
+          <p
+            className={`text-[#B5AEA4] max-w-2xl ${anim} ${inView ? "opacity-100" : "opacity-0"}`}
+            style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.9rem", lineHeight: 1.8, transitionDelay: inView ? "100ms" : undefined }}
           >
             {t("loc.description")}
-          </motion.p>
+          </p>
         </div>
 
         <div ref={contentRef} style={{ minHeight: contentInView ? undefined : "520px" }} aria-hidden={!contentInView}>
           {contentInView ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {locations.map((loc, i) => (
-            <motion.div
+            <div
               key={loc.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-40px" }}
-              transition={{ duration: 0.6, delay: i * 0.1, ease: "easeOut" }}
-              className="bg-[#111111] border border-white/[0.05] hover:border-white/[0.08] rounded-xl overflow-hidden transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:shadow-[0_8px_32px_rgba(0,0,0,0.35)] group"
+              className="bg-[#111111] border border-white/[0.05] hover:border-white/[0.08] rounded-xl overflow-hidden transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_8px_32px_rgba(0,0,0,0.35)] group opacity-100 translate-y-0"
+              style={{ animationDelay: `${i * 80}ms` }}
             >
               <div className="aspect-[16/10] overflow-hidden">
                 <img
@@ -186,7 +175,7 @@ export function Locations() {
                 </ul>
                 <ReserveLink href={loc.reservioUrl} label={`${t("loc.reserve")} – ${loc.name}`} redirectLabel={t("cta.redirecting")} />
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
           ) : null}

@@ -1,6 +1,6 @@
 import { useRef } from "react";
-import { motion, useInView } from "motion/react";
 import { useLanguage } from "../i18n";
+import { useInView } from "../hooks/useInView";
 
 const barbers = [
   { name: "Kuba", image: "/team/kuba.png" },
@@ -13,14 +13,12 @@ const barbers = [
   { name: "Fila", image: "/team/fila.png" },
 ];
 
+const cardAnim = "transition-all duration-500 ease-out";
+
 function TeamCard({ barber, index }: { barber: typeof barbers[0]; index: number }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.6, delay: index * 0.06, ease: "easeOut" }}
-      className={`group ${index >= 4 ? "pt-3" : ""}`}
+    <div
+      className={`group ${index >= 4 ? "pt-3" : ""} opacity-100 translate-y-0 ${cardAnim}`}
     >
       <div className="relative overflow-hidden rounded-xl border border-[#1F1F1F] group-hover:border-[#C9A84C]/25 group-hover:-translate-y-0.5 group-hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)] transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]">
         <div className="aspect-[3/4] overflow-hidden">
@@ -40,7 +38,7 @@ function TeamCard({ barber, index }: { barber: typeof barbers[0]; index: number 
           </span>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -55,11 +53,8 @@ export function Team() {
     <section id="team" className="py-8 md:py-12 lg:py-20 bg-[#0F0F0F] scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div ref={ref} className="mb-20">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.55, ease: "easeOut" }}
-            className="flex items-center gap-3 mb-5"
+          <div
+            className={`flex items-center gap-3 mb-5 transition-all duration-500 ease-out ${inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-5"}`}
           >
             <div className="w-8 h-px bg-[#8A8580]" />
             <span
@@ -68,25 +63,19 @@ export function Team() {
             >
               {t("team.label")}
             </span>
-          </motion.div>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.55, delay: 0.1, ease: "easeOut" }}
-            className="text-[#C4BEB4] mb-8"
-            style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.2 }}
+          </div>
+          <h2
+            className={`text-[#C4BEB4] mb-8 transition-all duration-500 ease-out ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
+            style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.2, transitionDelay: inView ? "50ms" : undefined }}
           >
             J<span className="text-[#C9A84C]">&</span>J {t("team.heading")}
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={inView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.55, delay: 0.2, ease: "easeOut" }}
-            className="text-[#B5AEA4] max-w-2xl"
-            style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.9rem", lineHeight: 1.9 }}
+          </h2>
+          <p
+            className={`text-[#B5AEA4] max-w-2xl transition-all duration-500 ease-out ${inView ? "opacity-100" : "opacity-0"}`}
+            style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.9rem", lineHeight: 1.9, transitionDelay: inView ? "100ms" : undefined }}
           >
             {t("team.description")}
-          </motion.p>
+          </p>
         </div>
 
         <div ref={contentRef} style={{ minHeight: contentInView ? undefined : "480px" }} aria-hidden={!contentInView}>

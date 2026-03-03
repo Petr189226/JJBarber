@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from "motion/react";
 import { X, Shield } from "lucide-react";
 import { useLanguage } from "../i18n";
 
@@ -86,23 +85,12 @@ export function PrivacyModal({ open, onClose }: Props) {
     </>
   );
 
+  if (!open) return null;
+
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-        >
-          <div className="absolute inset-0 bg-[#0A0A0A]/90 backdrop-blur-sm" onClick={onClose} aria-hidden />
-          <motion.div
-            initial={{ opacity: 0, y: 24, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.97 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            className="relative w-full max-w-2xl max-h-[85vh] overflow-hidden bg-[#0D0D0D] border border-[#1F1F1F] rounded-xl shadow-2xl"
-          >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-[#0A0A0A]/90 backdrop-blur-sm" onClick={onClose} aria-hidden />
+      <div className="relative w-full max-w-2xl max-h-[85vh] overflow-hidden bg-[#0D0D0D] border border-[#1F1F1F] rounded-xl shadow-2xl">
             <div className="sticky top-0 z-10 bg-[#0D0D0D] border-b border-[#1F1F1F] px-6 lg:px-8 py-5 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Shield size={20} className="text-[#C9A84C]" />
@@ -121,9 +109,7 @@ export function PrivacyModal({ open, onClose }: Props) {
             <div className="overflow-y-auto px-6 lg:px-8 py-6 max-h-[calc(85vh-80px)]">
               {content}
             </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      </div>
+    </div>
   );
 }
