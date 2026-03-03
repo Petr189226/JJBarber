@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { ChevronDown } from "lucide-react";
+import { useLanguage } from "../i18n";
 
 const HERO_IMAGE = "/hero.png";
 
@@ -15,6 +16,7 @@ const BRANCH_LABELS: Record<string, string> = {
 };
 
 export function Hero() {
+  const { t } = useLanguage();
   const [branch, setBranch] = useState("");
   const [error, setError] = useState(false);
 
@@ -40,7 +42,6 @@ export function Hero() {
           alt="Interiér J&J Barber Shop"
           className="w-full h-full object-cover object-center"
         />
-        {/* Multi-layer overlay for depth */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A]/85 via-[#0A0A0A]/55 to-[#0A0A0A]/20" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/90 via-transparent to-[#0A0A0A]/30" />
       </div>
@@ -69,7 +70,7 @@ export function Hero() {
               className="text-[#C9A84C] tracking-[0.3em] uppercase"
               style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.78rem" }}
             >
-              Praha 10 · Od roku 2020
+              {t("hero.label")}
             </span>
           </motion.div>
 
@@ -87,9 +88,9 @@ export function Hero() {
               letterSpacing: "-0.02em",
             }}
           >
-            Tvůj barber shop
+            {t("hero.headline1")}
             <br />
-            na <em style={{ fontStyle: "italic", color: "#C9A84C" }}>Praze 10</em>
+            {t("hero.headline2")} <em style={{ fontStyle: "italic", color: "#C9A84C" }}>{t("hero.headline3")}</em>
           </motion.h1>
 
           {/* Subheadline */}
@@ -100,7 +101,7 @@ export function Hero() {
             className="text-[#A89880] mb-10 max-w-md"
             style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "1.05rem", lineHeight: 1.7 }}
           >
-            Lokální barber shop s přátelskou atmosférou – Vršovice a Strašnice.
+            {t("hero.sub")}
           </motion.p>
 
           {/* Booking pre-step */}
@@ -117,7 +118,7 @@ export function Hero() {
                   className={`appearance-none bg-[#111111] border ${error ? "border-[#C9A84C]" : "border-[#2A2A2A]"} focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/40 focus:shadow-[0_0_12px_rgba(201,168,76,0.2)] text-[#E8DCC8] rounded-sm pl-4 pr-10 py-4 outline-none transition-all duration-300 w-full sm:w-60 cursor-pointer backdrop-blur-sm`}
                   style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.9rem" }}
                 >
-                  <option value="" disabled style={{ color: "#3A3A3A" }}>Vyber pobočku</option>
+                  <option value="" disabled style={{ color: "#3A3A3A" }}>{t("hero.selectPlaceholder")}</option>
                   <option value="vrsovice" style={{ background: "#111111", color: "#E8DCC8" }}>Vršovice</option>
                   <option value="strasnice" style={{ background: "#111111", color: "#E8DCC8" }}>Strašnice</option>
                 </select>
@@ -129,7 +130,7 @@ export function Hero() {
                 className="px-8 py-4 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-sm transition-all duration-300 hover:shadow-[0_0_30px_rgba(201,168,76,0.4)] active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:hover:bg-[#C9A84C]"
                 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.95rem", letterSpacing: "0.15em", textTransform: "uppercase" }}
               >
-                {branch ? `Rezervovat – ${BRANCH_LABELS[branch]}` : "Rezervovat termín"}
+                {branch ? `${t("hero.bookBranch")} – ${BRANCH_LABELS[branch]}` : t("hero.book")}
               </button>
             </div>
             {error && (
@@ -137,7 +138,7 @@ export function Hero() {
                 className="text-[#C9A84C] mt-2"
                 style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.8rem" }}
               >
-                Vyber pobočku
+                {t("hero.selectError")}
               </p>
             )}
           </motion.div>
@@ -154,7 +155,7 @@ export function Hero() {
               className="px-8 py-4 border border-[#E8DCC8]/30 hover:border-[#C9A84C]/60 text-[#E8DCC8] hover:text-[#C9A84C] rounded-sm transition-all duration-300 backdrop-blur-sm"
               style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.95rem", letterSpacing: "0.15em", textTransform: "uppercase" }}
             >
-              Ceník služeb
+              {t("hero.pricelist")}
             </button>
           </motion.div>
 
@@ -166,9 +167,9 @@ export function Hero() {
             className="flex gap-10 mt-16 pt-8 border-t border-[#E8DCC8]/10"
           >
             {[
-              { value: "Od 2020", label: "na trhu" },
-              { value: "8", label: "barberů" },
-              { value: "2", label: "pobočky" },
+              { value: t("hero.stat1value"), label: t("hero.stat1label") },
+              { value: "8", label: t("hero.stat2label") },
+              { value: "2", label: t("hero.stat3label") },
             ].map((stat) => (
               <div key={stat.label}>
                 <div
@@ -197,7 +198,7 @@ export function Hero() {
         onClick={scrollToServices}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[#6B6B6B] hover:text-[#C9A84C] transition-colors group"
       >
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.65rem", letterSpacing: "0.2em", textTransform: "uppercase" }}>Přejít dolů</span>
+        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.65rem", letterSpacing: "0.2em", textTransform: "uppercase" }}>{t("hero.scrollDown")}</span>
         <motion.div
           animate={{ y: [0, 6, 0] }}
           transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}

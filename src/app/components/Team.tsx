@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { motion, useInView } from "motion/react";
+import { useLanguage } from "../i18n";
 
 const barbers = [
   { name: "Kuba", image: "/team/kuba.png" },
@@ -46,11 +47,11 @@ function TeamCard({ barber, index }: { barber: typeof barbers[0]; index: number 
 export function Team() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const { t } = useLanguage();
 
   return (
     <section id="team" className="py-24 bg-[#0A0A0A]">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        {/* Header */}
         <div ref={ref} className="mb-14">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -63,7 +64,7 @@ export function Team() {
               className="text-[#C9A84C] tracking-[0.3em] uppercase"
               style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.75rem" }}
             >
-              Kdo vás ostříhá
+              {t("team.label")}
             </span>
           </motion.div>
           <motion.h2
@@ -73,7 +74,7 @@ export function Team() {
             className="text-[#E8DCC8] mb-6"
             style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.15 }}
           >
-            J<span className="text-[#C9A84C]">&</span>J tým
+            J<span className="text-[#C9A84C]">&</span>J {t("team.heading")}
           </motion.h2>
           <motion.p
             initial={{ opacity: 0 }}
@@ -82,11 +83,10 @@ export function Team() {
             className="text-[#A89880] max-w-2xl"
             style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.95rem", lineHeight: 1.8 }}
           >
-            Pepa a Kuba založili barber v roce 2020. Od té doby pracují na jeho rozvoji a budování dobrého jména. Dnes je součástí týmu již 8 barberů, kteří dohromady tvoří sehranou partu.
+            {t("team.description")}
           </motion.p>
         </div>
 
-        {/* Grid 4x2 */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
           {barbers.map((barber, i) => (
             <TeamCard key={barber.name} barber={barber} index={i} />

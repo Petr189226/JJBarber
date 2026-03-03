@@ -1,40 +1,12 @@
 import { useRef } from "react";
 import { motion, useInView } from "motion/react";
 import { MapPin, Clock, ExternalLink } from "lucide-react";
+import { useLanguage } from "../i18n";
 
 const RESERVIO_VRSOVICE = "https://j-j-barbershop.reservio.com/j-j-barber-shop";
 const RESERVIO_STRASNICE = "https://j-j-barbershop.reservio.com/j-j-barber-shop-strasnice";
 
-const locations = [
-  {
-    name: "Vršovice",
-    address: "Vršovická 7/27, 101 00 Praha 10",
-    image: "/location-vrsovice.png",
-    hours: [
-      "Pondělí — Pátek 9:00 — 21:00",
-      "Sobota 10:00 — 17:00",
-      "Neděle 10:00 — 17:00",
-    ],
-    reservioUrl: RESERVIO_VRSOVICE,
-    mapImage: "/map-vrsovice.webp",
-    mapLink: "https://www.google.com/maps/place/?q=place_id:ChIJj7OHo66TC0cR9_vNnPEtFtA",
-  },
-  {
-    name: "Strašnice",
-    address: "Černokostelecká 830/23, 100 00 Praha 10",
-    image: "/location-strasnice.png",
-    hours: [
-      "Pondělí — Pátek 9:00 — 21:00",
-      "Sobota 10:00 — 17:00",
-      "Neděle zavřeno",
-    ],
-    reservioUrl: RESERVIO_STRASNICE,
-    mapImage: "/map-strasnice.webp",
-    mapLink: "https://www.google.com/maps/search/?api=1&query=JJ+Barber+Shop+Strašnice+Černokostelecká+Praha+10",
-  },
-];
-
-function MiniMap({ loc }: { loc: typeof locations[0] }) {
+function MiniMap({ loc, openLabel }: { loc: { name: string; mapImage: string; mapLink: string }; openLabel: string }) {
   return (
     <a
       href={loc.mapLink}
@@ -50,22 +22,18 @@ function MiniMap({ loc }: { loc: typeof locations[0] }) {
         className="w-full h-full object-cover brightness-[0.4] group-hover/map:brightness-[0.55] transition-all duration-300"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/70 via-transparent to-[#0A0A0A]/20" />
-
-      {/* Gold pin */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full z-10">
         <svg width="20" height="28" viewBox="0 0 20 28" fill="none" className="drop-shadow-[0_2px_6px_rgba(201,168,76,0.5)] group-hover/map:scale-110 transition-transform duration-200">
           <path d="M10 0C4.477 0 0 4.477 0 10c0 7.5 10 18 10 18s10-10.5 10-18c0-5.523-4.477-10-10-10z" fill="#C9A84C" />
           <circle cx="10" cy="10" r="4" fill="#0A0A0A" />
         </svg>
       </div>
-
-      {/* Bottom bar */}
       <div className="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-[#0A0A0A]/90 to-transparent flex items-center justify-between">
         <span
           className="text-[#6B6B6B] group-hover/map:text-[#A89880] transition-colors duration-200 truncate"
           style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.7rem" }}
         >
-          Otevřít v Google Maps
+          {openLabel}
         </span>
         <ExternalLink size={11} className="text-[#6B6B6B] group-hover/map:text-[#C9A84C] transition-colors duration-200 flex-shrink-0 ml-2" />
       </div>
@@ -76,11 +44,32 @@ function MiniMap({ loc }: { loc: typeof locations[0] }) {
 export function Locations() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const { t } = useLanguage();
+
+  const locations = [
+    {
+      name: "Vršovice",
+      address: "Vršovická 7/27, 101 00 Praha 10",
+      image: "/location-vrsovice.png",
+      hours: [t("loc.mon-fri"), t("loc.sat"), t("loc.sun.vrsovice")],
+      reservioUrl: RESERVIO_VRSOVICE,
+      mapImage: "/map-vrsovice.webp",
+      mapLink: "https://www.google.com/maps/place/?q=place_id:ChIJj7OHo66TC0cR9_vNnPEtFtA",
+    },
+    {
+      name: "Strašnice",
+      address: "Černokostelecká 830/23, 100 00 Praha 10",
+      image: "/location-strasnice.png",
+      hours: [t("loc.mon-fri"), t("loc.sat"), t("loc.sun.strasnice")],
+      reservioUrl: RESERVIO_STRASNICE,
+      mapImage: "/map-strasnice.webp",
+      mapLink: "https://www.google.com/maps/search/?api=1&query=JJ+Barber+Shop+Strašnice+Černokostelecká+Praha+10",
+    },
+  ];
 
   return (
     <section id="locations" className="py-24 bg-[#0D0D0D] overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        {/* Header */}
         <div ref={ref} className="mb-16">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -93,7 +82,7 @@ export function Locations() {
               className="text-[#C9A84C] tracking-[0.3em] uppercase"
               style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.75rem" }}
             >
-              Kde nás najdete
+              {t("loc.label")}
             </span>
           </motion.div>
           <motion.h2
@@ -103,7 +92,7 @@ export function Locations() {
             className="text-[#E8DCC8] mb-6"
             style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 1.15 }}
           >
-            Pobočky
+            {t("loc.heading")}
           </motion.h2>
           <motion.p
             initial={{ opacity: 0 }}
@@ -112,11 +101,10 @@ export function Locations() {
             className="text-[#A89880] max-w-2xl"
             style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.95rem", lineHeight: 1.8 }}
           >
-            Na našich pobočkách ve Vršovicích a Strašnicích tě čeká tým zkušených profesionálů, kteří mají vášeň pro své řemeslo. Kdykoliv přijdeš, očekávej profesionální službu ve veselé a přátelské atmosféře.
+            {t("loc.description")}
           </motion.p>
         </div>
 
-        {/* Location cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {locations.map((loc, i) => (
             <motion.div
@@ -151,7 +139,7 @@ export function Locations() {
                   </span>
                 </div>
                 <div className="mb-5">
-                  <MiniMap loc={loc} />
+                  <MiniMap loc={loc} openLabel={t("loc.openMaps")} />
                 </div>
                 <ul className="space-y-2 mb-8">
                   {loc.hours.map((line) => (
@@ -173,7 +161,7 @@ export function Locations() {
                   className="inline-flex items-center gap-2 px-6 py-3 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-sm transition-all duration-300 hover:shadow-[0_0_20px_rgba(201,168,76,0.3)] active:scale-95"
                   style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
                 >
-                  Vytvořit rezervaci
+                  {t("loc.reserve")}
                   <ExternalLink size={14} />
                 </a>
               </div>

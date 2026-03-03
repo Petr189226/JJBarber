@@ -1,16 +1,9 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { X, Gift, Send, Loader2 } from "lucide-react";
+import { useLanguage } from "../i18n";
 
 const WEB3FORMS_KEY = "023e0516-f33d-4063-b6dc-afba879de144";
-
-const SERVICES = [
-  "Klasický střih – 490 Kč",
-  "Střih dlouhých vlasů – 690 Kč",
-  "Úprava vousů – 390 Kč",
-  "Střih + vousy – 790 Kč",
-  "Dětský střih – 450 Kč",
-];
 
 const BRANCHES = ["Vršovice", "Strašnice"];
 
@@ -28,6 +21,7 @@ interface Props {
 }
 
 export function VoucherModal({ open, onClose }: Props) {
+  const { t } = useLanguage();
   const [form, setForm] = useState({
     name: "",
     surname: "",
@@ -40,6 +34,14 @@ export function VoucherModal({ open, onClose }: Props) {
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
+
+  const services = [
+    `${t("svc.classic.name")} – 490 Kč`,
+    `${t("svc.long.name")} – 690 Kč`,
+    `${t("svc.beard.name")} – 390 Kč`,
+    `${t("svc.combo.name")} – 790 Kč`,
+    `${t("svc.kids.name")} – 450 Kč`,
+  ];
 
   const update = (field: string, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -76,10 +78,10 @@ export function VoucherModal({ open, onClose }: Props) {
       if (data.success) {
         setSent(true);
       } else {
-        setError("Odeslání se nezdařilo. Zkuste to prosím znovu.");
+        setError(t("voucher.errorSend"));
       }
     } catch {
-      setError("Chyba připojení. Zkuste to prosím znovu.");
+      setError(t("voucher.errorConn"));
     } finally {
       setSending(false);
     }
@@ -117,131 +119,75 @@ export function VoucherModal({ open, onClose }: Props) {
             <div className="sticky top-0 z-10 bg-[#0D0D0D] border-b border-[#1F1F1F] px-8 py-5 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Gift size={20} className="text-[#C9A84C]" />
-                <h3
-                  className="text-[#E8DCC8]"
-                  style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.3rem" }}
-                >
-                  Dárkový poukaz
+                <h3 className="text-[#E8DCC8]" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.3rem" }}>
+                  {t("voucher.title")}
                 </h3>
               </div>
-              <button
-                onClick={handleClose}
-                className="text-[#6B6B6B] hover:text-[#E8DCC8] transition-colors p-1"
-                aria-label="Zavřít"
-              >
+              <button onClick={handleClose} className="text-[#6B6B6B] hover:text-[#E8DCC8] transition-colors p-1" aria-label={t("voucher.close")}>
                 <X size={20} />
               </button>
             </div>
 
             <div className="px-8 py-6">
               {sent ? (
-                <motion.div
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-center py-10"
-                >
+                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="text-center py-10">
                   <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-[#C9A84C]/10 flex items-center justify-center">
                     <Gift size={28} className="text-[#C9A84C]" />
                   </div>
-                  <h4
-                    className="text-[#E8DCC8] mb-3"
-                    style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.3rem" }}
-                  >
-                    Děkujeme!
+                  <h4 className="text-[#E8DCC8] mb-3" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.3rem" }}>
+                    {t("voucher.thanks")}
                   </h4>
-                  <p
-                    className="text-[#6B6B6B] max-w-xs mx-auto"
-                    style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.9rem", lineHeight: 1.7 }}
-                  >
-                    Objednávka voucheru byla odeslána. Ozveme se vám s potvrzením a&nbsp;dalšími informacemi o&nbsp;vyzvednutí.
+                  <p className="text-[#6B6B6B] max-w-xs mx-auto" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.9rem", lineHeight: 1.7 }}>
+                    {t("voucher.success")}
                   </p>
                   <button
                     onClick={handleClose}
                     className="mt-8 px-8 py-3 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-sm transition-all duration-200"
                     style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
                   >
-                    Zavřít
+                    {t("voucher.close")}
                   </button>
                 </motion.div>
               ) : (
                 <>
-                  <p
-                    className="text-[#6B6B6B] mb-6"
-                    style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.85rem", lineHeight: 1.7 }}
-                  >
-                    Darujte voucher na jednu z našich služeb. Voucher je nutné vyzvednout a zaplatit na vybrané pobočce.
+                  <p className="text-[#6B6B6B] mb-6" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.85rem", lineHeight: 1.7 }}>
+                    {t("voucher.intro")}
                   </p>
 
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className={labelClass} style={labelStyle}>Jméno *</label>
-                        <input
-                          type="text"
-                          required
-                          value={form.name}
-                          onChange={(e) => update("name", e.target.value)}
-                          placeholder="Jan"
-                          className={inputClass}
-                          style={inputStyle}
-                        />
+                        <label className={labelClass} style={labelStyle}>{t("voucher.name")} *</label>
+                        <input type="text" required value={form.name} onChange={(e) => update("name", e.target.value)} placeholder="Jan" className={inputClass} style={inputStyle} />
                       </div>
                       <div>
-                        <label className={labelClass} style={labelStyle}>Příjmení</label>
-                        <input
-                          type="text"
-                          value={form.surname}
-                          onChange={(e) => update("surname", e.target.value)}
-                          placeholder="Novák"
-                          className={inputClass}
-                          style={inputStyle}
-                        />
+                        <label className={labelClass} style={labelStyle}>{t("voucher.surname")}</label>
+                        <input type="text" value={form.surname} onChange={(e) => update("surname", e.target.value)} placeholder="Novák" className={inputClass} style={inputStyle} />
                       </div>
                     </div>
 
                     <div>
-                      <label className={labelClass} style={labelStyle}>Email *</label>
-                      <input
-                        type="email"
-                        required
-                        value={form.email}
-                        onChange={(e) => update("email", e.target.value)}
-                        placeholder="jan@email.cz"
-                        className={inputClass}
-                        style={inputStyle}
-                      />
+                      <label className={labelClass} style={labelStyle}>{t("voucher.email")} *</label>
+                      <input type="email" required value={form.email} onChange={(e) => update("email", e.target.value)} placeholder="jan@email.cz" className={inputClass} style={inputStyle} />
                     </div>
 
                     <div>
-                      <label className={labelClass} style={labelStyle}>Telefon</label>
-                      <input
-                        type="tel"
-                        value={form.phone}
-                        onChange={(e) => update("phone", e.target.value)}
-                        placeholder="+420 777 123 456"
-                        className={inputClass}
-                        style={inputStyle}
-                      />
+                      <label className={labelClass} style={labelStyle}>{t("voucher.phone")}</label>
+                      <input type="tel" value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="+420 777 123 456" className={inputClass} style={inputStyle} />
                     </div>
 
                     <div>
-                      <label className={labelClass} style={labelStyle}>Výběr služby *</label>
-                      <select
-                        required
-                        value={form.service}
-                        onChange={(e) => update("service", e.target.value)}
-                        className={selectClass}
-                        style={inputStyle}
-                      >
-                        <option value="" disabled>Vyber službu</option>
-                        {SERVICES.map((s) => (
+                      <label className={labelClass} style={labelStyle}>{t("voucher.service")} *</label>
+                      <select required value={form.service} onChange={(e) => update("service", e.target.value)} className={selectClass} style={inputStyle}>
+                        <option value="" disabled>{t("voucher.servicePlaceholder")}</option>
+                        {services.map((s) => (
                           <option key={s} value={s} style={{ background: "#111111", color: "#E8DCC8" }}>{s}</option>
                         ))}
                       </select>
                     </div>
 
                     <div>
-                      <label className={labelClass} style={labelStyle}>Vyzvednout na pobočce *</label>
+                      <label className={labelClass} style={labelStyle}>{t("voucher.branch")} *</label>
                       <div className="grid grid-cols-2 gap-3">
                         {BRANCHES.map((b) => (
                           <button
@@ -262,11 +208,11 @@ export function VoucherModal({ open, onClose }: Props) {
                     </div>
 
                     <div>
-                      <label className={labelClass} style={labelStyle}>Poznámka</label>
+                      <label className={labelClass} style={labelStyle}>{t("voucher.note")}</label>
                       <textarea
                         value={form.note}
                         onChange={(e) => update("note", e.target.value)}
-                        placeholder="Jakékoliv doplňující informace..."
+                        placeholder={t("voucher.notePlaceholder")}
                         rows={3}
                         className={`${inputClass} resize-none`}
                         style={inputStyle}
@@ -285,12 +231,8 @@ export function VoucherModal({ open, onClose }: Props) {
                       className="w-full flex items-center justify-center gap-2 py-4 mt-2 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-sm transition-all duration-200 hover:shadow-[0_0_20px_rgba(201,168,76,0.3)] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:hover:bg-[#C9A84C]"
                       style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.9rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
                     >
-                      {sending ? (
-                        <Loader2 size={16} className="animate-spin" />
-                      ) : (
-                        <Send size={16} />
-                      )}
-                      {sending ? "Odesílám..." : "Odeslat objednávku"}
+                      {sending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                      {sending ? t("voucher.sending") : t("voucher.submit")}
                     </button>
                   </form>
                 </>

@@ -1,9 +1,11 @@
 import { motion, useInView } from "motion/react";
 import { useRef } from "react";
+import { useLanguage } from "../i18n";
 
 export function FinalCTA() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
+  const { t } = useLanguage();
 
   return (
     <section className="py-20 bg-gradient-to-b from-[#0D0D0D] to-[#0A0A0A] relative overflow-hidden">
@@ -22,9 +24,9 @@ export function FinalCTA() {
             lineHeight: 1.15,
           }}
         >
-          Rezervuj si termín
+          {t("cta.heading1")}
           <br />
-          <em className="text-[#C9A84C] italic">ještě dnes</em>.
+          <em className="text-[#C9A84C] italic">{t("cta.heading2")}</em>.
         </motion.h2>
 
         <motion.p
@@ -34,7 +36,7 @@ export function FinalCTA() {
           className="text-[#6B6B6B] mt-4 mb-8"
           style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "1rem", lineHeight: 1.7 }}
         >
-          Vyber pobočku a zarezervuj si svůj termín online — zabere to méně než minutu.
+          {t("cta.sub")}
         </motion.p>
 
         <motion.a
@@ -53,7 +55,7 @@ export function FinalCTA() {
             textTransform: "uppercase",
           }}
         >
-          Rezervovat termín
+          {t("cta.button")}
         </motion.a>
       </div>
     </section>

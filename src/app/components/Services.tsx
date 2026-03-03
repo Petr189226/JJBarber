@@ -2,67 +2,27 @@ import { useRef, useState } from "react";
 import { motion, useInView } from "motion/react";
 import { Scissors, Star, Zap, Droplets, Package, Gift } from "lucide-react";
 import { VoucherModal } from "./VoucherModal";
+import { useLanguage } from "../i18n";
 
-const services = [
-  {
-    icon: Scissors,
-    name: "Klasický střih",
-    description: "Stříhání strojkem, stříhání nůžkami, zaholení kontur, úprava obočí, mytí hlavy, masáž hlavy, odstranění chloupků z uší, styling.",
-    price: "490",
-    duration: null,
-    popular: false,
-  },
-  {
-    icon: Scissors,
-    name: "Střih dlouhých vlasů",
-    description: "Stříhání nůžkami, zaholení kontur, úprava obočí, mytí hlavy, masáž hlavy, odstranění chloupků z uší, styling.",
-    price: "690",
-    duration: null,
-    popular: false,
-  },
-  {
-    icon: Droplets,
-    name: "Úprava vousů",
-    description: "Zkrácení délky vousů, zaholení kontur břitvou, úprava obočí, odstranění chloupků z uší, ošetření pokožky.",
-    price: "390",
-    duration: null,
-    popular: false,
-  },
-  {
-    icon: Zap,
-    name: "Holení vousů",
-    description: "Napaření vousů párou, oholení břitvou, úprava obočí, odstranění chloupků z uší, ošetření pokožky.",
-    price: "390",
-    duration: null,
-    popular: false,
-  },
-  {
-    icon: Star,
-    name: "Střih + vousy",
-    description: "Stříhání strojkem, stříhání nůžkami, zaholení kontur, úprava obočí, mytí hlavy, masáž hlavy, odstranění chloupků z uší, styling, úprava nebo holení vousů, ošetření pokožky.",
-    price: "790",
-    duration: null,
-    popular: true,
-  },
-  {
-    icon: Package,
-    name: "Dětský střih",
-    description: "Stříhání strojkem, stříhání nůžkami, úprava kontur, styling, možnost hair tattoo.",
-    price: "450",
-    duration: null,
-    popular: false,
-  },
-  {
-    icon: Gift,
-    name: "Voucher",
-    description: "Darujte voucher na jednu z našich služeb. Voucher je nutné telefonicky objednat a vyzvednout na jedné z našich poboček.",
-    price: null,
-    duration: null,
-    popular: false,
-  },
+interface Service {
+  icon: typeof Scissors;
+  nameKey: string;
+  descKey: string;
+  price: string | null;
+  popular: boolean;
+}
+
+const services: Service[] = [
+  { icon: Scissors, nameKey: "svc.classic", descKey: "svc.classic", price: "490", popular: false },
+  { icon: Scissors, nameKey: "svc.long", descKey: "svc.long", price: "690", popular: false },
+  { icon: Droplets, nameKey: "svc.beard", descKey: "svc.beard", price: "390", popular: false },
+  { icon: Zap, nameKey: "svc.shave", descKey: "svc.shave", price: "390", popular: false },
+  { icon: Star, nameKey: "svc.combo", descKey: "svc.combo", price: "790", popular: true },
+  { icon: Package, nameKey: "svc.kids", descKey: "svc.kids", price: "450", popular: false },
+  { icon: Gift, nameKey: "svc.voucher", descKey: "svc.voucher", price: null, popular: false },
 ];
 
-function ServiceCard({ service, index, onClick }: { service: typeof services[0]; index: number; onClick?: () => void }) {
+function ServiceCard({ service, index, onClick, t }: { service: Service; index: number; onClick?: () => void; t: (k: string) => string }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const Icon = service.icon;
@@ -80,18 +40,16 @@ function ServiceCard({ service, index, onClick }: { service: typeof services[0];
           : "border-[#1F1F1F] bg-[#111111] hover:border-[#C9A84C]/30"
       } ${onClick ? "cursor-pointer" : ""}`}
     >
-      {/* Popular badge */}
       {service.popular && (
         <div
           className="absolute -top-3 left-6 px-3 py-1 bg-[#C9A84C] text-[#0A0A0A] text-xs tracking-widest uppercase"
           style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.65rem" }}
         >
-          Nejoblíbenější
+          {t("svc.popular")}
         </div>
       )}
 
       <div className="p-8">
-        {/* Icon */}
         <div className={`w-12 h-12 rounded-sm flex items-center justify-center mb-6 transition-colors duration-300 ${
           service.popular
             ? "bg-[#C9A84C]/15 border border-[#C9A84C]/30"
@@ -100,23 +58,20 @@ function ServiceCard({ service, index, onClick }: { service: typeof services[0];
           <Icon size={20} className={service.popular ? "text-[#C9A84C]" : "text-[#7A7A7A] group-hover:text-[#C9A84C] transition-colors duration-300"} />
         </div>
 
-        {/* Name */}
         <h3
           className="text-[#E8DCC8] mb-3"
           style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.25rem" }}
         >
-          {service.name}
+          {t(`${service.nameKey}.name`)}
         </h3>
 
-        {/* Description */}
         <p
           className="text-[#6B6B6B] mb-6 leading-relaxed"
           style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.88rem", lineHeight: 1.7 }}
         >
-          {service.description}
+          {t(`${service.descKey}.desc`)}
         </p>
 
-        {/* Bottom row */}
         <div className="flex items-end justify-between pt-5 border-t border-[#1F1F1F]">
           <div>
             {service.price != null ? (
@@ -131,7 +86,7 @@ function ServiceCard({ service, index, onClick }: { service: typeof services[0];
                   className="text-[#6B6B6B] ml-1"
                   style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.8rem" }}
                 >
-                  Kč
+                  {t("svc.currency")}
                 </span>
               </>
             ) : (
@@ -139,22 +94,13 @@ function ServiceCard({ service, index, onClick }: { service: typeof services[0];
                 className={onClick ? "text-[#C9A84C]" : "text-[#6B6B6B]"}
                 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: onClick ? 600 : 400, fontSize: "0.85rem", letterSpacing: onClick ? "0.05em" : undefined }}
               >
-                {onClick ? "Objednat poukaz →" : "Na vyžádání"}
+                {onClick ? t("svc.orderVoucher") : t("svc.onRequest")}
               </span>
             )}
           </div>
-          {service.duration != null && (
-            <span
-              className="text-[#6B6B6B]"
-              style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.78rem" }}
-            >
-              {service.duration}
-            </span>
-          )}
         </div>
       </div>
 
-      {/* Hover glow */}
       <div className="absolute inset-0 rounded-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
         style={{ boxShadow: "inset 0 0 0 1px rgba(201,168,76,0.15)" }} />
     </motion.div>
@@ -165,11 +111,11 @@ export function Services() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const [voucherOpen, setVoucherOpen] = useState(false);
+  const { t } = useLanguage();
 
   return (
     <section id="services" className="py-24 bg-[#0A0A0A]">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        {/* Header */}
         <div ref={ref} className="mb-16">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -182,7 +128,7 @@ export function Services() {
               className="text-[#C9A84C] tracking-[0.3em] uppercase"
               style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.75rem" }}
             >
-              Ceník služeb
+              {t("svc.label")}
             </span>
           </motion.div>
           <motion.h2
@@ -192,7 +138,7 @@ export function Services() {
             className="text-[#E8DCC8]"
             style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.15 }}
           >
-            Ceník
+            {t("svc.heading")}
           </motion.h2>
           <motion.p
             initial={{ opacity: 0 }}
@@ -201,23 +147,22 @@ export function Services() {
             className="text-[#6B6B6B] mt-4 max-w-lg"
             style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.95rem", lineHeight: 1.7 }}
           >
-            Každá služba je prováděna s maximální precizností a péčí.
+            {t("svc.description")}
           </motion.p>
         </div>
 
-        {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {services.map((service, i) => (
             <ServiceCard
-              key={service.name}
+              key={service.nameKey}
               service={service}
               index={i}
-              onClick={service.name === "Voucher" ? () => setVoucherOpen(true) : undefined}
+              t={t}
+              onClick={service.nameKey === "svc.voucher" ? () => setVoucherOpen(true) : undefined}
             />
           ))}
         </div>
 
-        {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -232,7 +177,7 @@ export function Services() {
             className="inline-flex items-center gap-3 px-8 py-4 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-sm transition-all duration-300 hover:shadow-[0_0_30px_rgba(201,168,76,0.3)] active:scale-95"
             style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.95rem", letterSpacing: "0.15em", textTransform: "uppercase" }}
           >
-            Rezervovat termín
+            {t("svc.book")}
           </a>
         </motion.div>
       </div>

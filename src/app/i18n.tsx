@@ -1,0 +1,205 @@
+import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+
+export type Lang = "cs" | "en";
+
+interface LangContextValue {
+  lang: Lang;
+  setLang: (lang: Lang) => void;
+  t: (key: string) => string;
+}
+
+const translations: Record<string, Record<Lang, string>> = {
+  // ── Navbar ──
+  "nav.locations": { cs: "Pobočky", en: "Locations" },
+  "nav.team": { cs: "Tým", en: "Team" },
+  "nav.services": { cs: "Ceník", en: "Pricing" },
+  "nav.reviews": { cs: "Recenze", en: "Reviews" },
+  "nav.contact": { cs: "Kontakt", en: "Contact" },
+  "nav.book": { cs: "Rezervovat termín", en: "Book Now" },
+
+  // ── Hero ──
+  "hero.label": { cs: "Praha 10 · Od roku 2020", en: "Prague 10 · Since 2020" },
+  "hero.headline1": { cs: "Tvůj barber shop", en: "Your barber shop" },
+  "hero.headline2": { cs: "na", en: "in" },
+  "hero.headline3": { cs: "Praze 10", en: "Prague 10" },
+  "hero.sub": {
+    cs: "Lokální barber shop s přátelskou atmosférou – Vršovice a Strašnice.",
+    en: "Local barber shop with a friendly atmosphere – Vršovice & Strašnice.",
+  },
+  "hero.selectPlaceholder": { cs: "Vyber pobočku", en: "Select branch" },
+  "hero.book": { cs: "Rezervovat termín", en: "Book Now" },
+  "hero.bookBranch": { cs: "Rezervovat", en: "Book" },
+  "hero.selectError": { cs: "Vyber pobočku", en: "Please select a branch" },
+  "hero.pricelist": { cs: "Ceník služeb", en: "Price List" },
+  "hero.stat1value": { cs: "Od 2020", en: "Since 2020" },
+  "hero.stat1label": { cs: "na trhu", en: "in business" },
+  "hero.stat2label": { cs: "barberů", en: "barbers" },
+  "hero.stat3label": { cs: "pobočky", en: "locations" },
+  "hero.scrollDown": { cs: "Přejít dolů", en: "Scroll down" },
+
+  // ── Locations ──
+  "loc.label": { cs: "Kde nás najdete", en: "Where to find us" },
+  "loc.heading": { cs: "Pobočky", en: "Locations" },
+  "loc.description": {
+    cs: "Na našich pobočkách ve Vršovicích a Strašnicích tě čeká tým zkušených profesionálů, kteří mají vášeň pro své řemeslo. Kdykoliv přijdeš, očekávej profesionální službu ve veselé a přátelské atmosféře.",
+    en: "At our branches in Vršovice and Strašnice, a team of experienced professionals with a passion for their craft awaits you. Whenever you visit, expect professional service in a cheerful and friendly atmosphere.",
+  },
+  "loc.reserve": { cs: "Vytvořit rezervaci", en: "Make a Reservation" },
+  "loc.openMaps": { cs: "Otevřít v Google Maps", en: "Open in Google Maps" },
+  "loc.mon-fri": { cs: "Pondělí — Pátek 9:00 — 21:00", en: "Monday — Friday 9:00 — 21:00" },
+  "loc.sat": { cs: "Sobota 10:00 — 17:00", en: "Saturday 10:00 — 17:00" },
+  "loc.sun.vrsovice": { cs: "Neděle 10:00 — 17:00", en: "Sunday 10:00 — 17:00" },
+  "loc.sun.strasnice": { cs: "Neděle zavřeno", en: "Sunday closed" },
+
+  // ── Team ──
+  "team.label": { cs: "Kdo vás ostříhá", en: "Who will cut your hair" },
+  "team.heading": { cs: "tým", en: "Team" },
+  "team.description": {
+    cs: "Pepa a Kuba založili barber v roce 2020. Od té doby pracují na jeho rozvoji a budování dobrého jména. Dnes je součástí týmu již 8 barberů, kteří dohromady tvoří sehranou partu.",
+    en: "Pepa and Kuba founded the barbershop in 2020. Since then, they have been working on its growth and building a great reputation. Today, the team includes 8 barbers who together form a well-coordinated crew.",
+  },
+
+  // ── Services ──
+  "svc.label": { cs: "Ceník služeb", en: "Our Services" },
+  "svc.heading": { cs: "Ceník", en: "Pricing" },
+  "svc.description": {
+    cs: "Každá služba je prováděna s maximální precizností a péčí.",
+    en: "Every service is performed with maximum precision and care.",
+  },
+  "svc.popular": { cs: "Nejoblíbenější", en: "Most Popular" },
+  "svc.currency": { cs: "Kč", en: "CZK" },
+  "svc.onRequest": { cs: "Na vyžádání", en: "On request" },
+  "svc.orderVoucher": { cs: "Objednat poukaz →", en: "Order voucher →" },
+  "svc.book": { cs: "Rezervovat termín", en: "Book Now" },
+
+  "svc.classic.name": { cs: "Klasický střih", en: "Classic Haircut" },
+  "svc.classic.desc": {
+    cs: "Stříhání strojkem, stříhání nůžkami, zaholení kontur, úprava obočí, mytí hlavy, masáž hlavy, odstranění chloupků z uší, styling.",
+    en: "Clipper cut, scissor cut, contour shaving, eyebrow trim, hair wash, head massage, ear hair removal, styling.",
+  },
+  "svc.long.name": { cs: "Střih dlouhých vlasů", en: "Long Hair Cut" },
+  "svc.long.desc": {
+    cs: "Stříhání nůžkami, zaholení kontur, úprava obočí, mytí hlavy, masáž hlavy, odstranění chloupků z uší, styling.",
+    en: "Scissor cut, contour shaving, eyebrow trim, hair wash, head massage, ear hair removal, styling.",
+  },
+  "svc.beard.name": { cs: "Úprava vousů", en: "Beard Trim" },
+  "svc.beard.desc": {
+    cs: "Zkrácení délky vousů, zaholení kontur břitvou, úprava obočí, odstranění chloupků z uší, ošetření pokožky.",
+    en: "Beard length trim, razor contour shave, eyebrow trim, ear hair removal, skin care.",
+  },
+  "svc.shave.name": { cs: "Holení vousů", en: "Beard Shave" },
+  "svc.shave.desc": {
+    cs: "Napaření vousů párou, oholení břitvou, úprava obočí, odstranění chloupků z uší, ošetření pokožky.",
+    en: "Steam beard treatment, razor shave, eyebrow trim, ear hair removal, skin care.",
+  },
+  "svc.combo.name": { cs: "Střih + vousy", en: "Haircut + Beard" },
+  "svc.combo.desc": {
+    cs: "Stříhání strojkem, stříhání nůžkami, zaholení kontur, úprava obočí, mytí hlavy, masáž hlavy, odstranění chloupků z uší, styling, úprava nebo holení vousů, ošetření pokožky.",
+    en: "Clipper cut, scissor cut, contour shaving, eyebrow trim, hair wash, head massage, ear hair removal, styling, beard trim or shave, skin care.",
+  },
+  "svc.kids.name": { cs: "Dětský střih", en: "Kids Haircut" },
+  "svc.kids.desc": {
+    cs: "Stříhání strojkem, stříhání nůžkami, úprava kontur, styling, možnost hair tattoo.",
+    en: "Clipper cut, scissor cut, contour trim, styling, hair tattoo option.",
+  },
+  "svc.voucher.name": { cs: "Voucher", en: "Gift Voucher" },
+  "svc.voucher.desc": {
+    cs: "Darujte voucher na jednu z našich služeb. Voucher je nutné telefonicky objednat a vyzvednout na jedné z našich poboček.",
+    en: "Give the gift of a voucher for any of our services. The voucher must be ordered by phone and picked up at one of our branches.",
+  },
+
+  // ── Reviews ──
+  "rev.label": { cs: "Recenze", en: "Reviews" },
+  "rev.heading": { cs: "Co říkají naši klienti", en: "What our clients say" },
+  "rev.google": { cs: "Google recenze", en: "Google reviews" },
+  "rev.role": { cs: "Zákazník", en: "Customer" },
+
+  // ── Booking ──
+  "book.label": { cs: "Rezervace", en: "Booking" },
+  "book.heading1": { cs: "Rezervuj si", en: "Book your" },
+  "book.heading2": { cs: "termín", en: "appointment" },
+  "book.description": {
+    cs: "Rezervace probíhá online přes Reservio. Vyber si pobočku, službu a volný termín. Potvrzení přijde na e-mail nebo SMS.",
+    en: "Booking is done online via Reservio. Choose your branch, service, and available time slot. Confirmation will be sent via email or SMS.",
+  },
+  "book.voucher": { cs: "Dárkový poukaz", en: "Gift Voucher" },
+  "book.quote": { cs: "Tvůj barber shop na Praze 10.", en: "Your barber shop in Prague 10." },
+  "book.reserve": { cs: "Vytvořit rezervaci", en: "Make a Reservation" },
+  "book.openReservio": { cs: "Otevřít Reservio", en: "Open Reservio" },
+
+  // ── Final CTA ──
+  "cta.heading1": { cs: "Rezervuj si termín", en: "Book your appointment" },
+  "cta.heading2": { cs: "ještě dnes", en: "today" },
+  "cta.sub": {
+    cs: "Vyber pobočku a zarezervuj si svůj termín online — zabere to méně než minutu.",
+    en: "Choose a branch and book your appointment online — it takes less than a minute.",
+  },
+  "cta.button": { cs: "Rezervovat termín", en: "Book Now" },
+
+  // ── Footer ──
+  "footer.brand": {
+    cs: "Lokální barber shop s přátelskou atmosférou – Vršovice a Strašnice, Praha 10.",
+    en: "Local barber shop with a friendly atmosphere – Vršovice & Strašnice, Prague 10.",
+  },
+  "footer.nav": { cs: "Navigace", en: "Navigation" },
+  "footer.services": { cs: "Služby", en: "Services" },
+  "footer.contact": { cs: "Kontakt", en: "Contact" },
+  "footer.home": { cs: "Úvod", en: "Home" },
+  "footer.hours": { cs: "Po–Pá 9:00–21:00, So 10:00–17:00", en: "Mon–Fri 9:00–21:00, Sat 10:00–17:00" },
+  "footer.copyright": {
+    cs: "© 2026 J&J Barber Shop. Všechna práva vyhrazena.",
+    en: "© 2026 J&J Barber Shop. All rights reserved.",
+  },
+  "footer.privacy": { cs: "Zásady ochrany osobních údajů", en: "Privacy Policy" },
+
+  // ── Voucher Modal ──
+  "voucher.title": { cs: "Dárkový poukaz", en: "Gift Voucher" },
+  "voucher.close": { cs: "Zavřít", en: "Close" },
+  "voucher.intro": {
+    cs: "Darujte voucher na jednu z našich služeb. Voucher je nutné vyzvednout a zaplatit na vybrané pobočce.",
+    en: "Give the gift of a voucher for any of our services. The voucher must be picked up and paid for at the selected branch.",
+  },
+  "voucher.name": { cs: "Jméno", en: "First Name" },
+  "voucher.surname": { cs: "Příjmení", en: "Last Name" },
+  "voucher.email": { cs: "Email", en: "Email" },
+  "voucher.phone": { cs: "Telefon", en: "Phone" },
+  "voucher.service": { cs: "Výběr služby", en: "Select Service" },
+  "voucher.servicePlaceholder": { cs: "Vyber službu", en: "Choose a service" },
+  "voucher.branch": { cs: "Vyzvednout na pobočce", en: "Pick up at branch" },
+  "voucher.note": { cs: "Poznámka", en: "Note" },
+  "voucher.notePlaceholder": { cs: "Jakékoliv doplňující informace...", en: "Any additional information..." },
+  "voucher.submit": { cs: "Odeslat objednávku", en: "Submit Order" },
+  "voucher.sending": { cs: "Odesílám...", en: "Sending..." },
+  "voucher.thanks": { cs: "Děkujeme!", en: "Thank you!" },
+  "voucher.success": {
+    cs: "Objednávka voucheru byla odeslána. Ozveme se vám s potvrzením a\u00a0dalšími informacemi o\u00a0vyzvednutí.",
+    en: "Your voucher order has been submitted. We will contact you with confirmation and pickup details.",
+  },
+  "voucher.errorSend": { cs: "Odeslání se nezdařilo. Zkuste to prosím znovu.", en: "Submission failed. Please try again." },
+  "voucher.errorConn": { cs: "Chyba připojení. Zkuste to prosím znovu.", en: "Connection error. Please try again." },
+};
+
+const LangContext = createContext<LangContextValue>({
+  lang: "cs",
+  setLang: () => {},
+  t: (key) => key,
+});
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const [lang, setLang] = useState<Lang>("cs");
+
+  const t = useCallback(
+    (key: string): string => translations[key]?.[lang] ?? key,
+    [lang],
+  );
+
+  return (
+    <LangContext.Provider value={{ lang, setLang, t }}>
+      {children}
+    </LangContext.Provider>
+  );
+}
+
+export function useLanguage() {
+  return useContext(LangContext);
+}
