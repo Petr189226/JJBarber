@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, useInView } from "motion/react";
 import { MapPin, Clock, ExternalLink } from "lucide-react";
 import { useLanguage } from "../i18n";
@@ -37,6 +37,29 @@ function MiniMap({ loc, openLabel }: { loc: { name: string; mapImage: string; ma
         </span>
         <ExternalLink size={11} className="text-[#6B6B6B] group-hover/map:text-[#C9A84C] transition-colors duration-200 flex-shrink-0 ml-2" />
       </div>
+    </a>
+  );
+}
+
+function ReserveLink({ href, label, redirectLabel }: { href: string; label: string; redirectLabel: string }) {
+  const [clicked, setClicked] = useState(false);
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setClicked(true);
+    setTimeout(() => {
+      window.open(href, "_blank");
+      setClicked(false);
+    }, 300);
+  };
+  return (
+    <a
+      href={href}
+      onClick={handleClick}
+      className={`inline-flex items-center gap-2 px-6 py-3 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-sm transition-all duration-300 hover:shadow-[0_0_20px_rgba(201,168,76,0.3)] focus:ring-2 focus:ring-[#C9A84C]/50 focus:outline-none ${clicked ? "scale-[0.98]" : "active:scale-95"}`}
+      style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
+    >
+      {clicked ? redirectLabel : label}
+      <ExternalLink size={14} />
     </a>
   );
 }
@@ -154,16 +177,7 @@ export function Locations() {
                     </li>
                   ))}
                 </ul>
-                <a
-                  href={loc.reservioUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-sm transition-all duration-300 hover:shadow-[0_0_20px_rgba(201,168,76,0.3)] active:scale-95"
-                  style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
-                >
-                  {t("loc.reserve")}
-                  <ExternalLink size={14} />
-                </a>
+                <ReserveLink href={loc.reservioUrl} label={t("loc.reserve")} redirectLabel={t("cta.redirecting")} />
               </div>
             </motion.div>
           ))}

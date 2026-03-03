@@ -19,6 +19,7 @@ export function Hero() {
   const { t } = useLanguage();
   const [branch, setBranch] = useState("");
   const [error, setError] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
 
   const scrollToServices = () => {
     const el = document.querySelector("#services");
@@ -30,7 +31,11 @@ export function Hero() {
       setError(true);
       return;
     }
-    window.open(RESERVIO_URLS[branch], "_blank");
+    setRedirecting(true);
+    setTimeout(() => {
+      window.open(RESERVIO_URLS[branch], "_blank");
+      setRedirecting(false);
+    }, 300);
   };
 
   return (
@@ -126,11 +131,11 @@ export function Hero() {
               </div>
               <button
                 onClick={handleReservation}
-                disabled={!branch}
-                className="px-8 py-4 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-sm transition-all duration-300 hover:shadow-[0_0_30px_rgba(201,168,76,0.4)] active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:hover:bg-[#C9A84C]"
+                disabled={!branch || redirecting}
+                className={`px-8 py-4 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-sm transition-all duration-300 hover:shadow-[0_0_30px_rgba(201,168,76,0.4)] focus:ring-2 focus:ring-[#C9A84C]/50 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:hover:bg-[#C9A84C] ${redirecting ? "scale-[0.98]" : "active:scale-95"}`}
                 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.95rem", letterSpacing: "0.15em", textTransform: "uppercase" }}
               >
-                {branch ? `${t("hero.bookBranch")} – ${BRANCH_LABELS[branch]}` : t("hero.book")}
+                {redirecting ? t("cta.redirecting") : branch ? `${t("hero.bookBranch")} – ${BRANCH_LABELS[branch]}` : t("hero.book")}
               </button>
             </div>
             {error && (

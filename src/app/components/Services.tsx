@@ -9,17 +9,18 @@ interface Service {
   nameKey: string;
   descKey: string;
   price: string | null;
+  hasDuration: boolean;
   popular: boolean;
 }
 
 const services: Service[] = [
-  { icon: Scissors, nameKey: "svc.classic", descKey: "svc.classic", price: "490", popular: false },
-  { icon: Scissors, nameKey: "svc.long", descKey: "svc.long", price: "690", popular: false },
-  { icon: Droplets, nameKey: "svc.beard", descKey: "svc.beard", price: "390", popular: false },
-  { icon: Zap, nameKey: "svc.shave", descKey: "svc.shave", price: "390", popular: false },
-  { icon: Star, nameKey: "svc.combo", descKey: "svc.combo", price: "790", popular: true },
-  { icon: Package, nameKey: "svc.kids", descKey: "svc.kids", price: "450", popular: false },
-  { icon: Gift, nameKey: "svc.voucher", descKey: "svc.voucher", price: null, popular: false },
+  { icon: Scissors, nameKey: "svc.classic", descKey: "svc.classic", price: "490", hasDuration: true, popular: false },
+  { icon: Scissors, nameKey: "svc.long", descKey: "svc.long", price: "690", hasDuration: true, popular: false },
+  { icon: Droplets, nameKey: "svc.beard", descKey: "svc.beard", price: "390", hasDuration: true, popular: false },
+  { icon: Zap, nameKey: "svc.shave", descKey: "svc.shave", price: "390", hasDuration: true, popular: false },
+  { icon: Star, nameKey: "svc.combo", descKey: "svc.combo", price: "790", hasDuration: true, popular: true },
+  { icon: Package, nameKey: "svc.kids", descKey: "svc.kids", price: "450", hasDuration: true, popular: false },
+  { icon: Gift, nameKey: "svc.voucher", descKey: "svc.voucher", price: null, hasDuration: false, popular: false },
 ];
 
 function ServiceCard({ service, index, onClick, t }: { service: Service; index: number; onClick?: () => void; t: (k: string) => string }) {
@@ -59,11 +60,20 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
         </div>
 
         <h3
-          className="text-[#E8DCC8] mb-3"
+          className="text-[#E8DCC8] mb-1"
           style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.25rem" }}
         >
           {t(`${service.nameKey}.name`)}
         </h3>
+        {service.hasDuration && (
+          <span
+            className="text-[#6B6B6B]/70 block mb-3"
+            style={{ fontFamily: "'Inter', sans-serif", fontWeight: 400, fontSize: "0.78rem" }}
+          >
+            {t(`${service.nameKey}.duration`)}
+          </span>
+        )}
+        {!service.hasDuration && <div className="mb-2" />}
 
         <p
           className="text-[#6B6B6B] mb-6 leading-relaxed"

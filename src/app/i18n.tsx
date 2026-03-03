@@ -135,6 +135,18 @@ const translations: Record<string, Record<Lang, string>> = {
     en: "Choose a branch and book your appointment online — it takes less than a minute.",
   },
   "cta.button": { cs: "Rezervovat termín", en: "Book Now" },
+  "cta.redirecting": { cs: "Přesměrovávám…", en: "Redirecting…" },
+
+  // ── Durations ──
+  "svc.classic.duration": { cs: "30 min", en: "30 min" },
+  "svc.long.duration": { cs: "45 min", en: "45 min" },
+  "svc.beard.duration": { cs: "30 min", en: "30 min" },
+  "svc.shave.duration": { cs: "30 min", en: "30 min" },
+  "svc.combo.duration": { cs: "60 min", en: "60 min" },
+  "svc.kids.duration": { cs: "30 min", en: "30 min" },
+
+  // ── Sticky CTA ──
+  "sticky.book": { cs: "Rezervovat", en: "Book" },
 
   // ── Footer ──
   "footer.brand": {
