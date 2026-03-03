@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion } from "motion/react";
 import { ChevronDown } from "lucide-react";
 import { useLanguage } from "../i18n";
 
@@ -94,12 +93,7 @@ export function Hero() {
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 w-full">
         <div className="max-w-2xl">
           {/* Label */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="flex items-center gap-3 mb-6"
-          >
+          <div className="flex items-center gap-3 mb-6">
             <div className="w-8 h-px bg-[#8A8580]" />
             <span
               className="text-[#8A8580] tracking-[0.25em] uppercase"
@@ -107,13 +101,10 @@ export function Hero() {
             >
               {t("hero.label")}
             </span>
-          </motion.div>
+          </div>
 
           {/* Headline */}
-          <motion.h1
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.5, ease: "easeOut" }}
+          <h1
             className="text-[#C4BEB4] mb-4 flex flex-col gap-2"
             style={{
               fontFamily: "'Playfair Display', serif",
@@ -125,25 +116,18 @@ export function Hero() {
           >
             <span>{t("hero.headline1")}</span>
             <span><em style={{ fontStyle: "italic", color: "#C9A84C", letterSpacing: "0.02em" }}>{t("hero.headline2")} {t("hero.headline3")}</em></span>
-          </motion.h1>
+          </h1>
 
           {/* Subheadline */}
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: 0.75, ease: [0.22, 1, 0.36, 1] }}
+          <p
             className="text-[#B5AEA4] mb-10 max-w-md"
             style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "1rem", lineHeight: 1.8 }}
           >
             {t("hero.sub")}
-          </motion.p>
+          </p>
 
           {/* Booking pre-step */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 1.0 }}
-          >
+          <div>
             <label
               htmlFor="hero-branch"
               className="mb-2 text-[#B5AEA4] text-xs tracking-[0.18em] uppercase block"
@@ -183,26 +167,20 @@ export function Hero() {
                 {t("hero.selectError")}
               </p>
             )}
-          </motion.div>
+          </div>
         </div>
       </div>
 
       {/* Scroll indicator */}
-      <motion.button
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.6, duration: 0.6 }}
+      <button
         onClick={scrollToServices}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[#8A8580] hover:text-[#B5AEA4] transition-colors duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent focus-visible:rounded-xl"
       >
         <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.65rem", letterSpacing: "0.2em", textTransform: "uppercase" }}>{t("hero.scrollDown")}</span>
-        <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
-        >
+        <div>
           <ChevronDown size={20} />
-        </motion.div>
-      </motion.button>
+        </div>
+      </button>
     </section>
   );
 }

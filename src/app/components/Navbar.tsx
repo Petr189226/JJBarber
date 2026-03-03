@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
 import { Menu, X } from "lucide-react";
 import { useLanguage, type Lang } from "../i18n";
 import { BookButton } from "./BookButton";
@@ -52,24 +51,15 @@ function LanguageSwitcher() {
       className="relative flex items-center gap-2 px-3 py-2 border border-[#2A2A2A] hover:border-[#C9A84C]/40 rounded-xl transition-all duration-200 cursor-pointer ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none group"
       aria-label={`Switch language to ${lang === "cs" ? "English" : "Czech"}`}
     >
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={lang}
-          initial={{ opacity: 0, scale: 0.8, y: -4 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.8, y: 4 }}
-          transition={{ duration: 0.2 }}
-          className="flex items-center gap-2"
+      <div className="flex items-center gap-2">
+        <CurrentFlag size={18} />
+        <span
+          className="text-[#8A8580] group-hover:text-[#C9A84C] transition-colors duration-200"
+          style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.72rem", letterSpacing: "0.1em" }}
         >
-          <CurrentFlag size={18} />
-          <span
-            className="text-[#8A8580] group-hover:text-[#C9A84C] transition-colors duration-200"
-            style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.72rem", letterSpacing: "0.1em" }}
-          >
-            {current.label}
-          </span>
-        </motion.div>
-      </AnimatePresence>
+          {current.label}
+        </span>
+      </div>
     </button>
   );
 }
@@ -117,10 +107,7 @@ export function Navbar() {
 
   return (
     <>
-      <motion.header
-        initial={{ y: -80, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+      <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-[250ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
           scrolled
             ? "bg-[#0A0A0A]/95 backdrop-blur-md border-b border-white/[0.06] shadow-[0_4px_24px_rgba(0,0,0,0.3)]"
@@ -197,45 +184,34 @@ export function Navbar() {
             </div>
           </div>
         </div>
-      </motion.header>
+      </header>
 
       {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="fixed top-20 left-0 right-0 z-40 bg-[#0A0A0A]/98 backdrop-blur-xl border-b border-white/[0.06] lg:hidden"
-          >
-            <nav className="flex flex-col px-6 py-6 gap-2">
-              {navLinks.map((link, i) => (
-                <motion.a
-                  key={link.href}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.07 }}
-                  href={link.href}
-                  onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
-                  className="text-[#8A8580] hover:text-[#C4BEB4] py-3 border-b border-[#1A1A1A] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-inset"
-                  style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "1.1rem", letterSpacing: "0.15em", textTransform: "uppercase" }}
-                >
-                  {link.label}
-                </motion.a>
-              ))}
-              <BookButton
-                href={RESERVIO_URL}
-                label={t("nav.book")}
-                size="md"
-                variant="primary"
-                showIcon={false}
-                className="mt-4 w-full justify-center"
-              />
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {mobileOpen && (
+        <div className="fixed top-20 left-0 right-0 z-40 bg-[#0A0A0A]/98 backdrop-blur-xl border-b border-white/[0.06] lg:hidden">
+          <nav className="flex flex-col px-6 py-6 gap-2">
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
+                className="text-[#8A8580] hover:text-[#C4BEB4] py-3 border-b border-[#1A1A1A] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-inset"
+                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "1.1rem", letterSpacing: "0.15em", textTransform: "uppercase" }}
+              >
+                {link.label}
+              </a>
+            ))}
+            <BookButton
+              href={RESERVIO_URL}
+              label={t("nav.book")}
+              size="md"
+              variant="primary"
+              showIcon={false}
+              className="mt-4 w-full justify-center"
+            />
+          </nav>
+        </div>
+      )}
     </>
   );
 }
