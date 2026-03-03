@@ -1,15 +1,16 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, useInView } from "motion/react";
 import { Phone, ExternalLink, Gift } from "lucide-react";
+import { VoucherModal } from "./VoucherModal";
 
 const RESERVIO_URL = "https://j-j-barbershop.reservio.com/";
 const RESERVIO_VRSOVICE = "https://j-j-barbershop.reservio.com/j-j-barber-shop";
 const RESERVIO_STRASNICE = "https://j-j-barbershop.reservio.com/j-j-barber-shop-strasnice";
-const POUKAZ_URL = "https://www.jjbarbershop.cz/darkovy-poukaz";
 
 export function Booking() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const [voucherOpen, setVoucherOpen] = useState(false);
 
   return (
     <section id="booking" className="py-24 bg-[#0A0A0A]">
@@ -87,19 +88,18 @@ export function Booking() {
             </motion.div>
 
             {/* Dárkový poukaz */}
-            <motion.a
-              href={POUKAZ_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            <motion.button
+              onClick={() => setVoucherOpen(true)}
               initial={{ opacity: 0 }}
               animate={inView ? { opacity: 1 } : {}}
               transition={{ duration: 0.6, delay: 0.45 }}
-              className="mt-8 inline-flex items-center gap-2 text-[#C9A84C] hover:text-[#D4B85A] transition-colors"
+              className="mt-8 inline-flex items-center gap-2 text-[#C9A84C] hover:text-[#D4B85A] transition-colors cursor-pointer"
               style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.85rem", letterSpacing: "0.1em" }}
             >
               <Gift size={18} />
               Dárkový poukaz
-            </motion.a>
+            </motion.button>
+            <VoucherModal open={voucherOpen} onClose={() => setVoucherOpen(false)} />
 
             {/* Quote */}
             <motion.div
