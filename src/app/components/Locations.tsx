@@ -16,6 +16,8 @@ const locations = [
       "Neděle 10:00 — 17:00",
     ],
     reservioUrl: RESERVIO_VRSOVICE,
+    mapImage: "/map-vrsovice.webp",
+    mapLink: "https://www.google.com/maps/place/?q=place_id:ChIJj7OHo66TC0cR9_vNnPEtFtA",
   },
   {
     name: "Strašnice",
@@ -27,8 +29,49 @@ const locations = [
       "Neděle zavřeno",
     ],
     reservioUrl: RESERVIO_STRASNICE,
+    mapImage: "/map-strasnice.webp",
+    mapLink: "https://www.google.com/maps/search/?api=1&query=JJ+Barber+Shop+Strašnice+Černokostelecká+Praha+10",
   },
 ];
+
+function MiniMap({ loc }: { loc: typeof locations[0] }) {
+  return (
+    <a
+      href={loc.mapLink}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`Otevřít mapu pobočky ${loc.name}`}
+      className="block relative w-full h-[120px] md:h-[130px] rounded-sm overflow-hidden border border-[#1F1F1F] hover:border-[#C9A84C]/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C9A84C] transition-all duration-300 group/map cursor-pointer"
+    >
+      <img
+        src={loc.mapImage}
+        alt={`Mapa – ${loc.name}`}
+        loading="lazy"
+        className="w-full h-full object-cover brightness-[0.4] group-hover/map:brightness-[0.55] transition-all duration-300"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/70 via-transparent to-[#0A0A0A]/20" />
+
+      {/* Gold pin */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full z-10">
+        <svg width="20" height="28" viewBox="0 0 20 28" fill="none" className="drop-shadow-[0_2px_6px_rgba(201,168,76,0.5)] group-hover/map:scale-110 transition-transform duration-200">
+          <path d="M10 0C4.477 0 0 4.477 0 10c0 7.5 10 18 10 18s10-10.5 10-18c0-5.523-4.477-10-10-10z" fill="#C9A84C" />
+          <circle cx="10" cy="10" r="4" fill="#0A0A0A" />
+        </svg>
+      </div>
+
+      {/* Bottom bar */}
+      <div className="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-[#0A0A0A]/90 to-transparent flex items-center justify-between">
+        <span
+          className="text-[#6B6B6B] group-hover/map:text-[#A89880] transition-colors duration-200 truncate"
+          style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.7rem" }}
+        >
+          Otevřít v Google Maps
+        </span>
+        <ExternalLink size={11} className="text-[#6B6B6B] group-hover/map:text-[#C9A84C] transition-colors duration-200 flex-shrink-0 ml-2" />
+      </div>
+    </a>
+  );
+}
 
 export function Locations() {
   const ref = useRef(null);
@@ -106,6 +149,9 @@ export function Locations() {
                   >
                     {loc.address}
                   </span>
+                </div>
+                <div className="mb-5">
+                  <MiniMap loc={loc} />
                 </div>
                 <ul className="space-y-2 mb-8">
                   {loc.hours.map((line) => (
