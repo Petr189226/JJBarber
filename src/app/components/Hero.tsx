@@ -62,6 +62,11 @@ export function Hero() {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A]/85 via-[#0A0A0A]/55 to-[#0A0A0A]/20" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/90 via-transparent to-[#0A0A0A]/30" />
+        <div
+          className="absolute inset-0"
+          style={{ background: "radial-gradient(ellipse 80% 70% at 20% 50%, rgba(10,10,10,0.45) 0%, transparent 55%)" }}
+          aria-hidden
+        />
       </div>
 
       {/* Content */}
