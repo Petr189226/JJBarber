@@ -89,7 +89,7 @@ export function Hero() {
           >
             Tvůj barber shop
             <br />
-            na <em style={{ fontStyle: "italic", color: "#C9A84C" }}>Praze 10</em>.
+            na <em style={{ fontStyle: "italic", color: "#C9A84C" }}>Praze 10</em>
           </motion.h1>
 
           {/* Subheadline */}

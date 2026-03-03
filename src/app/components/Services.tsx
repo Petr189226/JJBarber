@@ -1,6 +1,7 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, useInView } from "motion/react";
 import { Scissors, Star, Zap, Droplets, Package, Gift } from "lucide-react";
+import { VoucherModal } from "./VoucherModal";
 
 const services = [
   {
@@ -61,7 +62,7 @@ const services = [
   },
 ];
 
-function ServiceCard({ service, index }: { service: typeof services[0]; index: number }) {
+function ServiceCard({ service, index, onClick }: { service: typeof services[0]; index: number; onClick?: () => void }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const Icon = service.icon;
@@ -72,11 +73,12 @@ function ServiceCard({ service, index }: { service: typeof services[0]; index: n
       initial={{ opacity: 0, y: 40 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.6, delay: index * 0.1, ease: "easeOut" }}
+      onClick={onClick}
       className={`relative group rounded-sm border transition-all duration-400 hover:-translate-y-1 ${
         service.popular
           ? "border-[#C9A84C]/60 bg-gradient-to-b from-[#1A1610] to-[#111111]"
           : "border-[#1F1F1F] bg-[#111111] hover:border-[#C9A84C]/30"
-      }`}
+      } ${onClick ? "cursor-pointer" : ""}`}
     >
       {/* Popular badge */}
       {service.popular && (
@@ -134,10 +136,10 @@ function ServiceCard({ service, index }: { service: typeof services[0]; index: n
               </>
             ) : (
               <span
-                className="text-[#6B6B6B]"
-                style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.85rem" }}
+                className={onClick ? "text-[#C9A84C]" : "text-[#6B6B6B]"}
+                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: onClick ? 600 : 400, fontSize: "0.85rem", letterSpacing: onClick ? "0.05em" : undefined }}
               >
-                Na vyžádání
+                {onClick ? "Objednat poukaz →" : "Na vyžádání"}
               </span>
             )}
           </div>
@@ -162,6 +164,7 @@ function ServiceCard({ service, index }: { service: typeof services[0]; index: n
 export function Services() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const [voucherOpen, setVoucherOpen] = useState(false);
 
   return (
     <section id="services" className="py-24 bg-[#0A0A0A]">
@@ -205,7 +208,12 @@ export function Services() {
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {services.map((service, i) => (
-            <ServiceCard key={service.name} service={service} index={i} />
+            <ServiceCard
+              key={service.name}
+              service={service}
+              index={i}
+              onClick={service.name === "Voucher" ? () => setVoucherOpen(true) : undefined}
+            />
           ))}
         </div>
 
@@ -228,6 +236,8 @@ export function Services() {
           </a>
         </motion.div>
       </div>
+
+      <VoucherModal open={voucherOpen} onClose={() => setVoucherOpen(false)} />
     </section>
   );
 }

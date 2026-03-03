@@ -46,11 +46,11 @@ const reviews = [
     text: "Absolutní spokojenost 👍 sice jsem chvíli čekal, ale každá práce vyžaduje svůj čas. Fajn přístup, super kvalita střihu a cena bezkonkurenční 💪👏",
   },
   {
-    name: "Jakub Matějašek",
+    name: "Petr Chajda",
     role: "Zákazník",
-    initials: "JM",
+    initials: "PC",
     rating: 5,
-    text: "Perfektní servis. Kluci jsou šikovný, Pepa ostříhá pokaždé perfektně. Přesně tak jak jsem si řekl, tak to udělal. Moc hezký a příjemný interiér. A je to za super cenu.",
+    text: "Do JJ chodím už delší dobu a vždycky odcházím maximálně spokojený. Skvělá atmosféra, profesionální přístup a hlavně precizní práce. Kluci si dávají záležet na detailech a přesně ví, co dělají. Poměr cena/výkon je za mě bezkonkurenční. Rozhodně doporučuju!",
   },
   {
     name: "Karel Vyhn",
@@ -143,16 +143,16 @@ export function Reviews() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: 0.6, delay: i * 0.1 }}
-              className="bg-[#111111] border border-[#1F1F1F] hover:border-[#C9A84C]/20 rounded-sm p-6 transition-all duration-400 group hover:-translate-y-1"
+              className="bg-[#111111] border border-[#1F1F1F] hover:border-[#C9A84C]/20 rounded-sm p-6 transition-all duration-400 group hover:-translate-y-1 flex flex-col"
             >
               <Quote size={22} className="text-[#C9A84C]/40 mb-4" />
               <p
-                className="text-[#A89880] mb-6 leading-relaxed"
+                className="text-[#A89880] mb-6 leading-relaxed flex-1"
                 style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.875rem", lineHeight: 1.75 }}
               >
                 "{review.text}"
               </p>
-              <div className="flex items-center gap-3 pt-4 border-t border-[#1F1F1F]">
+              <div className="flex items-center gap-3 pt-4 border-t border-[#1F1F1F] mt-auto">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#C9A84C]/30 to-[#C9A84C]/10 border border-[#C9A84C]/30 flex items-center justify-center flex-shrink-0">
                   <span
                     className="text-[#C9A84C]"
