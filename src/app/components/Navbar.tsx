@@ -7,7 +7,7 @@ import { CTA_SCROLL_THRESHOLD, RESERVIO_URL } from "../cta-config";
 
 function FlagCZ({ size = 20 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 640 480" className="rounded-[3px] overflow-hidden">
+    <svg width={size} height={size} viewBox="0 0 640 480" className="rounded-lg overflow-hidden">
       <rect width="640" height="480" fill="#d7141a" />
       <rect width="640" height="240" fill="#fff" />
       <path d="M 0,0 320,240 0,480 z" fill="#11457e" />
@@ -17,12 +17,18 @@ function FlagCZ({ size = 20 }: { size?: number }) {
 
 function FlagGB({ size = 20 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 640 480" className="rounded-[3px] overflow-hidden">
-      <rect width="640" height="480" fill="#012169" />
-      <path d="M75,0 L640,370 640,480 565,480 0,110 0,0z M565,0 L640,0 640,110 75,480 0,480 0,370z" fill="#fff" />
-      <path d="M267,0 L267,480 373,480 373,0z M0,160 L0,320 640,320 640,160z" fill="#fff" />
-      <path d="M283,0 L283,480 357,480 357,0z M0,176 L0,304 640,304 640,176z" fill="#C8102E" />
-      <path d="M0,320 L213,320 0,480z M0,0 L213,160 0,160z M640,0 L427,160 640,160z M640,480 L427,320 640,320z" fill="#C8102E" />
+    <svg width={size} height={size} viewBox="0 0 120 80" className="rounded-lg overflow-hidden">
+      <rect width="120" height="80" fill="#012169" />
+      {/* White diagonal stripes (St Andrew) */}
+      <path d="M-4,-4 L124,84 L132,76 L4,-12 Z M124,-4 L-4,84 L-12,76 L116,-12 Z" fill="#fff" />
+      {/* Red diagonal stripes (St Patrick) – simplified */}
+      <path d="M0,15 L105,80 L113,72 L8,7 Z M120,15 L15,80 L7,72 L112,7 Z M15,0 L120,65 L112,73 L7,8 Z M105,0 L0,65 L8,73 L113,8 Z" fill="#C8102E" />
+      {/* White cross (St George) */}
+      <rect x="38" y="0" width="44" height="80" fill="#fff" />
+      <rect x="0" y="18" width="120" height="44" fill="#fff" />
+      {/* Red cross (St George) */}
+      <rect x="46" y="0" width="28" height="80" fill="#C8102E" />
+      <rect x="0" y="26" width="120" height="28" fill="#C8102E" />
     </svg>
   );
 }
@@ -32,7 +38,7 @@ function LanguageSwitcher() {
 
   const toggle = () => setLang(lang === "cs" ? "en" : "cs");
 
-  const flags: Record<Lang, { component: typeof FlagCZ; label: string }> = {
+  const flags: Record<Lang, { component: typeof FlagCZ | typeof FlagGB; label: string }> = {
     cs: { component: FlagCZ, label: "CZ" },
     en: { component: FlagGB, label: "EN" },
   };
