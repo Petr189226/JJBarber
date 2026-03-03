@@ -1,7 +1,6 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { motion, useInView } from "motion/react";
-import { Phone, ExternalLink, Gift } from "lucide-react";
-import { VoucherModal } from "./VoucherModal";
+import { Phone, ExternalLink } from "lucide-react";
 import { useLanguage } from "../i18n";
 import { BookButton } from "./BookButton";
 import { RESERVIO_URL, RESERVIO_VRSOVICE, RESERVIO_STRASNICE } from "../cta-config";
@@ -9,7 +8,6 @@ import { RESERVIO_URL, RESERVIO_VRSOVICE, RESERVIO_STRASNICE } from "../cta-conf
 export function Booking() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
-  const [voucherOpen, setVoucherOpen] = useState(false);
   const { t } = useLanguage();
 
   return (
@@ -85,19 +83,6 @@ export function Booking() {
                 </div>
               </div>
             </motion.div>
-
-            <motion.button
-              onClick={() => setVoucherOpen(true)}
-              initial={{ opacity: 0 }}
-              animate={inView ? { opacity: 1 } : {}}
-              transition={{ duration: 0.55, delay: 0.45 }}
-              className="mt-8 inline-flex items-center gap-2 text-[#8A8580] hover:text-[#B5AEA4] transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:rounded-xl"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.85rem", letterSpacing: "0.1em" }}
-            >
-              <Gift size={18} />
-              {t("book.voucher")}
-            </motion.button>
-            <VoucherModal open={voucherOpen} onClose={() => setVoucherOpen(false)} />
 
             <motion.div
               initial={{ opacity: 0 }}
