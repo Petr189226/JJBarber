@@ -69,7 +69,7 @@ export function Footer() {
           {navColumns.map((col) => (
             <div key={col.title}>
               <h4
-                className="text-[#8A8580] mb-5 tracking-[0.2em] uppercase"
+                className="text-[#B5AEA4] mb-5 tracking-[0.2em] uppercase"
                 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.72rem" }}
               >
                 {col.title}

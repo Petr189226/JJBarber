@@ -118,7 +118,7 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.0 }}
           >
-            <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
               <div className="relative">
                 <select
                   value={branch}
@@ -136,7 +136,7 @@ export function Hero() {
                 onClick={handleReservation}
                 disabled={!branch || redirecting}
                 className={`px-8 py-5 bg-gradient-to-b from-[#D4B85A] to-[#C9A84C] hover:from-[#DDC268] hover:to-[#D4B85A] text-[#0A0A0A] rounded-xl transition-all duration-200 ease-out shadow-[0_0_20px_rgba(212,175,55,0.15)] hover:-translate-y-0.5 hover:shadow-[0_0_24px_rgba(212,175,55,0.2),0_4px_24px_rgba(201,168,76,0.3)] hover:brightness-105 focus-visible:ring-2 focus-visible:ring-[#C9A84C]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:hover:translate-y-0 ${redirecting ? "scale-[0.98] opacity-90" : "active:scale-[0.98]"}`}
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.95rem", letterSpacing: "0.15em", textTransform: "uppercase" }}
+                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "1rem", letterSpacing: "0.18em", textTransform: "uppercase" }}
               >
                 {redirecting ? t("cta.redirecting") : branch ? `${t("hero.bookBranch")} – ${BRANCH_LABELS[branch]}` : t("hero.book")}
               </button>
@@ -157,7 +157,7 @@ export function Hero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 1.3 }}
-            className="flex gap-10 mt-16 pt-8 border-t border-white/[0.06]"
+            className="flex gap-10 mt-20 pt-10 border-t border-white/[0.06]"
           >
             {[
               { value: t("hero.stat1value"), label: t("hero.stat1label") },
@@ -167,12 +167,12 @@ export function Hero() {
               <div key={stat.label}>
                 <div
                   className="text-[#C4BEB4]"
-                  style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "1.5rem", lineHeight: 1 }}
+                  style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "1.625rem", lineHeight: 1 }}
                 >
                   {stat.value}
                 </div>
                 <div
-                  className="text-[#8A8580] mt-1"
+                  className="text-[#B5AEA4] mt-1"
                   style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem", letterSpacing: "0.04em" }}
                 >
                   {stat.label}

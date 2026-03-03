@@ -51,12 +51,12 @@ export function Reviews() {
               {t("rev.label")}
             </span>
           </motion.div>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6 gap-3">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
-              className="text-[#C4BEB4] mb-4"
+              className="text-[#C4BEB4] mb-0"
               style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.2 }}
             >
               {t("rev.heading")}

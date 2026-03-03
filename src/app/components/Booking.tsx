@@ -42,7 +42,7 @@ export function Booking() {
             >
               {t("book.heading1")}
               <br />
-              <em style={{ fontStyle: "italic", color: "#C9A84C", fontSize: "1.05em" }}>{t("book.heading2")}</em>
+              <em style={{ fontStyle: "italic", color: "#C9A84C", fontSize: "1.12em" }}>{t("book.heading2")}</em>
             </motion.h2>
 
             <motion.p

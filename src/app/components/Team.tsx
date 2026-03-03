@@ -20,7 +20,7 @@ function TeamCard({ barber, index }: { barber: typeof barbers[0]; index: number 
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.6, delay: index * 0.06, ease: "easeOut" }}
-      className="group"
+      className={`group ${index >= 4 ? "pt-3" : ""}`}
     >
       <div className="relative overflow-hidden rounded-xl border border-[#1F1F1F] group-hover:border-[#C9A84C]/25 group-hover:-translate-y-0.5 group-hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)] transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]">
         <div className="aspect-[3/4] overflow-hidden">

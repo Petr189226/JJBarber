@@ -108,7 +108,7 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
           {t(`${service.descKey}.desc`)}
         </p>
 
-        <div className="mt-auto flex items-end justify-between border-t border-[#1F1F1F] pt-5">
+        <div className="mt-auto flex items-end justify-between border-t border-[#1F1F1F] pt-6 mt-6">
           <div className="flex items-baseline">
             {service.price != null ? (
               <>

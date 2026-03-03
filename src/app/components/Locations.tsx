@@ -140,7 +140,7 @@ export function Locations() {
                 <img
                   src={loc.image}
                   alt={`Interiér JJ Barber shop ${loc.name}`}
-                  className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500 ease-out"
+                  className={`w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500 ease-out ${i === 1 ? "brightness-[0.96]" : ""}`}
                 />
               </div>
               <div className="p-8">
