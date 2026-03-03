@@ -1,13 +1,21 @@
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { Instagram, Facebook, MapPin, Phone, Clock } from "lucide-react";
 import { useLanguage } from "../i18n";
+import { PrivacyModal } from "./PrivacyModal";
 
 const INSTAGRAM_URL = "https://www.instagram.com/jjbarbershop_vrsovicka/";
 const FACEBOOK_URL = "https://www.facebook.com/112444267014044";
-const PRIVACY_URL = "https://www.jjbarbershop.cz/zasady-ochrany-osobnich-udaju";
 
 export function Footer() {
   const { t } = useLanguage();
+  const [privacyOpen, setPrivacyOpen] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setPrivacyOpen(true);
+    window.addEventListener("jj-open-privacy", handler);
+    return () => window.removeEventListener("jj-open-privacy", handler);
+  }, []);
 
   const navColumns = [
     {
@@ -134,16 +142,16 @@ export function Footer() {
             {t("footer.copyright")}
           </span>
           <div className="flex gap-6">
-            <a
-              href={PRIVACY_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              onClick={() => setPrivacyOpen(true)}
               className="text-[#5A5A5A] hover:text-[#8A8580] transition-colors duration-200 cursor-pointer focus-visible:outline-none"
               style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem" }}
             >
               {t("footer.privacy")}
-            </a>
+            </button>
           </div>
+          <PrivacyModal open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
         </div>
       </div>
     </footer>

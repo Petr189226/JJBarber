@@ -43,7 +43,7 @@ function LanguageSwitcher() {
   return (
     <button
       onClick={toggle}
-      className="relative flex items-center gap-2 px-3 py-2 border border-[#2A2A2A] hover:border-white/15 rounded-xl transition-all duration-200 cursor-pointer ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none group"
+      className="relative flex items-center gap-2 px-3 py-2 border border-[#2A2A2A] hover:border-[#C9A84C]/40 rounded-xl transition-all duration-200 cursor-pointer ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none group"
       aria-label={`Switch language to ${lang === "cs" ? "English" : "Czech"}`}
     >
       <AnimatePresence mode="wait">
@@ -57,7 +57,7 @@ function LanguageSwitcher() {
         >
           <CurrentFlag size={18} />
           <span
-            className="text-[#8A8580] group-hover:text-[#C4BEB4] transition-colors duration-200"
+            className="text-[#8A8580] group-hover:text-[#C9A84C] transition-colors duration-200"
             style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.72rem", letterSpacing: "0.1em" }}
           >
             {current.label}
@@ -68,22 +68,38 @@ function LanguageSwitcher() {
   );
 }
 
+const SECTION_IDS = ["locations", "team", "services", "reviews", "booking"] as const;
+
 export function Navbar() {
   const { t } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
 
   const navLinks = [
-    { label: t("nav.locations"), href: "#locations" },
-    { label: t("nav.team"), href: "#team" },
-    { label: t("nav.services"), href: "#services" },
-    { label: t("nav.reviews"), href: "#reviews" },
-    { label: t("nav.contact"), href: "#booking" },
+    { label: t("nav.locations"), href: "#locations", id: "locations" },
+    { label: t("nav.team"), href: "#team", id: "team" },
+    { label: t("nav.services"), href: "#services", id: "services" },
+    { label: t("nav.reviews"), href: "#reviews", id: "reviews" },
+    { label: t("nav.contact"), href: "#booking", id: "booking" },
   ];
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > CTA_SCROLL_THRESHOLD);
-    window.addEventListener("scroll", onScroll);
+    const onScroll = () => {
+      setScrolled(window.scrollY > CTA_SCROLL_THRESHOLD);
+      const offset = 180;
+      let current: string | null = null;
+      for (let i = SECTION_IDS.length - 1; i >= 0; i--) {
+        const el = document.getElementById(SECTION_IDS[i]);
+        if (el && el.getBoundingClientRect().top <= offset) {
+          current = SECTION_IDS[i];
+          break;
+        }
+      }
+      setActiveSection(current);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
@@ -111,7 +127,7 @@ export function Navbar() {
             <a
               href="#"
               onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-              className="flex items-center group"
+              className="flex items-center group transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]"
             >
               <img
                 src="/logo.png"
@@ -121,29 +137,38 @@ export function Navbar() {
             </a>
 
             {/* Desktop Nav */}
-            <nav className="hidden lg:flex items-center gap-8">
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
-                  className="group text-[#8A8580] hover:text-[#C4BEB4] transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] tracking-[0.12em] uppercase relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:rounded-xl"
-                  style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: "0.72rem" }}
-                >
-                  {link.label}
-                  <span className="absolute -bottom-1 left-0 w-0 h-px bg-white/30 group-hover:w-full transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]" />
-                </a>
-              ))}
+            <nav className="hidden lg:flex items-center gap-1">
+              {navLinks.map((link) => {
+                const isActive = activeSection === link.id;
+                return (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
+                    className={`group relative px-4 py-2.5 rounded-lg transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] ${
+                      isActive
+                        ? "text-[#C9A84C] bg-[#C9A84C]/10"
+                        : "text-[#8A8580] hover:text-[#C9A84C] hover:bg-[#C9A84C]/8"
+                    }`}
+                    style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.8rem", letterSpacing: "0.14em", textTransform: "uppercase" }}
+                  >
+                    {link.label}
+                    {isActive && (
+                      <span className="absolute left-2 top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-full bg-[#C9A84C]" />
+                    )}
+                  </a>
+                );
+              })}
             </nav>
 
             {/* CTA + Language + Mobile toggle */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 lg:gap-4 lg:pl-4 lg:border-l lg:border-white/[0.06]">
               <LanguageSwitcher />
               <BookButton
                 href={RESERVIO_URL}
                 label={t("nav.book")}
                 size="sm"
-                variant={scrolled ? "primary" : "ghost"}
+                variant="primary"
                 showIcon={false}
                 className="hidden sm:inline-flex"
               />
@@ -188,7 +213,7 @@ export function Navbar() {
                 href={RESERVIO_URL}
                 label={t("nav.book")}
                 size="md"
-                variant={scrolled ? "primary" : "ghost"}
+                variant="primary"
                 showIcon={false}
                 className="mt-4 w-full justify-center"
               />

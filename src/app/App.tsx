@@ -7,6 +7,7 @@ import { Reviews } from "./components/Reviews";
 import { Booking } from "./components/Booking";
 import { Footer } from "./components/Footer";
 import { StickyBookBar } from "./components/StickyBookBar";
+import { CookieBanner } from "./components/CookieBanner";
 import { LanguageProvider } from "./i18n";
 
 export default function App() {
@@ -24,6 +25,7 @@ export default function App() {
         </main>
         <Footer />
         <StickyBookBar />
+        <CookieBanner />
       </div>
     </LanguageProvider>
   );

@@ -153,12 +153,6 @@ export function Booking() {
                 <ExternalLink size={16} />
               </span>
             </a>
-            <p
-              className="text-[#6B6660] text-[0.7rem] mt-2 text-right"
-              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 400 }}
-            >
-              {t("book.reservioNote")}
-            </p>
           </motion.div>
         </div>
       </div>

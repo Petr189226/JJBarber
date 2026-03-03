@@ -3,7 +3,6 @@ import { motion, useInView } from "motion/react";
 import { Scissors, ScissorsLineDashed, Slice, Star, Baby, Gift, Clock, type LucideIcon } from "lucide-react";
 import { VoucherModal } from "./VoucherModal";
 import { useLanguage } from "../i18n";
-import { BookButton } from "./BookButton";
 
 const SERVICE_ICON_MAP: Record<string, LucideIcon> = {
   "svc.classic": Scissors,
@@ -114,7 +113,7 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
               <>
                 <span
                   className="text-[#C9A84C]"
-                  style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: "2rem", lineHeight: 1 }}
+                  style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "2rem", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}
                 >
                   {service.price}
                 </span>
@@ -164,15 +163,6 @@ export function Services() {
           >
             {t("svc.heading")}
           </motion.h2>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={inView ? { opacity: 1 } : {}}
-            transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-            className="text-[#B5AEA4] mt-2 max-w-lg"
-            style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.9rem", lineHeight: 1.8 }}
-          >
-            {t("svc.description")}
-          </motion.p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 [&>div]:h-full">
@@ -186,22 +176,6 @@ export function Services() {
             />
           ))}
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-10 text-center"
-        >
-          <BookButton
-            href="#booking"
-            label={t("svc.book")}
-            variant="textLink"
-            action="scroll"
-            showIcon={false}
-          />
-        </motion.div>
       </div>
 
       <VoucherModal open={voucherOpen} onClose={() => setVoucherOpen(false)} />

@@ -62,10 +62,6 @@ const translations: Record<string, Record<Lang, string>> = {
   // ── Services ──
   "svc.label": { cs: "Ceník služeb", en: "Our Services" },
   "svc.heading": { cs: "Ceník", en: "Pricing" },
-  "svc.description": {
-    cs: "Precizní práce. Transparentní ceny.",
-    en: "Precise work. Transparent prices.",
-  },
   "svc.popular": { cs: "Nejoblíbenější", en: "Most Popular" },
   "svc.currency": { cs: "Kč", en: "CZK" },
   "svc.onRequest": { cs: "Na vyžádání", en: "On request" },
@@ -164,6 +160,13 @@ const translations: Record<string, Record<Lang, string>> = {
     en: "© 2026 J&J Barber Shop. All rights reserved.",
   },
   "footer.privacy": { cs: "Zásady ochrany osobních údajů", en: "Privacy Policy" },
+
+  // ── Cookie Banner ──
+  "cookie.message": {
+    cs: "Používáme cookies pro fungování webu. Pokračováním vyjadřujete souhlas. Více v",
+    en: "We use cookies for website functionality. By continuing you consent. More in",
+  },
+  "cookie.accept": { cs: "Souhlasím", en: "Accept" },
 
   // ── Voucher Modal ──
   "voucher.title": { cs: "Dárkový poukaz", en: "Gift Voucher" },

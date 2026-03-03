@@ -3,7 +3,15 @@ import { motion } from "motion/react";
 import { ChevronDown } from "lucide-react";
 import { useLanguage } from "../i18n";
 
-const HERO_IMAGE = "/hero.png";
+const HERO_IMAGES = {
+  webp: [
+    { src: "/hero-960.webp", w: 960 },
+    { src: "/hero-1280.webp", w: 1280 },
+    { src: "/hero-1920.webp", w: 1920 },
+    { src: "/hero-2560.webp", w: 2560 },
+  ],
+  fallback: "/hero.png",
+};
 
 const RESERVIO_URLS: Record<string, string> = {
   vrsovice: "https://j-j-barbershop.reservio.com/j-j-barber-shop",
@@ -53,13 +61,22 @@ export function Hero() {
 
   return (
     <section className="relative h-screen min-h-[700px] flex items-center justify-center overflow-hidden">
-      {/* Background image */}
+      {/* Background image – responsive WebP with fallback */}
       <div className="absolute inset-0">
-        <img
-          src={HERO_IMAGE}
-          alt="Interiér J&J Barber Shop"
-          className="w-full h-full object-cover object-center"
-        />
+        <picture className="block w-full h-full">
+          <source
+            type="image/webp"
+            srcSet={HERO_IMAGES.webp.map(({ src, w }) => `${src} ${w}w`).join(", ")}
+            sizes="100vw"
+          />
+          <img
+            src={HERO_IMAGES.fallback}
+            alt="Interiér J&J Barber Shop"
+            className="w-full h-full object-cover object-center"
+            fetchPriority="high"
+            decoding="async"
+          />
+        </picture>
         <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A]/85 via-[#0A0A0A]/55 to-[#0A0A0A]/20" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/90 via-transparent to-[#0A0A0A]/30" />
         <div
