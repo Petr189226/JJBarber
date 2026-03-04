@@ -29,9 +29,9 @@ export function Hero() {
   const [branch, setBranch] = useState(() => {
     try {
       const saved = localStorage.getItem("jj-branch");
-      return saved && (saved === "vrsovice" || saved === "strasnice") ? saved : "";
+      return saved && (saved === "vrsovice" || saved === "strasnice") ? saved : "vrsovice";
     } catch {
-      return "";
+      return "vrsovice";
     }
   });
   const [error, setError] = useState(false);
