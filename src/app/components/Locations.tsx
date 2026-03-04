@@ -1,6 +1,5 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapPin, Clock, ExternalLink } from "lucide-react";
-import { useInView } from "../hooks/useInView";
 import { useLanguage } from "../i18n";
 import { RESERVIO_VRSOVICE, RESERVIO_STRASNICE } from "../cta-config";
 
@@ -68,10 +67,13 @@ function ReserveLink({ href, label, redirectLabel }: { href: string; label: stri
 }
 
 export function Locations() {
-  const ref = useRef(null);
-  const contentRef = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
-  const contentInView = useInView(contentRef, { once: true, margin: "100px" });
+  const [inView, setInView] = useState(false);
+  const [contentInView, setContentInView] = useState(false);
+  useEffect(() => {
+    setInView(true);
+    const t = setTimeout(() => setContentInView(true), 100);
+    return () => clearTimeout(t);
+  }, []);
   const anim = "transition-all duration-500 ease-out";
   const { t } = useLanguage();
 
@@ -99,7 +101,7 @@ export function Locations() {
   return (
     <section id="locations" className="py-8 md:py-12 lg:py-20 bg-[#0B0B0B] overflow-hidden scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div ref={ref} className="mb-20">
+        <div className="mb-20">
           <div
             className={`flex items-center gap-3 mb-5 ${anim} ${inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-5"}`}
           >
@@ -125,7 +127,7 @@ export function Locations() {
           </p>
         </div>
 
-        <div ref={contentRef} style={{ minHeight: contentInView ? undefined : "520px" }} aria-hidden={!contentInView}>
+        <div style={{ minHeight: contentInView ? undefined : "520px" }} aria-hidden={!contentInView}>
           {contentInView ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {locations.map((loc, i) => (

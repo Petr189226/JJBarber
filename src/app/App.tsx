@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from "rea
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
 import { LanguageProvider } from "./i18n";
+import { useInView } from "./hooks/useInView";
 
 const Locations = lazy(() => import("./components/Locations").then((m) => ({ default: m.Locations })));
 const Team = lazy(() => import("./components/Team").then((m) => ({ default: m.Team })));
@@ -18,24 +19,11 @@ function SectionFallback({ minH = "40vh" }: { minH?: string }) {
 
 /**
  * Renders children (lazy chunk) only when the sentinel scrolls into view.
- * Negative bottom rootMargin so we don't load until user has scrolled (keeps chunks off critical path).
+ * Uses useInView so the hook lives in the main bundle and lazy chunks don't pull it (shorter critical chain).
  */
 function LazySection({ children, minH = "40vh" }: { children: ReactNode; minH?: string }) {
-  const [inView, setInView] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const el = sentinelRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => {
-        if (e?.isIntersecting) setInView(true);
-      },
-      { rootMargin: "0px 0px -25% 0px", threshold: 0 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
+  const inView = useInView(sentinelRef, { once: true, margin: "0px 0px -25% 0px" });
 
   if (!inView) return <div ref={sentinelRef} style={{ minHeight: minH }} aria-hidden />;
   return <Suspense fallback={<SectionFallback minH={minH} />}>{children}</Suspense>;

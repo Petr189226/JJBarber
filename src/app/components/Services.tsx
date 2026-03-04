@@ -1,6 +1,5 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Scissors, ScissorsLineDashed, Slice, Star, Baby, Gift, Clock, type LucideIcon } from "lucide-react";
-import { useInView } from "../hooks/useInView";
 import { VoucherModal } from "./VoucherModal";
 import { useLanguage } from "../i18n";
 
@@ -54,13 +53,15 @@ const services: Service[] = [
 ];
 
 function ServiceCard({ service, index, onClick, t }: { service: Service; index: number; onClick?: () => void; t: (k: string) => string }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const id = setTimeout(() => setInView(true), index * 80);
+    return () => clearTimeout(id);
+  }, [index]);
   const icon = SERVICE_ICON_MAP[service.nameKey] ?? Scissors;
 
   return (
     <div
-      ref={ref}
       onClick={onClick}
       style={{ transitionDelay: inView ? `${index * 80}ms` : undefined }}
       className={`relative group flex h-full flex-col rounded-xl border transition-all duration-500 ease-out hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)] ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"} ${
@@ -143,17 +144,20 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
 }
 
 export function Services() {
-  const ref = useRef(null);
-  const contentRef = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
-  const contentInView = useInView(contentRef, { once: true, margin: "100px" });
+  const [inView, setInView] = useState(false);
+  const [contentInView, setContentInView] = useState(false);
   const [voucherOpen, setVoucherOpen] = useState(false);
+  useEffect(() => {
+    setInView(true);
+    const t = setTimeout(() => setContentInView(true), 100);
+    return () => clearTimeout(t);
+  }, []);
   const { t } = useLanguage();
 
   return (
     <section id="services" className="py-8 md:py-12 lg:py-20 bg-[#0B0B0B] scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div ref={ref} className="mb-20">
+        <div className="mb-20">
           <h2
             className={`text-[#C4BEB4] mb-8 transition-all duration-500 ease-out ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
             style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.2, transitionDelay: inView ? "50ms" : undefined }}
@@ -162,7 +166,7 @@ export function Services() {
           </h2>
         </div>
 
-        <div ref={contentRef} style={{ minHeight: contentInView ? undefined : "480px" }} aria-hidden={!contentInView}>
+        <div style={{ minHeight: contentInView ? undefined : "480px" }} aria-hidden={!contentInView}>
           {contentInView ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 [&>div]:h-full">
               {services.map((service, i) => (

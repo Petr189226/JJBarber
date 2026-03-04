@@ -1,15 +1,17 @@
-import { useRef } from "react";
+import { useEffect, useState } from "react";
 import { Phone, ExternalLink } from "lucide-react";
-import { useInView } from "../hooks/useInView";
 import { useLanguage } from "../i18n";
 import { BookButton } from "./BookButton";
 import { RESERVIO_URL, RESERVIO_VRSOVICE, RESERVIO_STRASNICE } from "../cta-config";
 
 export function Booking() {
-  const ref = useRef(null);
-  const rightRef = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
-  const rightInView = useInView(rightRef, { once: true, margin: "100px" });
+  const [inView, setInView] = useState(false);
+  const [rightInView, setRightInView] = useState(false);
+  useEffect(() => {
+    setInView(true);
+    const t = setTimeout(() => setRightInView(true), 100);
+    return () => clearTimeout(t);
+  }, []);
   const { t } = useLanguage();
 
   return (
@@ -17,7 +19,7 @@ export function Booking() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
           {/* Left column */}
-          <div ref={ref}>
+          <div>
             <div
               className={`flex items-center gap-3 mb-5 transition-all duration-500 ease-out ${inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-5"}`}
             >
@@ -95,7 +97,7 @@ export function Booking() {
           </div>
 
           {/* Right column – lazy to reduce initial DOM */}
-          <div ref={rightRef} style={{ minHeight: rightInView ? undefined : "320px" }} aria-hidden={!rightInView}>
+          <div style={{ minHeight: rightInView ? undefined : "320px" }} aria-hidden={!rightInView}>
             {rightInView ? (
           <div className="space-y-6 opacity-100 translate-x-0 transition-all duration-500 ease-out">
             <a

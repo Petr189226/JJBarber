@@ -1,6 +1,5 @@
-import { useRef } from "react";
+import { useEffect, useState } from "react";
 import { useLanguage } from "../i18n";
-import { useInView } from "../hooks/useInView";
 
 const barbers = [
   { name: "Kuba", image: "/team/kuba.png" },
@@ -43,16 +42,19 @@ function TeamCard({ barber, index }: { barber: typeof barbers[0]; index: number 
 }
 
 export function Team() {
-  const ref = useRef(null);
-  const contentRef = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
-  const contentInView = useInView(contentRef, { once: true, margin: "100px" });
+  const [inView, setInView] = useState(false);
+  const [contentInView, setContentInView] = useState(false);
+  useEffect(() => {
+    setInView(true);
+    const t = setTimeout(() => setContentInView(true), 100);
+    return () => clearTimeout(t);
+  }, []);
   const { t } = useLanguage();
 
   return (
     <section id="team" className="py-8 md:py-12 lg:py-20 bg-[#0F0F0F] scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div ref={ref} className="mb-20">
+        <div className="mb-20">
           <div
             className={`flex items-center gap-3 mb-5 transition-all duration-500 ease-out ${inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-5"}`}
           >
@@ -78,7 +80,7 @@ export function Team() {
           </p>
         </div>
 
-        <div ref={contentRef} style={{ minHeight: contentInView ? undefined : "480px" }} aria-hidden={!contentInView}>
+        <div style={{ minHeight: contentInView ? undefined : "480px" }} aria-hidden={!contentInView}>
           {contentInView ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
               {barbers.map((barber, i) => (
