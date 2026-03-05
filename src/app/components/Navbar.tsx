@@ -48,14 +48,14 @@ function LanguageSwitcher() {
   return (
     <button
       onClick={toggle}
-      className="relative flex items-center gap-2 px-3 py-2 border border-white/15 hover:border-[#C9A84C]/40 rounded-xl transition-all duration-200 cursor-pointer ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none group"
+      className="relative flex items-center gap-2 px-3 py-2 border border-[#2A2A2A] hover:border-[#C9A84C]/40 rounded-xl transition-all duration-200 cursor-pointer ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none group"
       aria-label={`Switch language to ${lang === "cs" ? "English" : "Czech"}`}
     >
       <div className="flex items-center gap-2">
         <CurrentFlag size={18} />
         <span
-          className="text-[#C4BEB4] group-hover:text-[#C9A84C] transition-colors duration-200"
-          style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.75rem", letterSpacing: "0.12em" }}
+          className="text-[#8A8580] group-hover:text-[#C9A84C] transition-colors duration-200"
+          style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.72rem", letterSpacing: "0.1em" }}
         >
           {current.label}
         </span>
@@ -111,7 +111,7 @@ export function Navbar() {
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-[250ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
           scrolled
             ? "bg-[#0A0A0A]/95 backdrop-blur-md border-b border-white/[0.06] shadow-[0_4px_24px_rgba(0,0,0,0.3)]"
-            : "bg-[#0A0A0A]/40 backdrop-blur-sm"
+            : "bg-transparent"
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -150,9 +150,9 @@ export function Navbar() {
                     className={`group relative px-4 py-2.5 rounded-lg transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] ${
                       isActive
                         ? "text-[#C9A84C] bg-[#C9A84C]/10"
-                        : "text-[#C4BEB4] hover:text-[#C9A84C] hover:bg-[#C9A84C]/8"
+                        : "text-[#8A8580] hover:text-[#C9A84C] hover:bg-[#C9A84C]/8"
                     }`}
-                    style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.85rem", letterSpacing: "0.15em", textTransform: "uppercase" }}
+                    style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.8rem", letterSpacing: "0.14em", textTransform: "uppercase" }}
                   >
                     {link.label}
                     {isActive && (
