@@ -15,29 +15,33 @@
         property="og:description"
         content="Lokální barber s charakterem ve Vršovicích a Strašnicích na Praze 10. Klasické střihy, vousy a holení v barbershopu od roku 2020."
       />
-      <meta property="og:url" content="https://jj-barbershop.vercel.app" />
-      <meta property="og:image" content="https://jj-barbershop.vercel.app/hero-1280.webp" />
+      <meta property="og:url" content="https://petrchajda.cz/" />
+      <meta property="og:image" content="https://petrchajda.cz/hero-1280.webp" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content="J&J Barber Shop – Vršovice &amp; Strašnice, Praha 10" />
       <meta
         name="twitter:description"
         content="Lokální barber s charakterem ve Vršovicích a Strašnicích na Praze 10. Klasické střihy, vousy a holení v barbershopu od roku 2020."
       />
-      <meta name="twitter:image" content="https://jj-barbershop.vercel.app/hero-1280.webp" />
+      <meta name="twitter:image" content="https://petrchajda.cz/hero-1280.webp" />
       <title>J&J Barber Shop – Vršovice & Strašnice, Praha 10</title>
+      <link rel="canonical" href="https://petrchajda.cz/" />
+      <!-- LCP first – hero preload před fonty (mobil 4G) -->
+      <link rel="preload" href="/hero-480.webp" as="image" media="(max-width: 768px)" />
+      <link rel="preload" href="/hero-768.webp" as="image" media="(min-width: 769px)" />
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-      <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Barlow+Condensed:wght@600;700&family=Inter:wght@300;400;500&display=optional" as="style" />
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Barlow+Condensed:wght@600;700&family=Inter:wght@300;400;500&display=optional" media="print" onload="this.media='all'" />
       <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Barlow+Condensed:wght@600;700&family=Inter:wght@300;400;500&display=optional" /></noscript>
-      <!-- Preload a smaller hero for faster LCP on mobile/slow networks -->
-      <link rel="preload" href="/hero-768.webp" as="image" imagesrcset="/hero-480.webp 480w, /hero-768.webp 768w" imagesizes="100vw" />
       <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=2" />
       <link rel="icon" type="image/x-icon" href="/favicon.ico?v=2" />
       <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2" />
     </head>
 
     <body style="min-height:100vh;margin:0">
+      <script type="application/ld+json">
+      {"@context":"https://schema.org","@type":"LocalBusiness","name":"J&amp;J Barber Shop","description":"Lokální barber s charakterem ve Vršovicích a Strašnicích na Praze 10. Klasické střihy, vousy a holení v barbershopu od roku 2020.","url":"https://petrchajda.cz","image":"https://petrchajda.cz/hero-1280.webp","address":[{"@type":"PostalAddress","streetAddress":"Vršovická 7/27","addressLocality":"Praha 10","postalCode":"101 00"},{"@type":"PostalAddress","streetAddress":"Černokostelecká 830/23","addressLocality":"Praha 10","postalCode":"100 00"}],"priceRange":"390–790 Kč"}
+      </script>
       <div id="root" style="min-height:100vh"></div>
       <script type="module" src="/src/main.tsx" defer></script>
     </body>
