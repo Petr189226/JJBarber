@@ -1,9 +1,3 @@
-/**
- * Date filter utilities – local timezone safe.
- * Nepoužívat toISOString().slice(0,10) pro local date – způsobuje UTC posun.
- */
-
-/** Formátuje Date do YYYY-MM-DD pro input type="date" v lokální timezone */
 export function formatLocalDateForInput(d: Date): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -11,19 +5,16 @@ export function formatLocalDateForInput(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
-/** Vrátí dnešní datum v lokální timezone (00:00:00 local) */
 export function getLocalToday(): Date {
   const now = new Date();
   return new Date(now.getFullYear(), now.getMonth(), now.getDate());
 }
 
-/** Parsuje YYYY-MM-DD string na začátek dne v lokální timezone (timestamp) */
 export function getStartOfDayLocal(dateStr: string): number {
   const [y, m, d] = dateStr.split("-").map(Number);
   return new Date(y, m - 1, d, 0, 0, 0, 0).getTime();
 }
 
-/** Parsuje YYYY-MM-DD string na konec dne v lokální timezone (timestamp) */
 export function getEndOfDayLocal(dateStr: string): number {
   const [y, m, d] = dateStr.split("-").map(Number);
   return new Date(y, m - 1, d, 23, 59, 59, 999).getTime();
@@ -37,7 +28,6 @@ export interface DateRange {
   preset: DatePresetId;
 }
 
-/** Vrátí rozsah pro preset v lokální timezone */
 export function getPresetRange(preset: Exclude<DatePresetId, "custom" | "">): DateRange {
   const today = getLocalToday();
   const fromStr = formatLocalDateForInput(today);
@@ -79,7 +69,6 @@ export function getPresetRange(preset: Exclude<DatePresetId, "custom" | "">): Da
   return { from: "", to: "", preset: "" };
 }
 
-/** Detekuje aktivní preset z from/to hodnot */
 export function detectPresetFromRange(from: string, to: string): DatePresetId {
   if (!from || !to) return "";
   const range = getPresetRange("dnes");
@@ -93,7 +82,6 @@ export function detectPresetFromRange(from: string, to: string): DatePresetId {
   return "custom";
 }
 
-/** Validuje, že Od <= Do */
 export function isDateRangeValid(from: string, to: string): boolean {
   if (!from || !to) return true;
   return getStartOfDayLocal(from) <= getEndOfDayLocal(to);

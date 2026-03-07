@@ -18,6 +18,16 @@ import {
   MoreVerticalIcon,
   FileTextIcon,
   PrinterIcon,
+  Banknote,
+  TrendingUp,
+  Receipt,
+  CheckCircle2,
+  BarChart3,
+  KeyRound,
+  Trash2,
+  UserCog,
+  Settings,
+  ClipboardList,
 } from "lucide-react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
@@ -50,6 +60,13 @@ type VoucherOrder = {
 };
 
 type AdminRole = "majitel" | "barber" | null;
+
+type AdminAccount = {
+  user_id: string;
+  role: string;
+  email: string;
+  last_sign_in_at?: string | null;
+};
 
 const statusLabels: Record<Status, string> = {
   new: "Nový",
@@ -88,22 +105,43 @@ function StatusBadge({ status }: { status: Status }) {
   );
 }
 
-function StatsCard({
-  label,
+function DashboardStatsCard({
+  title,
   value,
-  sub,
-  color,
+  subtitle,
+  icon: Icon,
+  variant = "default",
 }: {
-  label: string;
+  title: string;
   value: number | string;
-  sub?: string;
-  color: string;
+  subtitle?: string;
+  icon: React.ComponentType<{ className?: string }>;
+  variant?: "default" | "primary" | "success" | "warning";
 }) {
+  const variantStyles = {
+    default: "from-gray-50 to-gray-100/50",
+    primary: "from-amber-50/80 to-[#fef9e7]",
+    success: "from-green-50 to-green-100/50",
+    warning: "from-amber-50 to-amber-100/50",
+  };
+  const iconColors = {
+    default: "text-gray-600",
+    primary: "text-[#b8860b]",
+    success: "text-green-600",
+    warning: "text-amber-600",
+  };
   return (
-    <div className="bg-white border border-gray-200 rounded-lg px-4 py-3 flex flex-col gap-0.5">
-      <span className="text-gray-600 text-[10px] uppercase tracking-wider font-medium">{label}</span>
-      <span className={`text-2xl font-semibold tabular-nums ${color}`}>{value}</span>
-      {sub && <span className="text-gray-600 text-[11px]">{sub}</span>}
+    <div className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${variantStyles[variant]} p-6 shadow-sm transition-all hover:shadow-md`}>
+      <div className="flex items-start justify-between">
+        <div className="flex-1">
+          <p className="text-sm font-medium text-gray-600">{title}</p>
+          <p className="mt-2 text-3xl font-semibold tracking-tight text-gray-900 tabular-nums">{value}</p>
+          {subtitle && <p className="mt-1 text-xs text-gray-500">{subtitle}</p>}
+        </div>
+        <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-white/80 ${iconColors[variant]} shadow-sm backdrop-blur-sm transition-transform group-hover:scale-110`}>
+          <Icon className="h-6 w-6" />
+        </div>
+      </div>
     </div>
   );
 }
@@ -127,6 +165,19 @@ export function AdminApp() {
   const [role, setRole] = useState<AdminRole>(null);
   const [roleLoading, setRoleLoading] = useState(true);
   const [showAddAdmin, setShowAddAdmin] = useState(false);
+  const [adminAccounts, setAdminAccounts] = useState<AdminAccount[]>([]);
+  const [adminAccountsLoading, setAdminAccountsLoading] = useState(false);
+  const [manageAdminsError, setManageAdminsError] = useState("");
+  const [passwordModal, setPasswordModal] = useState<{ user_id: string; email: string } | null>(null);
+  const [newPasswordForUser, setNewPasswordForUser] = useState("");
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+  const [deleteConfirm, setDeleteConfirm] = useState<{ user_id: string; email: string } | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [roleEditUserId, setRoleEditUserId] = useState<string | null>(null);
+  const [newRoleForUser, setNewRoleForUser] = useState<"majitel" | "barber">("barber");
+  const [roleUpdateLoading, setRoleUpdateLoading] = useState(false);
+  const [adminSection, setAdminSection] = useState<"orders" | "administration">("orders");
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<Status | "Vše">("Vše");
   const [filterPobocka, setFilterPobocka] = useState("Všechny pobočky");
@@ -145,6 +196,8 @@ export function AdminApp() {
   const [savingNote, setSavingNote] = useState(false);
   const [fetchError, setFetchError] = useState("");
   const detailPanelRef = useRef<HTMLDivElement>(null);
+
+  const ADMIN_LOGIN_DOMAIN = "@admin.local";
 
   useEffect(() => {
     const meta = document.createElement("meta");
@@ -327,13 +380,17 @@ export function AdminApp() {
     return arr;
   }, [filtered, sortCol, sortAsc]);
 
+  const adminEmailFromEnv = import.meta.env.VITE_ADMIN_EMAIL as string | undefined;
+  const rawLogin = (adminEmailFromEnv?.trim() || email).trim();
+  const loginEmail = rawLogin.includes("@") ? rawLogin : rawLogin ? `${rawLogin.toLowerCase().replace(/\s+/g, ".")}${ADMIN_LOGIN_DOMAIN}` : "";
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supabase || !email || !password) return;
+    if (!supabase || !loginEmail || !password) return;
     setLoginLoading(true);
     setLoginError("");
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password });
       if (error) {
         const msg = error.message;
         const cause = (error as Error & { cause?: Error })?.cause?.message;
@@ -410,9 +467,105 @@ export function AdminApp() {
     }
   };
 
+  const callManageAdmins = useCallback(
+    async (action: string, body: Record<string, unknown> = {}) => {
+      if (!supabase) return null;
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      const url = import.meta.env.VITE_SUPABASE_URL;
+      if (!token || !url) return null;
+      const res = await fetch(`${url}/functions/v1/manage-admins`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ action, ...body }),
+      });
+      return { ok: res.ok, json: await res.json().catch(() => ({})) };
+    },
+    []
+  );
+
+  const fetchAdminAccounts = useCallback(async () => {
+    if (role !== "majitel") return;
+    setAdminAccountsLoading(true);
+    setManageAdminsError("");
+    const result = await callManageAdmins("list");
+    setAdminAccountsLoading(false);
+    if (!result) {
+      setManageAdminsError("Chybí přihlášení nebo konfigurace");
+      return;
+    }
+    if (!result.ok) {
+      setManageAdminsError(result.json.error || "Nepodařilo se načíst seznam");
+      return;
+    }
+    setAdminAccounts(result.json.admins ?? []);
+  }, [role, callManageAdmins]);
+
+  useEffect(() => {
+    if (role === "majitel") fetchAdminAccounts();
+  }, [role, fetchAdminAccounts]);
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!passwordModal || newPasswordForUser.length < 6) return;
+    setPasswordLoading(true);
+    setPasswordError("");
+    const result = await callManageAdmins("update-password", {
+      user_id: passwordModal.user_id,
+      new_password: newPasswordForUser,
+    });
+    setPasswordLoading(false);
+    if (result?.ok) {
+      setPasswordModal(null);
+      setNewPasswordForUser("");
+      return;
+    }
+    setPasswordError(result?.json?.error || "Nepodařilo se změnit heslo");
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!deleteConfirm) return;
+    setDeleteLoading(true);
+    setManageAdminsError("");
+    const result = await callManageAdmins("delete", { user_id: deleteConfirm.user_id });
+    setDeleteLoading(false);
+    if (result?.ok) {
+      setDeleteConfirm(null);
+      setAdminAccounts((prev) => prev.filter((a) => a.user_id !== deleteConfirm.user_id));
+      return;
+    }
+    setManageAdminsError(result?.json?.error || "Nepodařilo se odstranit účet");
+  };
+
+  const handleChangeRole = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!roleEditUserId) return;
+    setRoleUpdateLoading(true);
+    setManageAdminsError("");
+    const result = await callManageAdmins("update-role", {
+      user_id: roleEditUserId,
+      new_role: newRoleForUser,
+    });
+    setRoleUpdateLoading(false);
+    if (result?.ok) {
+      setRoleEditUserId(null);
+      setAdminAccounts((prev) =>
+        prev.map((a) => (a.user_id === roleEditUserId ? { ...a, role: newRoleForUser } : a))
+      );
+      return;
+    }
+    setManageAdminsError(result?.json?.error || "Nepodařilo se změnit roli");
+  };
+
   const handleAddAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supabase || !newAdminEmail || !newAdminPassword || role !== "majitel") return;
+    const loginName = newAdminEmail.trim();
+    if (!supabase || !loginName || !newAdminPassword || role !== "majitel") return;
     setAddAdminLoading(true);
     setAddAdminError("");
     setAddAdminSuccess(false);
@@ -426,6 +579,9 @@ export function AdminApp() {
       setAddAdminLoading(false);
       return;
     }
+    const emailForApi = loginName.includes("@")
+      ? loginName
+      : `${loginName.toLowerCase().replace(/\s+/g, ".")}${ADMIN_LOGIN_DOMAIN}`;
     const res = await fetch(`${url}/functions/v1/create-admin`, {
       method: "POST",
       headers: {
@@ -433,7 +589,7 @@ export function AdminApp() {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
-        email: newAdminEmail.trim(),
+        email: emailForApi,
         password: newAdminPassword,
         role: newAdminRole,
       }),
@@ -449,6 +605,7 @@ export function AdminApp() {
     setNewAdminPassword("");
     setShowAddAdmin(false);
     setAddAdminLoading(false);
+    fetchAdminAccounts();
   };
 
   const formatDate = (s: string) => {
@@ -536,19 +693,18 @@ export function AdminApp() {
     }
     const width = 1024;
     const height = 682;
-    const amountStr = parseAmount(o.service).toLocaleString("cs-CZ");
     const surname = (o.surname || "").trim();
     const layout = {
-      voucherNo: { top: 32, right: 40 },
-      nameLeft: 417,
-      nameBottom: 272,
-      surnameLeft: 636,
-      surnameBottom: 275,
+      voucherNo: { left: 178, bottom: 533 },
+      nameLeft: 418,
+      nameBottom: 271,
+      surnameLeft: 628,
+      surnameBottom: 273,
       serviceLeft: 437,
       serviceBottom: 221,
       serviceRight: 98,
-      amountBottom: 88,
-      branchBottom: 48,
+      branchLeft: 781,
+      branchBottom: 534,
     };
     const iframe = document.createElement("iframe");
     iframe.setAttribute("style", "position:fixed;left:-9999px;top:0;width:" + width + "px;height:" + height + "px;border:none;");
@@ -565,12 +721,11 @@ export function AdminApp() {
       </head><body style="margin:0;background:#0f0f0f;">
       <div style="position:relative;width:${width}px;height:${height}px;overflow:hidden;background:#0f0f0f;">
         <img src="${window.location.origin}/voucher-card.png?v=2" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill;" />
-        <div style="position:absolute;top:${layout.voucherNo.top}px;right:${layout.voucherNo.right}px;font-size:11px;color:#8a8a8a;font-family:'Playfair Display',serif;z-index:1;">Č. voucheru: ${escapeHtml(voucherNumber)}</div>
+        <div style="position:absolute;left:${layout.voucherNo.left}px;bottom:${layout.voucherNo.bottom}px;font-size:11px;color:#8a8a8a;font-family:'Playfair Display',serif;z-index:1;">Č. voucheru: ${escapeHtml(voucherNumber)}</div>
         <div style="position:absolute;left:${layout.nameLeft}px;bottom:${layout.nameBottom}px;font-size:20px;font-weight:600;line-height:1;color:#ffffff;font-family:'Playfair Display',serif;z-index:1;">${escapeHtml(o.name)}</div>
         <div style="position:absolute;left:${layout.surnameLeft}px;bottom:${layout.surnameBottom}px;font-size:20px;font-weight:600;line-height:1;color:#ffffff;font-family:'Playfair Display',serif;z-index:1;">${escapeHtml(surname || "–")}</div>
         <div style="position:absolute;left:${layout.serviceLeft}px;right:${layout.serviceRight}px;bottom:${layout.serviceBottom}px;font-size:17px;line-height:1;color:#C4BEB4;font-family:'Playfair Display',serif;z-index:1;">${escapeHtml(o.service)}</div>
-        <div style="position:absolute;left:${layout.serviceLeft}px;bottom:${layout.amountBottom}px;font-size:19px;font-weight:700;color:#C9A84C;font-family:'Playfair Display',serif;z-index:1;">${escapeHtml(amountStr)} Kč</div>
-        <div style="position:absolute;left:${layout.serviceLeft}px;bottom:${layout.branchBottom}px;font-size:12px;color:#8a8a8a;font-family:'Playfair Display',serif;z-index:1;">Pobočka: ${escapeHtml(o.branch)}</div>
+        <div style="position:absolute;left:${layout.branchLeft}px;bottom:${layout.branchBottom}px;font-size:12px;color:#8a8a8a;font-family:'Playfair Display',serif;z-index:1;">Pobočka: ${escapeHtml(o.branch)}</div>
       </div>
       </body></html>
     `);
@@ -682,12 +837,17 @@ export function AdminApp() {
   const adminLayout = "min-h-screen relative";
 
   const inputClass =
-    "w-full bg-white border border-gray-300 focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/25 text-gray-900 rounded-xl px-4 py-3 outline-none transition-all";
-  const btnClass = "px-6 py-3 bg-[#C9A84C] hover:bg-[#D4B85A] text-gray-900 rounded-xl font-semibold transition-all";
+    "w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:border-[#C9A84C]/60 focus:ring-2 focus:ring-[#C9A84C]/20";
+  const btnClass =
+    "rounded-xl px-6 py-3 font-bold text-[#08080c] transition-all shadow-sm hover:shadow-md";
+  const btnPrimaryStyle: React.CSSProperties = {
+    background: "linear-gradient(135deg, #C9A84C, #E8C96A)",
+    boxShadow: "0 4px 14px rgba(201,168,76,0.25), 0 1px 0 rgba(255,255,255,0.15) inset",
+  };
 
   if (!isSupabaseConfigured()) {
     return (
-      <div className={`${adminLayout} flex items-center justify-center p-6 bg-white`}>
+      <div className={`${adminLayout} flex items-center justify-center p-6 bg-gradient-to-br from-gray-50 to-gray-100/50`}>
         <div className="max-w-md text-center">
           <h1 className="text-gray-800 text-xl mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
             Admin není nakonfigurován
@@ -702,7 +862,7 @@ export function AdminApp() {
 
   if (loading) {
     return (
-      <div className={`${adminLayout} flex items-center justify-center bg-white`} role="status" aria-live="polite">
+      <div className={`${adminLayout} flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100/50`} role="status" aria-live="polite">
         <div className="w-8 h-8 border-2 border-[#C9A84C] border-t-transparent rounded-full animate-spin" aria-hidden />
         <span className="sr-only">Načítám…</span>
       </div>
@@ -711,23 +871,28 @@ export function AdminApp() {
 
   if (!user) {
     return (
-      <div className={`${adminLayout} flex items-center justify-center p-6 bg-white`}>
-        <div className="w-full max-w-sm">
-          <h1 className="text-gray-800 text-2xl mb-2 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
-            J&J Admin
-          </h1>
-          <p className="text-gray-600 text-sm mb-8 text-center">Přihlášení pro správu voucherů</p>
+      <div className={`${adminLayout} flex items-center justify-center p-6 bg-gradient-to-br from-gray-50 to-gray-100/50`}>
+        <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+          <div className="mb-6 flex justify-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl shadow-md" style={{ background: "linear-gradient(135deg, #C9A84C, #E8C96A)", boxShadow: "0 4px 20px rgba(201,168,76,0.35)" }}>
+              <ScissorsIcon size={22} className="text-[#08080c]" strokeWidth={2.5} />
+            </div>
+          </div>
+          <h1 className="text-center text-xl font-semibold text-gray-900">Barber Admin</h1>
+          <p className="mt-1 mb-8 text-center text-sm text-gray-500">Přihlášení pro správu voucherů</p>
 
           <form onSubmit={handleLogin} className="space-y-4">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="E-mail"
-              required
-              className={inputClass}
-              autoComplete="email"
-            />
+            {!adminEmailFromEnv?.trim() && (
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="E-mail"
+                required
+                className={inputClass}
+                autoComplete="email"
+              />
+            )}
             <input
               type="password"
               value={password}
@@ -737,8 +902,8 @@ export function AdminApp() {
               className={inputClass}
               autoComplete="current-password"
             />
-            {loginError && <p className="text-red-400 text-sm">{loginError}</p>}
-            <button type="submit" disabled={loginLoading} className={`w-full ${btnClass}`}>
+            {loginError && <p className="text-sm text-red-500">{loginError}</p>}
+            <button type="submit" disabled={loginLoading} className={`w-full ${btnClass}`} style={btnPrimaryStyle}>
               {loginLoading ? "Přihlašuji…" : "Přihlásit"}
             </button>
           </form>
@@ -751,64 +916,151 @@ export function AdminApp() {
   const isBarber = role === "barber";
   const noRole = role === null && !roleLoading;
 
+  const goldAccent = "#C9A84C";
+  const goldLight = "rgba(201,168,76,0.12)";
+  const goldBorder = "rgba(201,168,76,0.25)";
+
   return (
-    <div className={`${adminLayout} min-h-screen bg-white text-gray-900`} style={{ fontFamily: "Inter, sans-serif" }}>
-      <div>
-        <header className="border-b border-gray-200 bg-white px-4 sm:px-8 py-3 flex items-center justify-between sticky top-0 z-40">
-          <div className="flex items-center gap-4">
-            <div className="w-9 h-9 bg-[#c9a84c] rounded-lg flex items-center justify-center flex-shrink-0">
-              <ScissorsIcon size={18} className="text-[#080808]" />
-            </div>
-            <div>
-              <h1 className="text-gray-900 text-lg font-medium" style={{ fontFamily: "Playfair Display, serif" }}>
-                Barber Admin
-              </h1>
-              <span className="text-gray-600 text-xs">Správa dárkových poukazů</span>
-            </div>
-            {role && (
-              <div className="flex items-center gap-2 pl-4 border-l border-gray-200">
-                <span
-                  className={`text-xs px-2.5 py-1 rounded-md font-medium ${
-                    isMajitel ? "bg-[#c9a84c]/15 text-[#c9a84c] border border-[#c9a84c]/30" : "bg-gray-50 text-gray-600 border border-gray-200"
-                  }`}
-                >
-                  {isMajitel ? "Majitel" : "Barber"}
-                </span>
-              </div>
-            )}
+    <>
+    <div className={`${adminLayout} min-h-screen bg-[#f6f6f8] text-gray-900`} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      <aside
+        className="fixed left-0 top-0 z-40 hidden h-screen w-[220px] flex-col border-r border-gray-200/80 bg-white shadow-sm md:flex"
+        style={{ boxShadow: "2px 0 24px rgba(0,0,0,0.04)" }}
+      >
+        <div className="flex items-center gap-3 px-5 pt-7 pb-6">
+          <div
+            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl"
+            style={{ background: "linear-gradient(135deg, #C9A84C, #E8C96A)", boxShadow: "0 4px 14px rgba(201,168,76,0.35)" }}
+          >
+            <ScissorsIcon size={17} className="text-[#08080c]" strokeWidth={2.5} />
           </div>
-          <div className="flex items-center gap-2">
-            {isMajitel && (
-              <button
-                onClick={() => setShowAddAdmin((v) => !v)}
-                className={`text-sm px-4 py-2 rounded-lg font-medium transition-colors border ${
-                  showAddAdmin
-                    ? "bg-[#c9a84c] text-gray-900 border-[#c9a84c]"
-                    : "bg-transparent text-gray-600 border-gray-400 hover:border-gray-500 hover:text-gray-800"
-                }`}
-                aria-expanded={showAddAdmin}
-                aria-label={showAddAdmin ? "Skrýt formulář pro přidání správce" : "Přidat nového správce"}
-              >
-                + Přidat správce
-              </button>
+          <div>
+            <div className="text-sm font-extrabold tracking-wider text-gray-900" style={{ letterSpacing: "0.08em" }}>
+              BARBER
+            </div>
+            <div className="text-[10px] font-medium uppercase tracking-widest text-gray-500" style={{ letterSpacing: "0.15em" }}>
+              Admin Panel
+            </div>
+          </div>
+        </div>
+        <div className="mx-5 mb-4 h-px bg-gray-200" />
+        <div className="px-5 pb-2">
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-400" style={{ letterSpacing: "0.2em" }}>
+            Menu
+          </span>
+        </div>
+        <nav className="flex-1 space-y-0.5 px-3">
+          <button
+            type="button"
+            onClick={() => setAdminSection("orders")}
+            className={`relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition-colors ${
+              adminSection === "orders"
+                ? "font-semibold text-[#C9A84C]"
+                : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+            }`}
+            style={adminSection === "orders" ? { background: goldLight } : undefined}
+          >
+            {adminSection === "orders" && (
+              <span className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-[#C9A84C]" />
             )}
-            <a
-              href="/"
-              className="text-gray-600 hover:text-gray-800 text-sm px-3 py-2 rounded-lg transition-colors"
-            >
-              ← Web
-            </a>
+            <ClipboardList size={15} strokeWidth={adminSection === "orders" ? 2.5 : 1.8} />
+            Objednávky
+          </button>
+          {isMajitel && (
             <button
-              onClick={handleLogout}
-              className="text-gray-600 hover:text-gray-800 text-sm px-3 py-2 rounded-lg transition-colors"
-              aria-label="Odhlásit se"
+              type="button"
+              onClick={() => setAdminSection("administration")}
+              className={`relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition-colors ${
+                adminSection === "administration"
+                  ? "font-semibold text-[#C9A84C]"
+                  : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+              }`}
+              style={adminSection === "administration" ? { background: goldLight } : undefined}
             >
-              Odhlásit
+              {adminSection === "administration" && (
+                <span className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-[#C9A84C]" />
+              )}
+              <Settings size={15} strokeWidth={adminSection === "administration" ? 2.5 : 1.8} />
+              Administrace
             </button>
+          )}
+        </nav>
+        <div className="space-y-0.5 border-t border-gray-200 px-3 pb-6 pt-4">
+          <a
+            href="/"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+          >
+            <span className="hidden sm:inline">← Web</span>
+          </a>
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600"
+            aria-label="Odhlásit se"
+          >
+            <LogOutIcon size={15} strokeWidth={1.8} />
+            Odhlásit
+          </button>
+        </div>
+      </aside>
+
+      <div className="min-h-screen flex flex-col md:ml-[220px]">
+        <header
+          className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-200/80 bg-white/90 px-6 py-4 backdrop-blur-md"
+          style={{ boxShadow: "0 1px 0 rgba(0,0,0,0.04)" }}
+        >
+          <div>
+            <div className="mb-0.5 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-gray-400">
+              <span>Admin</span>
+              <span className="text-gray-300">/</span>
+              <span className="text-gray-600">
+                {adminSection === "orders" ? "Objednávky" : "Administrace"}
+              </span>
+            </div>
+            <h1 className="text-base font-extrabold tracking-tight text-gray-900">
+              {adminSection === "orders" ? "Dárkové vouchery" : "Správa účtů"}
+            </h1>
+          </div>
+          <div className="flex items-center gap-3">
+            {role && (
+              <span
+                className="rounded-full border px-2.5 py-1 text-xs font-semibold"
+                style={
+                  isMajitel
+                    ? { background: goldLight, borderColor: goldBorder, color: "#b8860b" }
+                    : { background: "#f3f4f6", borderColor: "#e5e7eb", color: "#6b7280" }
+                }
+              >
+                {isMajitel ? "Majitel" : "Barber"}
+              </span>
+            )}
           </div>
         </header>
 
-        <main className="px-4 sm:px-8 py-4 sm:py-6 max-w-[1920px] mx-auto w-full">
+        {isMajitel && (
+          <div className="flex gap-1 border-b border-gray-200 bg-white px-4 py-2 md:hidden">
+            <button
+              type="button"
+              onClick={() => setAdminSection("orders")}
+              className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                adminSection === "orders" ? "bg-[#C9A84C]/15 text-[#b8860b]" : "text-gray-500 hover:bg-gray-100"
+              }`}
+            >
+              Objednávky
+            </button>
+            <button
+              type="button"
+              onClick={() => setAdminSection("administration")}
+              className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                adminSection === "administration" ? "bg-[#C9A84C]/15 text-[#b8860b]" : "text-gray-500 hover:bg-gray-100"
+              }`}
+            >
+              Administrace
+            </button>
+          </div>
+        )}
+
+      <main className="flex-1 px-6 py-7">
           {noRole && (
             <div className="mb-6 p-3 bg-amber-50 border border-amber-200 rounded-lg">
               <p className="text-gray-700 text-sm">
@@ -857,58 +1109,235 @@ export function AdminApp() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-5">
-                <StatsCard
-                  label="Celkové tržby"
-                  value={`${totalRevenue.toLocaleString("cs-CZ")} Kč`}
-                  sub="bez čekajících a storno"
-                  color="text-[#c9a84c]"
-                />
-                <StatsCard
-                  label="Tržby dnes"
-                  value={`${metrics.trzbyDnes.toLocaleString("cs-CZ")} Kč`}
-                  sub="vyřízené dnes"
-                  color="text-[#c9a84c]"
-                />
-                <StatsCard
-                  label="Nové"
-                  value={counts.novy}
-                  sub={metrics.novyDnes > 0 ? `${metrics.novyDnes} dnes` : "čekají"}
-                  color="text-blue-600"
-                />
-                <StatsCard label="Vyřízeno" value={counts.vyrizeno} sub="celkem" color="text-emerald-600" />
-                <StatsCard
-                  label="Čeká / rozpracováno"
-                  value={counts.ceka + counts.pending}
-                  sub="platba nebo v práci"
-                  color="text-amber-600"
-                />
-                <StatsCard
-                  label="Průměr voucheru"
-                  value={`${metrics.prumer.toLocaleString("cs-CZ")} Kč`}
-                  sub={metrics.topService ? metrics.topService.split("–")[0]?.trim() || "" : ""}
-                  color="text-gray-600"
-                />
+              {isMajitel && adminSection === "administration" ? (
+                <section className="space-y-8" aria-labelledby="administration-heading">
+                  <div>
+                    <h2 id="administration-heading" className="text-2xl font-semibold text-gray-900">
+                      Administrace
+                    </h2>
+                    <p className="mt-1 text-sm text-gray-600">
+                      Správa přístupů do adminu – přidat správce, seznam účtů, změna hesla a role.
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <h3 className="font-semibold text-gray-900">Přidat správce</h3>
+                    <p className="mt-1 text-sm text-gray-600">Vytvoř účet pro kolegu. Majitel může měnit stavy voucherů, barber má jen náhled.</p>
+                    <form onSubmit={handleAddAdmin} className="mt-4 grid max-w-md gap-3 sm:grid-cols-2" aria-describedby={addAdminError ? "add-admin-error" : addAdminSuccess ? "add-admin-success" : undefined}>
+                      <select
+                        value={newAdminRole}
+                        onChange={(e) => setNewAdminRole(e.target.value as "majitel" | "barber")}
+                        className={inputClass}
+                        disabled={addAdminLoading}
+                        aria-label="Role"
+                      >
+                        <option value="barber">Barber (jen náhled)</option>
+                        <option value="majitel">Majitel (plný přístup)</option>
+                      </select>
+                      <div className="sm:col-span-2" />
+                      <input
+                        type="text"
+                        value={newAdminEmail}
+                        onChange={(e) => { setNewAdminEmail(e.target.value); setAddAdminError(""); }}
+                        placeholder="jméno.příjmení"
+                        required
+                        className={inputClass}
+                        disabled={addAdminLoading}
+                        aria-invalid={!!addAdminError}
+                        autoComplete="username"
+                      />
+                      <p className="text-xs text-gray-500 sm:col-span-2 -mt-1">
+                        Přihlašovací jméno ve tvaru jméno.příjmení.
+                      </p>
+                      <input
+                        type="password"
+                        value={newAdminPassword}
+                        onChange={(e) => { setNewAdminPassword(e.target.value); setAddAdminError(""); }}
+                        placeholder="Heslo (min. 6 znaků)"
+                        required
+                        minLength={6}
+                        className={inputClass}
+                        disabled={addAdminLoading}
+                      />
+                      <div className="flex items-center gap-3 sm:col-span-2">
+                        <button type="submit" disabled={addAdminLoading} className={btnClass} style={btnPrimaryStyle} aria-busy={addAdminLoading}>
+                          {addAdminLoading ? "Vytvářím…" : "Přidat správce"}
+                        </button>
+                        {addAdminError && <p id="add-admin-error" className="text-sm text-red-500" role="alert">{addAdminError}</p>}
+                        {addAdminSuccess && <p id="add-admin-success" className="text-sm text-emerald-600" role="status">Účet vytvořen.</p>}
+                      </div>
+                    </form>
+                  </div>
+
+                  <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
+                    <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+                      <div>
+                        <h3 className="font-semibold text-gray-900">Seznam účtů</h3>
+                        <p className="mt-0.5 text-sm text-gray-600">Kdo má přístup – změna hesla, role, odstranění</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => fetchAdminAccounts()}
+                        disabled={adminAccountsLoading}
+                        className="flex h-10 items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50"
+                      >
+                        <RefreshCwIcon size={16} className={adminAccountsLoading ? "animate-spin" : ""} />
+                        Obnovit
+                      </button>
+                    </div>
+                    {manageAdminsError && (
+                      <div className="mx-6 mt-3 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
+                        <AlertCircleIcon size={16} />
+                        {manageAdminsError}
+                      </div>
+                    )}
+                    <div className="overflow-x-auto">
+                      {adminAccountsLoading && adminAccounts.length === 0 ? (
+                        <div className="flex justify-center py-12">
+                          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#C9A84C] border-t-transparent" aria-hidden />
+                          <span className="sr-only">Načítám účty…</span>
+                        </div>
+                      ) : adminAccounts.length === 0 ? (
+                        <p className="py-8 text-center text-sm text-gray-500">Zatím žádné účty. Přidejte správce výše.</p>
+                      ) : (
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b border-gray-200 bg-gray-50/50">
+                              <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">E-mail</th>
+                              <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">Role</th>
+                              <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">Poslední přihlášení</th>
+                              <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-600">Akce</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {adminAccounts.map((acc) => (
+                              <tr key={acc.user_id} className="transition-colors hover:bg-gray-50/50">
+                                <td className="px-6 py-4 text-sm text-gray-900">
+                                  {acc.email.endsWith(ADMIN_LOGIN_DOMAIN)
+                                    ? acc.email.slice(0, -ADMIN_LOGIN_DOMAIN.length)
+                                    : acc.email}
+                                </td>
+                                <td className="px-6 py-4">
+                                  <span className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${acc.role === "majitel" ? "border-blue-300 bg-blue-50 text-blue-700" : "border-gray-200 bg-gray-50 text-gray-600"}`}>
+                                    {acc.role === "majitel" ? "Majitel" : "Barber"}
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4 text-sm text-gray-600">
+                                  {acc.last_sign_in_at
+                                    ? new Date(acc.last_sign_in_at).toLocaleString("cs-CZ", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })
+                                    : "—"}
+                                </td>
+                                <td className="px-6 py-4 text-right">
+                                  {acc.user_id !== user?.id ? (
+                                    <div className="flex items-center justify-end gap-1">
+                                      <button type="button" onClick={() => { setPasswordModal({ user_id: acc.user_id, email: acc.email }); setNewPasswordForUser(""); setPasswordError(""); }} className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-gray-100 hover:text-[#b8860b]" title="Změnit heslo">
+                                        <KeyRound size={16} />
+                                      </button>
+                                      <button type="button" onClick={() => { setRoleEditUserId(acc.user_id); setNewRoleForUser(acc.role === "majitel" ? "majitel" : "barber"); }} className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-gray-100 hover:text-[#b8860b]" title="Změnit roli">
+                                        <UserCog size={16} />
+                                      </button>
+                                      <button type="button" onClick={() => setDeleteConfirm({ user_id: acc.user_id, email: acc.email })} className="flex h-8 w-8 items-center justify-center rounded-lg text-red-600 transition-colors hover:bg-red-50" title="Odstranit účet">
+                                        <Trash2 size={16} />
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <span className="text-xs text-gray-400">(vy)</span>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
+                    </div>
+                  </div>
+                </section>
+              ) : (
+              <>
+              {isMajitel && (
+                <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+                  <div className="sm:col-span-2 xl:col-span-2">
+                    <DashboardStatsCard
+                      title="Celkové tržby"
+                      value={`${totalRevenue.toLocaleString("cs-CZ")} Kč`}
+                      subtitle="bez čekajících a storno"
+                      icon={Banknote}
+                      variant="primary"
+                    />
+                  </div>
+                  <div className="xl:col-span-1">
+                    <DashboardStatsCard
+                      title="Tržby dnes"
+                      value={`${metrics.trzbyDnes.toLocaleString("cs-CZ")} Kč`}
+                      subtitle="vyřízené dnes"
+                      icon={TrendingUp}
+                      variant="success"
+                    />
+                  </div>
+                  <div className="xl:col-span-1">
+                    <DashboardStatsCard
+                      title="Nové"
+                      value={counts.novy}
+                      subtitle={metrics.novyDnes > 0 ? `${metrics.novyDnes} dnes` : "čekají"}
+                      icon={Receipt}
+                      variant="warning"
+                    />
+                  </div>
+                  <div className="xl:col-span-1">
+                    <DashboardStatsCard
+                      title="Vyřízeno"
+                      value={counts.vyrizeno}
+                      subtitle="celkem"
+                      icon={CheckCircle2}
+                      variant="success"
+                    />
+                  </div>
+                  <div className="xl:col-span-1">
+                    <DashboardStatsCard
+                      title="Čeká / rozpracováno"
+                      value={counts.ceka + counts.pending}
+                      subtitle="platba nebo v práci"
+                      icon={ClockIcon}
+                      variant="warning"
+                    />
+                  </div>
+                  <div className="xl:col-span-1">
+                    <DashboardStatsCard
+                      title="Průměr voucheru"
+                      value={`${metrics.prumer.toLocaleString("cs-CZ")} Kč`}
+                      subtitle={metrics.topService ? metrics.topService.split("–")[0]?.trim() || "" : ""}
+                      icon={BarChart3}
+                      variant="default"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-semibold text-gray-900">Objednávky voucherů</h2>
+                  <p className="mt-1 text-sm text-gray-600">Přehled všech objednávek a jejich stavů</p>
+                </div>
               </div>
 
               {ordersLoading ? (
                 <div className="flex justify-center py-20" role="status" aria-live="polite">
-                  <div className="w-8 h-8 border-2 border-[#c9a84c] border-t-transparent rounded-full animate-spin" aria-hidden />
+                  <div className="w-8 h-8 border-2 border-[#C9A84C] border-t-transparent rounded-full animate-spin" aria-hidden />
                   <span className="sr-only">Načítám objednávky…</span>
                 </div>
               ) : (
-                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-                  <div className="px-5 py-4 border-b border-gray-200 bg-white flex flex-col gap-3">
-                    <div className="flex items-center justify-between gap-4">
-                      <h2 className="text-gray-900 font-medium text-base">
-                        Objednávky voucherů
-                      </h2>
+                <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                  <div className="flex flex-col gap-3 border-b border-gray-200 bg-white px-6 py-4">
+                    <div className="flex flex-wrap items-center justify-between gap-4">
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        Seznam
+                      </h3>
                       {selectedIds.size > 0 ? (
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-gray-600 text-sm">{selectedIds.size} vybráno</span>
                           <button
                             onClick={bulkExportCsv}
-                            className="px-3 py-1.5 text-xs bg-[#c9a84c]/20 text-[#c9a84c] border border-[#c9a84c]/40 rounded-lg hover:bg-[#c9a84c]/30 transition-colors"
+                            className="rounded-lg border border-blue-300 bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100"
                           >
                             Export vybraných
                           </button>
@@ -922,7 +1351,7 @@ export function AdminApp() {
                               }
                               setSelectedIds(new Set());
                             }}
-                            className="px-3 py-1.5 text-xs bg-white border border-gray-300 rounded-lg text-gray-700 cursor-pointer"
+                            className="cursor-pointer rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                           >
                             <option value="">Změnit stav…</option>
                             {(["new", "pending", "awaiting_payment", "done", "storno"] as Status[]).map((s) => (
@@ -944,22 +1373,22 @@ export function AdminApp() {
                         </span>
                       )}
                     </div>
-                    <div className="flex flex-wrap items-center gap-2 overflow-x-auto pb-1 -mx-1">
-                      <div className="relative">
+                    <div className="-mx-1 flex flex-wrap items-center gap-2 overflow-x-auto pb-1">
+                      <div className="relative max-w-md flex-1">
                         <SearchIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input
                           type="text"
                           placeholder="Hledat jméno, email, telefon..."
                           value={search}
                           onChange={(e) => setSearch(e.target.value)}
-                          className="bg-white border border-gray-300 rounded-lg pl-9 pr-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#c9a84c]/60 w-40 sm:w-52 min-w-[140px]"
+                          className="h-10 w-full rounded-lg border border-gray-200 bg-white pl-10 pr-4 text-sm outline-none transition-all placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 min-w-[140px] sm:w-52"
                           aria-label="Hledat v objednávkách"
                         />
                       </div>
                       <select
                         value={filterStatus}
                         onChange={(e) => setFilterStatus(e.target.value as Status | "Vše")}
-                        className="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-[#c9a84c]/60 cursor-pointer"
+                        className="h-10 cursor-pointer rounded-lg border border-gray-200 bg-white pl-3 pr-10 text-sm font-medium text-gray-700 outline-none transition-all hover:border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                       >
                         <option value="Vše">Všechny stavy</option>
                         {(["new", "pending", "awaiting_payment", "done", "storno"] as Status[]).map((s) => (
@@ -971,7 +1400,7 @@ export function AdminApp() {
                       <select
                         value={filterPobocka}
                         onChange={(e) => setFilterPobocka(e.target.value)}
-                        className="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-[#c9a84c]/60 cursor-pointer"
+                        className="h-10 cursor-pointer rounded-lg border border-gray-200 bg-white px-3 pr-10 text-sm font-medium text-gray-700 outline-none transition-all hover:border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                       >
                         {branches.map((p) => (
                           <option key={p} value={p}>
@@ -989,10 +1418,10 @@ export function AdminApp() {
                           <button
                             key={p.id}
                             onClick={() => applyDatePreset(p.id)}
-                            className={`px-2.5 py-1.5 rounded text-xs font-medium transition-colors ${
+                            className={`rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-colors ${
                               filterDatePreset === p.id
-                                ? "bg-[#c9a84c]/20 text-[#c9a84c] border border-[#c9a84c]/40"
-                                : "bg-white text-gray-600 border border-gray-300 hover:text-gray-800 hover:border-gray-400"
+                                ? "border-blue-300 bg-blue-50 text-blue-700"
+                                : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:text-gray-800"
                             }`}
                             title={p.id === "dnes" ? "Dnešní datum (lokální čas)" : undefined}
                           >
@@ -1006,24 +1435,24 @@ export function AdminApp() {
                         )}
                       </div>
                       <div className="flex items-center gap-1">
-                        <span className="text-gray-500 text-xs">Od</span>
+                        <span className="text-xs text-gray-500">Od</span>
                         <input
                           type="date"
                           value={filterDateFrom}
                           onChange={(e) => handleDateFromChange(e.target.value)}
-                          className={`bg-white border rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-[#c9a84c]/60 ${
-                            !dateRangeValid ? "border-red-500/50" : "border-gray-300"
+                          className={`h-10 rounded-lg border px-3 py-2 text-sm text-gray-700 outline-none focus:ring-2 focus:ring-blue-500/20 ${
+                            !dateRangeValid ? "border-red-500/50" : "border-gray-200 focus:border-blue-500"
                           }`}
                         />
                       </div>
                       <div className="flex items-center gap-1">
-                        <span className="text-gray-500 text-xs">Do</span>
+                        <span className="text-xs text-gray-500">Do</span>
                         <input
                           type="date"
                           value={filterDateTo}
                           onChange={(e) => handleDateToChange(e.target.value)}
-                          className={`bg-white border rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-[#c9a84c]/60 ${
-                            !dateRangeValid ? "border-red-500/50" : "border-gray-300"
+                          className={`h-10 rounded-lg border px-3 py-2 text-sm text-gray-700 outline-none focus:ring-2 focus:ring-blue-500/20 ${
+                            !dateRangeValid ? "border-red-500/50" : "border-gray-200 focus:border-blue-500"
                           }`}
                           title={!dateRangeValid ? "Datum Do musí být po datu Od" : undefined}
                         />
@@ -1031,44 +1460,46 @@ export function AdminApp() {
                       {!dateRangeValid && (
                         <span className="text-red-400 text-xs">Od musí být před Do</span>
                       )}
-                      <label className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-2 cursor-pointer hover:border-gray-400 transition-colors">
+                      <label className="flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 transition-colors hover:border-gray-300">
                         <input
                           type="checkbox"
                           checked={filterJenNove}
                           onChange={(e) => setFilterJenNove(e.target.checked)}
-                          className="rounded border-gray-400 bg-white text-[#c9a84c] focus:ring-[#c9a84c]/50"
+                          className="rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500/20"
                         />
                         <span className="text-sm text-gray-700">Jen nové</span>
                       </label>
                       <button
                         onClick={() => fetchOrders()}
-                        className="p-2 bg-white border border-gray-300 rounded-lg text-gray-600 hover:text-[#c9a84c] hover:bg-gray-50 transition-colors"
+                        className="flex h-10 items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
                         aria-label="Obnovit seznam"
                         title="Obnovit"
                       >
                         <RefreshCwIcon size={14} className={ordersLoading ? "animate-spin" : ""} aria-hidden />
+                        <span className="hidden sm:inline">Obnovit</span>
                       </button>
                       <button
                         onClick={resetFilters}
-                        className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-50 transition-colors"
+                        className="flex h-10 items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
                         aria-label="Resetovat filtry"
                       >
                         Reset
                       </button>
                       <button
                         onClick={exportCsv}
-                        className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-600 hover:text-[#c9a84c] hover:bg-gray-50 hover:border-[#c9a84c]/30 transition-colors"
+                        className="flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-bold text-[#08080c] transition-all hover:shadow-md"
+                        style={{ background: "linear-gradient(135deg, #C9A84C, #E8C96A)", boxShadow: "0 4px 14px rgba(201,168,76,0.25)" }}
                         aria-label="Exportovat CSV"
                       >
                         <DownloadIcon size={14} aria-hidden />
-                        Export CSV
+                        <span className="hidden sm:inline">Export CSV</span>
                       </button>
                     </div>
                   </div>
 
-                  <div className="overflow-auto max-h-[calc(100vh-380px)] sm:max-h-[calc(100vh-420px)]">
+                  <div className="max-h-[calc(100vh-380px)] overflow-auto sm:max-h-[calc(100vh-420px)]">
                     <table className="w-full min-w-[720px]" role="grid" aria-label="Tabulka objednávek voucherů">
-                      <thead className="sticky top-0 z-10 bg-white border-b-2 border-gray-200">
+                      <thead className="sticky top-0 z-10 border-b border-gray-200 bg-gray-50/50">
                         <tr>
                           {isMajitel && (
                             <th className="w-10 px-2 py-3">
@@ -1076,7 +1507,7 @@ export function AdminApp() {
                                 type="checkbox"
                                 checked={selectedIds.size === sortedFiltered.length && sortedFiltered.length > 0}
                                 onChange={toggleSelectAll}
-                                className="rounded border-gray-400 bg-white text-[#c9a84c] focus:ring-[#c9a84c]/50"
+                                className="rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500/20"
                                 aria-label="Vybrat vše"
                               />
                             </th>
@@ -1137,7 +1568,7 @@ export function AdminApp() {
                                 {orders.length > 0 && (
                                   <button
                                     onClick={resetFilters}
-                                    className="text-xs text-[#c9a84c] hover:underline"
+                                    className="text-xs text-blue-600 hover:underline"
                                   >
                                     Zrušit filtry
                                   </button>
@@ -1152,10 +1583,10 @@ export function AdminApp() {
                               onClick={() => handleSelectOrder(o)}
                               className={`border-b border-gray-100 transition-colors group cursor-pointer ${
                                 selectedOrder?.id === o.id
-                                  ? "bg-amber-50 ring-inset ring-1 ring-[#c9a84c]/40"
+                                  ? "bg-amber-50/80 ring-inset ring-1 ring-[#C9A84C]/30"
                                   : i % 2 === 0
-                                    ? "bg-white hover:bg-gray-50"
-                                    : "bg-gray-50 hover:bg-gray-100"
+                                    ? "bg-white hover:bg-gray-50/50"
+                                    : "bg-gray-50/30 hover:bg-gray-50"
                               } ${o.status === "new" ? "border-l-2 border-l-blue-500/50" : ""}`}
                             >
                               {isMajitel && (
@@ -1164,12 +1595,12 @@ export function AdminApp() {
                                     type="checkbox"
                                     checked={selectedIds.has(o.id)}
                                     onChange={() => toggleSelect(o.id)}
-                                    className="rounded border-gray-400 bg-white text-[#c9a84c] focus:ring-[#c9a84c]/50"
+                                    className="rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500/20"
                                     aria-label={`Vybrat ${o.name}`}
                                   />
                                 </td>
                               )}
-                              <td className="px-4 pl-5 py-3 text-xs text-[#c9a84c] font-mono">
+                              <td className="px-4 py-3 pl-5 font-mono text-xs text-blue-600">
                                 {o.id.slice(0, 8)}…
                               </td>
                               <td className="px-4 py-3 text-xs text-gray-700 whitespace-nowrap">{formatDate(o.created_at)}</td>
@@ -1177,13 +1608,13 @@ export function AdminApp() {
                                 {o.name} {o.surname || ""}
                               </td>
                               <td className="px-4 py-3 text-xs text-gray-700">
-                                <a href={`mailto:${o.email}`} className="hover:text-[#c9a84c] transition-colors">
+                                <a href={`mailto:${o.email}`} className="transition-colors hover:text-[#b8860b]">
                                   {o.email}
                                 </a>
                               </td>
-                              <td className="px-4 py-3 text-xs text-gray-700 whitespace-nowrap">
+                              <td className="whitespace-nowrap px-4 py-3 text-xs text-gray-700">
                                 {o.phone ? (
-                                  <a href={`tel:${o.phone}`} className="hover:text-[#c9a84c] transition-colors">
+                                  <a href={`tel:${o.phone}`} className="transition-colors hover:text-[#b8860b]">
                                     {o.phone}
                                   </a>
                                 ) : (
@@ -1223,11 +1654,11 @@ export function AdminApp() {
                                           <button
                                             key={s}
                                             onClick={(e) => { e.stopPropagation(); updateStatus(o.id, s); }}
-                                            className={`w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-gray-50 transition-colors ${
-                                              o.status === s ? "text-[#c9a84c]" : "text-gray-600"
+                                            className={`flex w-full items-center gap-2 px-3 py-2 text-left text-xs transition-colors hover:bg-gray-50 ${
+                                              o.status === s ? "text-blue-600 font-medium" : "text-gray-600"
                                             }`}
                                           >
-                                            {o.status === s && <CheckIcon size={10} className="text-[#c9a84c]" />}
+                                            {o.status === s && <CheckIcon size={10} className="text-blue-600" />}
                                             {o.status !== s && <span className="w-[10px]" />}
                                             {statusLabels[s]}
                                           </button>
@@ -1246,7 +1677,7 @@ export function AdminApp() {
                                       e.stopPropagation();
                                       setOpenActionMenu(openActionMenu === o.id ? null : o.id);
                                     }}
-                                    className="p-2 rounded text-gray-500 hover:text-[#c9a84c] hover:bg-gray-100 transition-colors"
+                                    className="rounded p-2 text-gray-500 transition-colors hover:bg-gray-100 hover:text-[#b8860b]"
                                     aria-label="Akce"
                                     aria-expanded={openActionMenu === o.id}
                                   >
@@ -1295,7 +1726,7 @@ export function AdminApp() {
                     </table>
                   </div>
 
-                  <div className="px-5 py-3 border-t border-gray-200 flex items-center justify-between bg-white">
+                  <div className="flex items-center justify-between border-t border-gray-200 bg-white px-6 py-4">
                     <span className="text-xs text-gray-600">
                       Zobrazeno {filtered.length} z {orders.length} záznamů
                     </span>
@@ -1312,87 +1743,80 @@ export function AdminApp() {
               )}
             </>
           )}
-
-          {isMajitel && showAddAdmin && (
-            <div
-              className="mt-6 sm:mt-8 p-4 sm:p-6 bg-white border border-gray-200 rounded-xl max-w-md"
-              role="region"
-              aria-labelledby="add-admin-title"
-              aria-busy={addAdminLoading}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h2 id="add-admin-title" className="text-gray-800 font-medium" style={{ fontFamily: "Playfair Display, serif" }}>
-                  Přidat dalšího správce
-                </h2>
-                <button
-                  onClick={() => setShowAddAdmin(false)}
-                  className="text-gray-500 hover:text-gray-700 text-sm p-1 disabled:opacity-50"
-                  disabled={addAdminLoading}
-                  aria-label="Zavřít formulář"
-                >
-                  Zavřít
-                </button>
-              </div>
-              <p className="text-gray-600 text-xs mb-4">
-                Vytvoř účet pro kolegu. Majitel může měnit stavy voucherů, barber má jen náhled.
-              </p>
-              <form onSubmit={handleAddAdmin} className="space-y-3" aria-describedby={addAdminError ? "add-admin-error" : addAdminSuccess ? "add-admin-success" : undefined}>
-                <select
-                  value={newAdminRole}
-                  onChange={(e) => setNewAdminRole(e.target.value as "majitel" | "barber")}
-                  className={inputClass}
-                  disabled={addAdminLoading}
-                  aria-label="Role nového správce"
-                >
-                  <option value="barber">Barber (jen náhled)</option>
-                  <option value="majitel">Majitel (plný přístup)</option>
-                </select>
-                <input
-                  type="email"
-                  value={newAdminEmail}
-                  onChange={(e) => {
-                    setNewAdminEmail(e.target.value);
-                    setAddAdminError("");
-                  }}
-                  placeholder="E-mail nového správce"
-                  required
-                  className={inputClass}
-                  disabled={addAdminLoading}
-                  aria-invalid={!!addAdminError}
-                  aria-describedby={addAdminError ? "add-admin-error" : undefined}
-                />
-                <input
-                  type="password"
-                  value={newAdminPassword}
-                  onChange={(e) => {
-                    setNewAdminPassword(e.target.value);
-                    setAddAdminError("");
-                  }}
-                  placeholder="Heslo (min. 6 znaků)"
-                  required
-                  minLength={6}
-                  className={inputClass}
-                  disabled={addAdminLoading}
-                  aria-invalid={!!addAdminError}
-                />
-                {addAdminError && (
-                  <p id="add-admin-error" className="text-red-400 text-sm" role="alert">
-                    {addAdminError}
-                  </p>
-                )}
-                {addAdminSuccess && (
-                  <p id="add-admin-success" className="text-emerald-400 text-sm" role="status">
-                    Účet vytvořen. Nový správce se může přihlásit na e-mail a heslo.
-                  </p>
-                )}
-                <button type="submit" disabled={addAdminLoading} className={btnClass} aria-busy={addAdminLoading}>
-                  {addAdminLoading ? "Vytvářím…" : "Vytvořit účet"}
-                </button>
-              </form>
-            </div>
+        </>
           )}
         </main>
       </div>
+    </div>
+
+      {passwordModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4" role="dialog" aria-modal="true" aria-labelledby="password-modal-title" onClick={() => { setPasswordModal(null); setNewPasswordForUser(""); setPasswordError(""); }}>
+          <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <h3 id="password-modal-title" className="font-semibold text-gray-900">Změnit heslo</h3>
+            <p className="mt-1 text-sm text-gray-600">{passwordModal.email}</p>
+            <form onSubmit={handleChangePassword} className="mt-4 space-y-3">
+              <input
+                type="password"
+                value={newPasswordForUser}
+                onChange={(e) => { setNewPasswordForUser(e.target.value); setPasswordError(""); }}
+                placeholder="Nové heslo (min. 6 znaků)"
+                minLength={6}
+                className={inputClass}
+                autoFocus
+              />
+              {passwordError && <p className="text-sm text-red-500">{passwordError}</p>}
+              <div className="flex gap-2">
+                <button type="button" onClick={() => { setPasswordModal(null); setNewPasswordForUser(""); setPasswordError(""); }} className="flex-1 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                  Zrušit
+                </button>
+                <button type="submit" disabled={passwordLoading || newPasswordForUser.length < 6} className={btnClass + " flex-1"} style={btnPrimaryStyle}>
+                  {passwordLoading ? "Ukládám…" : "Uložit heslo"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4" role="alertdialog" aria-modal="true" aria-labelledby="delete-modal-title">
+          <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-6 shadow-xl">
+            <h3 id="delete-modal-title" className="font-semibold text-gray-900">Odstranit účet?</h3>
+            <p className="mt-2 text-sm text-gray-600">Účet <strong>{deleteConfirm.email}</strong> bude trvale odstraněn a nebude se moci přihlásit.</p>
+            <div className="mt-6 flex gap-2">
+              <button type="button" onClick={() => setDeleteConfirm(null)} className="flex-1 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                Zrušit
+              </button>
+              <button type="button" onClick={handleDeleteAccount} disabled={deleteLoading} className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50">
+                {deleteLoading ? "Odebírám…" : "Odstranit"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {roleEditUserId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4" role="dialog" aria-modal="true" aria-labelledby="role-modal-title" onClick={() => setRoleEditUserId(null)}>
+          <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <h3 id="role-modal-title" className="font-semibold text-gray-900">Změnit roli</h3>
+            <p className="mt-1 text-sm text-gray-600">{adminAccounts.find((a) => a.user_id === roleEditUserId)?.email}</p>
+            <form onSubmit={handleChangeRole} className="mt-4 space-y-3">
+              <select value={newRoleForUser} onChange={(e) => setNewRoleForUser(e.target.value as "majitel" | "barber")} className={inputClass}>
+                <option value="barber">Barber (jen náhled)</option>
+                <option value="majitel">Majitel (plný přístup)</option>
+              </select>
+              <div className="flex gap-2">
+                <button type="button" onClick={() => setRoleEditUserId(null)} className="flex-1 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                  Zrušit
+                </button>
+                <button type="submit" disabled={roleUpdateLoading} className={btnClass + " flex-1"} style={btnPrimaryStyle}>
+                  {roleUpdateLoading ? "Ukládám…" : "Uložit roli"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {(openDropdown || openActionMenu) && (
         <div
@@ -1412,13 +1836,13 @@ export function AdminApp() {
             aria-labelledby="detail-panel-title"
             className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-md bg-white border-l border-gray-200 shadow-2xl flex flex-col overflow-hidden"
           >
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 flex-shrink-0 bg-white">
+            <div className="flex flex-shrink-0 items-center justify-between border-b border-gray-200 bg-white px-5 py-4">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[#c9a84c] text-xs font-mono">{selectedOrder.id.slice(0, 8)}…</span>
+                  <span className="font-mono text-xs text-blue-600">{selectedOrder.id.slice(0, 8)}…</span>
                   <StatusBadge status={selectedOrder.status} />
                 </div>
-                <h3 id="detail-panel-title" className="mt-1 font-medium text-gray-900">
+                <h3 id="detail-panel-title" className="mt-1 font-semibold text-gray-900">
                   {selectedOrder.name} {selectedOrder.surname || ""}
                 </h3>
               </div>
@@ -1460,14 +1884,14 @@ export function AdminApp() {
                     onBlur={saveAdminNote}
                     placeholder="Interní poznámka..."
                     rows={3}
-                    className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#c9a84c]/50 resize-none"
+                    className="w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 placeholder-gray-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                   />
                   <div className="mt-2">
                     <button
                       type="button"
                       onClick={saveAdminNote}
                       disabled={savingNote || adminNote === (selectedOrder.admin_note || "")}
-                      className="px-3 py-1.5 text-xs bg-gray-100 border border-gray-300 rounded-lg text-gray-600 hover:text-[#c9a84c] hover:border-[#c9a84c]/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-600 transition-colors hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {savingNote ? "Ukládám…" : "Uložit"}
                     </button>
@@ -1486,14 +1910,15 @@ export function AdminApp() {
               )}
               <a
                 href={`mailto:${selectedOrder.email}`}
-                className="w-full py-2.5 bg-[#c9a84c] hover:bg-[#d4b85a] text-[#0a0a0a] rounded-lg text-sm font-medium text-center transition-colors"
+                className="w-full rounded-xl py-2.5 text-center text-sm font-bold text-[#08080c] transition-all"
+                style={{ background: "linear-gradient(135deg, #C9A84C, #E8C96A)", boxShadow: "0 4px 14px rgba(201,168,76,0.25)" }}
               >
                 Odeslat e-mail
               </a>
               {selectedOrder.phone ? (
                 <a
                   href={`tel:${selectedOrder.phone}`}
-                  className="w-full py-2.5 bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 rounded-lg text-sm text-center transition-colors"
+                  className="w-full rounded-lg border border-gray-200 bg-white py-2.5 text-center text-sm text-gray-700 transition-colors hover:bg-gray-50"
                 >
                   Zavolat
                 </a>
@@ -1504,7 +1929,7 @@ export function AdminApp() {
               )}
               <button
                 onClick={() => generateVoucherPdf(selectedOrder).catch((err) => alert(err?.message ?? "Chyba při generování PDF"))}
-                className="w-full py-2.5 bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors"
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
               >
                 <PrinterIcon size={16} />
                 Vygenerovat voucher
@@ -1513,6 +1938,6 @@ export function AdminApp() {
           </div>
         </>
       )}
-    </div>
+    </>
   );
 }

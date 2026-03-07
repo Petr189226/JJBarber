@@ -12,8 +12,6 @@ import {
 describe("dateFilter", () => {
   describe("formatLocalDateForInput", () => {
     it("formátuje datum v lokální timezone bez UTC posunu", () => {
-      // 5. března 2025 00:00 local = v ČR (UTC+1) je to 4.3. 23:00 UTC
-      // toISOString().slice(0,10) by vrátilo "2025-03-04" – špatně
       const d = new Date(2025, 2, 5, 0, 0, 0, 0);
       expect(formatLocalDateForInput(d)).toBe("2025-03-05");
     });
@@ -51,7 +49,7 @@ describe("dateFilter", () => {
   describe("getPresetRange", () => {
     beforeEach(() => {
       vi.useFakeTimers();
-      vi.setSystemTime(new Date(2025, 2, 5, 12, 0, 0)); // 5.3.2025 12:00
+      vi.setSystemTime(new Date(2025, 2, 5, 12, 0, 0));
     });
 
     afterEach(() => {
@@ -67,7 +65,7 @@ describe("dateFilter", () => {
 
     it('preset "tyden" vrací pondělí až dnes', () => {
       const range = getPresetRange("tyden");
-      expect(range.from).toBe("2025-03-03"); // pondělí
+      expect(range.from).toBe("2025-03-03");
       expect(range.to).toBe("2025-03-05");
       expect(range.preset).toBe("tyden");
     });
@@ -135,10 +133,8 @@ describe("dateFilter", () => {
 
   describe("timezone edge case – půlnoc", () => {
     it("dnešní datum není včerejší při UTC posunu", () => {
-      // Simulace: uživatel v UTC+2, je 5.3. 01:00 local = 4.3. 23:00 UTC
-      // getLocalToday() musí vrátit 5.3., ne 4.3.
       vi.useFakeTimers();
-      vi.setSystemTime(new Date(2025, 2, 5, 1, 0, 0)); // 5.3. 01:00
+      vi.setSystemTime(new Date(2025, 2, 5, 1, 0, 0));
       const range = getPresetRange("dnes");
       expect(range.from).toBe("2025-03-05");
       expect(range.to).toBe("2025-03-05");
