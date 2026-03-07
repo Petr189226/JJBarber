@@ -4,6 +4,7 @@ export const translations: Record<string, Record<Lang, string>> = {
   "nav.locations": { cs: "Pobočky", en: "Locations" },
   "nav.team": { cs: "Tým", en: "Team" },
   "nav.services": { cs: "Ceník", en: "Pricing" },
+  "nav.voucher": { cs: "Dárkový poukaz", en: "Gift Voucher" },
   "nav.reviews": { cs: "Recenze", en: "Reviews" },
   "nav.contact": { cs: "Kontakt", en: "Contact" },
   "nav.book": { cs: "Rezervovat termín", en: "Book Now" },
@@ -140,6 +141,11 @@ export const translations: Record<string, Record<Lang, string>> = {
   },
   "cookie.accept": { cs: "Souhlasím", en: "Accept" },
   "voucher.title": { cs: "Dárkový poukaz", en: "Gift Voucher" },
+  "voucher.sectionDesc": {
+    cs: "Darujte poukaz na naše služby. Rezervaci poukazu provedete online prostřednictvím krátkého formuláře. Vyzvednutí a platba jsou možné na jedné z našich poboček.",
+    en: "Give a voucher for our services. You can reserve a voucher online via a short form. Collection and payment are possible at one of our branches.",
+  },
+  "voucher.orderBtn": { cs: "Objednat poukaz", en: "Order voucher" },
   "voucher.close": { cs: "Zavřít", en: "Close" },
   "voucher.intro": {
     cs: "Darujte voucher na službu dle výběru. Vyzvednutí a platba na pobočce.",

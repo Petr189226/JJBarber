@@ -9,6 +9,7 @@ import { useInView } from "./hooks/useInView";
 const Locations = lazy(() => import("./components/Locations").then((m) => ({ default: m.Locations })));
 const Team = lazy(() => import("./components/Team").then((m) => ({ default: m.Team })));
 const Services = lazy(() => import("./components/Services").then((m) => ({ default: m.Services })));
+const VoucherSection = lazy(() => import("./components/VoucherSection").then((m) => ({ default: m.VoucherSection })));
 const Reviews = lazy(() => import("./components/Reviews").then((m) => ({ default: m.Reviews })));
 const Booking = lazy(() => import("./components/Booking").then((m) => ({ default: m.Booking })));
 const Footer = lazy(() => import("./components/Footer").then((m) => ({ default: m.Footer })));
@@ -70,6 +71,7 @@ export default function App() {
           <LazySection><Locations /></LazySection>
           <LazySection><Team /></LazySection>
           <LazySection><Services /></LazySection>
+          <LazySection><VoucherSection /></LazySection>
           <LazySection><Reviews /></LazySection>
           <LazySection><Booking /></LazySection>
         </main>

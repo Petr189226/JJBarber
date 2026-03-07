@@ -15,6 +15,8 @@ type VoucherOrder = {
   created_at: string;
 };
 
+type AdminRole = "majitel" | "barber" | null;
+
 const inputClass =
   "w-full bg-[#111111] border border-[#2A2A2A] focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/25 text-[#C4BEB4] rounded-xl px-4 py-3 outline-none transition-all";
 const btnClass =
@@ -30,6 +32,23 @@ export function AdminApp() {
   const [orders, setOrders] = useState<VoucherOrder[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [newAdminEmail, setNewAdminEmail] = useState("");
+  const [newAdminPassword, setNewAdminPassword] = useState("");
+  const [addAdminError, setAddAdminError] = useState("");
+  const [addAdminSuccess, setAddAdminSuccess] = useState(false);
+  const [addAdminLoading, setAddAdminLoading] = useState(false);
+  const [newAdminRole, setNewAdminRole] = useState<"majitel" | "barber">("barber");
+  const [role, setRole] = useState<AdminRole>(null);
+  const [roleLoading, setRoleLoading] = useState(true);
+  const [claimingMajitel, setClaimingMajitel] = useState(false);
+
+  useEffect(() => {
+    const meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex, nofollow";
+    document.head.appendChild(meta);
+    return () => meta.remove();
+  }, []);
 
   useEffect(() => {
     if (!supabase) return;
@@ -56,6 +75,27 @@ export function AdminApp() {
       });
   }, [user]);
 
+  useEffect(() => {
+    if (!user || !supabase) {
+      setRoleLoading(false);
+      return;
+    }
+    setRoleLoading(true);
+    supabase
+      .from("admin_roles")
+      .select("role")
+      .eq("user_id", user.id)
+      .single()
+      .then(({ data }) => {
+        setRole((data?.role as AdminRole) ?? null);
+        setRoleLoading(false);
+      })
+      .catch(() => {
+        setRole(null);
+        setRoleLoading(false);
+      });
+  }, [user]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supabase || !email || !password) return;
@@ -78,6 +118,51 @@ export function AdminApp() {
     setUpdatingId(null);
   };
 
+  const claimMajitel = async () => {
+    if (!supabase || !user) return;
+    setClaimingMajitel(true);
+    setAddAdminError("");
+    const { error } = await supabase.from("admin_roles").insert({ user_id: user.id, role: "majitel" });
+    setClaimingMajitel(false);
+    if (!error) {
+      setRole("majitel");
+      setAddAdminError("");
+    } else {
+      setAddAdminError(error.message);
+    }
+  };
+
+  const handleAddAdmin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!supabase || !newAdminEmail || !newAdminPassword || role !== "majitel") return;
+    setAddAdminLoading(true);
+    setAddAdminError("");
+    setAddAdminSuccess(false);
+    const { data, error } = await supabase.auth.signUp({
+      email: newAdminEmail.trim(),
+      password: newAdminPassword,
+      options: { emailRedirectTo: window.location.origin + "/jj-backstage" },
+    });
+    if (error) {
+      setAddAdminLoading(false);
+      setAddAdminError(error.message);
+      return;
+    }
+    if (data.user) {
+      const { error: roleErr } = await supabase.from("admin_roles").insert({
+        user_id: data.user.id,
+        role: newAdminRole,
+      });
+      if (roleErr) setAddAdminError(roleErr.message);
+      else {
+        setAddAdminSuccess(true);
+        setNewAdminEmail("");
+        setNewAdminPassword("");
+      }
+    }
+    setAddAdminLoading(false);
+  };
+
   const formatDate = (s: string) => {
     const d = new Date(s);
     return d.toLocaleDateString("cs-CZ", {
@@ -89,10 +174,22 @@ export function AdminApp() {
     });
   };
 
+  const adminLayout = "min-h-screen relative";
+  const adminBg = (
+    <>
+      <div
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url(/admin-bg.png)" }}
+      />
+      <div className="fixed inset-0 bg-[#0A0A0A]/85 z-[1]" />
+    </>
+  );
+
   if (!isSupabaseConfigured()) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center p-6">
-        <div className="max-w-md text-center">
+      <div className={`${adminLayout} flex items-center justify-center p-6`}>
+        {adminBg}
+        <div className="relative z-10 max-w-md text-center">
           <h1 className="text-[#C4BEB4] text-xl mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
             Admin není nakonfigurován
           </h1>
@@ -106,16 +203,18 @@ export function AdminApp() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#C9A84C] border-t-transparent rounded-full animate-spin" />
+      <div className={`${adminLayout} flex items-center justify-center`}>
+        {adminBg}
+        <div className="relative z-10 w-8 h-8 border-2 border-[#C9A84C] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center p-6">
-        <div className="w-full max-w-sm">
+      <div className={`${adminLayout} flex items-center justify-center p-6`}>
+        {adminBg}
+        <div className="relative z-10 w-full max-w-sm">
           <h1 className="text-[#C4BEB4] text-2xl mb-2 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
             J&J Admin
           </h1>
@@ -152,13 +251,30 @@ export function AdminApp() {
     );
   }
 
+  const isMajitel = role === "majitel";
+  const isBarber = role === "barber";
+  const needsClaim = role === null && !roleLoading;
+
   return (
-    <div className="min-h-screen bg-[#0A0A0A]">
+    <div className={adminLayout}>
+      {adminBg}
+      <div className="relative z-10">
       <header className="border-b border-[#1F1F1F] px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <h1 className="text-[#C4BEB4] text-xl" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Objednávky voucherů
-          </h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-[#C4BEB4] text-xl" style={{ fontFamily: "'Playfair Display', serif" }}>
+              Objednávky voucherů
+            </h1>
+            {role && (
+              <span
+                className={`text-xs px-2 py-0.5 rounded ${
+                  isMajitel ? "bg-[#C9A84C]/20 text-[#C9A84C]" : "bg-[#2A2A2A] text-[#8A8580]"
+                }`}
+              >
+                {isMajitel ? "Majitel" : "Barber"}
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-4">
             <a href="/" className="text-[#8A8580] hover:text-[#C4BEB4] text-sm transition-colors">
               ← Web
@@ -174,6 +290,22 @@ export function AdminApp() {
       </header>
 
       <main className="max-w-5xl mx-auto px-6 py-8">
+        {needsClaim && (
+          <div className="mb-8 p-4 bg-[#111111] border border-[#2A2A2A] rounded-xl">
+            <p className="text-[#B5AEA4] text-sm mb-3">
+              Jste prvním správcem. Nastavte se jako majitel – budete moci měnit stavy voucherů a přidávat další správce.
+            </p>
+            <button
+              onClick={claimMajitel}
+              disabled={claimingMajitel}
+              className={btnClass}
+            >
+              {claimingMajitel ? "Nastavuji…" : "Nastavit jako majitel"}
+            </button>
+            {addAdminError && <p className="text-red-400 text-sm mt-2">{addAdminError}</p>}
+          </div>
+        )}
+
         {ordersLoading ? (
           <div className="flex justify-center py-20">
             <div className="w-8 h-8 border-2 border-[#C9A84C] border-t-transparent rounded-full animate-spin" />
@@ -218,16 +350,22 @@ export function AdminApp() {
                     <td className="py-4 pr-4 text-[#B5AEA4] text-sm">{o.service}</td>
                     <td className="py-4 pr-4 text-[#B5AEA4] text-sm">{o.branch}</td>
                     <td className="py-4 pr-4">
-                      <select
-                        value={o.status}
-                        onChange={(e) => updateStatus(o.id, e.target.value as VoucherOrder["status"])}
-                        disabled={updatingId === o.id}
-                        className="bg-[#111111] border border-[#2A2A2A] text-[#C4BEB4] text-sm rounded-lg px-2 py-1.5 cursor-pointer"
-                      >
-                        <option value="new">Nový</option>
-                        <option value="pending">Rozpracováno</option>
-                        <option value="done">Vyřízeno</option>
-                      </select>
+                      {isMajitel ? (
+                        <select
+                          value={o.status}
+                          onChange={(e) => updateStatus(o.id, e.target.value as VoucherOrder["status"])}
+                          disabled={updatingId === o.id}
+                          className="bg-[#111111] border border-[#2A2A2A] text-[#C4BEB4] text-sm rounded-lg px-2 py-1.5 cursor-pointer"
+                        >
+                          <option value="new">Nový</option>
+                          <option value="pending">Rozpracováno</option>
+                          <option value="done">Vyřízeno</option>
+                        </select>
+                      ) : (
+                        <span className="text-[#B5AEA4] text-sm">
+                          {o.status === "new" ? "Nový" : o.status === "pending" ? "Rozpracováno" : "Vyřízeno"}
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -253,7 +391,57 @@ export function AdminApp() {
             </div>
           </details>
         )}
+
+        {isMajitel && (
+          <details className="mt-12 pt-8 border-t border-[#1F1F1F]">
+            <summary className="text-[#8A8580] text-sm cursor-pointer hover:text-[#C4BEB4]">
+              Přidat dalšího správce
+            </summary>
+            <div className="mt-4 max-w-sm">
+              <p className="text-[#6B6B6B] text-xs mb-4">
+                Vytvoř účet pro kolegu. Majitel může měnit stavy voucherů, barber má jen náhled.
+              </p>
+              <form onSubmit={handleAddAdmin} className="space-y-3">
+                <select
+                  value={newAdminRole}
+                  onChange={(e) => setNewAdminRole(e.target.value as "majitel" | "barber")}
+                  className={inputClass}
+                >
+                  <option value="barber">Barber (jen náhled)</option>
+                  <option value="majitel">Majitel (plný přístup)</option>
+                </select>
+                <input
+                  type="email"
+                  value={newAdminEmail}
+                  onChange={(e) => { setNewAdminEmail(e.target.value); setAddAdminError(""); }}
+                  placeholder="E-mail nového správce"
+                  required
+                  className={inputClass}
+                />
+                <input
+                  type="password"
+                  value={newAdminPassword}
+                  onChange={(e) => { setNewAdminPassword(e.target.value); setAddAdminError(""); }}
+                  placeholder="Heslo (min. 6 znaků)"
+                  required
+                  minLength={6}
+                  className={inputClass}
+                />
+                {addAdminError && <p className="text-red-400 text-sm">{addAdminError}</p>}
+                {addAdminSuccess && (
+                  <p className="text-emerald-400 text-sm">
+                    Účet vytvořen. Nový správce se může přihlásit na e-mail a heslo.
+                  </p>
+                )}
+                <button type="submit" disabled={addAdminLoading} className={btnClass}>
+                  {addAdminLoading ? "Vytvářím…" : "Vytvořit účet"}
+                </button>
+              </form>
+            </div>
+          </details>
+        )}
       </main>
+      </div>
     </div>
   );
 }

@@ -64,7 +64,7 @@ function LanguageSwitcher() {
   );
 }
 
-const SECTION_IDS = ["locations", "team", "services", "reviews", "booking"] as const;
+const SECTION_IDS = ["locations", "team", "services", "voucher", "reviews", "booking"] as const;
 
 export function Navbar() {
   const { t } = useLanguage();
@@ -76,6 +76,7 @@ export function Navbar() {
     { label: t("nav.locations"), href: "#locations", id: "locations" },
     { label: t("nav.team"), href: "#team", id: "team" },
     { label: t("nav.services"), href: "#services", id: "services" },
+    { label: t("nav.voucher"), href: "#voucher", id: "voucher" },
     { label: t("nav.reviews"), href: "#reviews", id: "reviews" },
     { label: t("nav.contact"), href: "#booking", id: "booking" },
   ];

@@ -5,7 +5,7 @@ import "./styles/index.css";
 
 const AdminApp = lazy(() => import("./app/admin/AdminApp.tsx").then((m) => ({ default: m.AdminApp })));
 
-const isAdmin = typeof window !== "undefined" && window.location.pathname.startsWith("/admin");
+const isAdmin = typeof window !== "undefined" && window.location.pathname.startsWith("/jj-backstage");
 
 createRoot(document.getElementById("root")!).render(
   isAdmin ? (

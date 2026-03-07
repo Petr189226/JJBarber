@@ -18,6 +18,7 @@ export function Footer() {
         { label: t("nav.locations"), href: "#locations" },
         { label: t("nav.team"), href: "#team" },
         { label: t("nav.services"), href: "#services" },
+        { label: t("nav.voucher"), href: "#voucher" },
         { label: t("nav.reviews"), href: "#reviews" },
         { label: t("nav.contact"), href: "#booking" },
       ],
@@ -27,6 +28,7 @@ export function Footer() {
       links: [
         { label: t("svc.classic.name"), href: "#services" },
         { label: t("svc.combo.name"), href: "#services" },
+        { label: t("nav.voucher"), href: "#voucher" },
         { label: t("svc.shave.name"), href: "#services" },
         { label: t("svc.beard.name"), href: "#services" },
       ],

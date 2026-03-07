@@ -15,8 +15,8 @@ if (!existsSync(dist)) {
   process.exit(1);
 }
 
-// Fallback pro /admin – když .htaccess nefunguje (skrytý soubor ve FileZilla)
-const adminDir = join(dist, 'admin');
+// Fallback pro /jj-backstage – když .htaccess nefunguje (skrytý soubor ve FileZilla)
+const adminDir = join(dist, 'jj-backstage');
 const indexHtml = join(dist, 'index.html');
 if (!existsSync(adminDir)) mkdirSync(adminDir, { recursive: true });
 copyFileSync(indexHtml, join(adminDir, 'index.html'));

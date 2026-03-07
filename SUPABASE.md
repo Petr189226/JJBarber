@@ -47,9 +47,15 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ## 5. Admin rozhraní
 
-- **URL:** `https://jjbarbershop.cz/admin`
+- **URL:** `https://jjbarbershop.cz/jj-backstage` (skrytá cesta, není v menu)
 - **Přihlášení:** e-mail + heslo z kroku 4
 - **Funkce:** seznam objednávek voucherů, změna stavu (Nový / Rozpracováno / Vyřízeno)
+- **Přidat dalšího správce:** v adminu rozbal „Přidat dalšího správce“ – majitelé si vytvoří účty pro kolegy přímo v UI, bez přístupu do Supabase
+- **Role:** Majitel může měnit stavy voucherů a přidávat správce. Barber má jen náhled (read-only).
+
+**Migrace rolí:** Po prvním nastavení spusť `npm run supabase:setup-roles` a v Supabase SQL Editoru spusť migraci. První přihlášený správce si pak v adminu nastaví „Nastavit jako majitel“.
+
+**Tip:** Aby nově vytvoření správci mohli hned přihlásit, vypni v Supabase **Authentication** → **Providers** → **Email** → **Confirm email**.
 
 ## Kde se databáze spravuje
 

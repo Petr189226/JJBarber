@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Scissors, ScissorsLineDashed, Slice, Star, Baby, Gift, Clock, type LucideIcon } from "lucide-react";
-import { VoucherModal } from "./VoucherModal";
+import { Scissors, ScissorsLineDashed, Slice, Star, Baby, Clock, type LucideIcon } from "lucide-react";
 import { useLanguage } from "../i18n";
 
 const SERVICE_ICON_MAP: Record<string, LucideIcon> = {
@@ -10,7 +9,6 @@ const SERVICE_ICON_MAP: Record<string, LucideIcon> = {
   "svc.shave": Slice,
   "svc.combo": Star,
   "svc.kids": Baby,
-  "svc.voucher": Gift,
 };
 
 function ServiceIconBadge({ icon: Icon, popular }: { icon: LucideIcon; popular: boolean }) {
@@ -49,7 +47,6 @@ const services: Service[] = [
   { nameKey: "svc.beard", descKey: "svc.beard", price: "390", hasDuration: true, popular: false },
   { nameKey: "svc.shave", descKey: "svc.shave", price: "390", hasDuration: true, popular: false },
   { nameKey: "svc.kids", descKey: "svc.kids", price: "450", hasDuration: true, popular: false },
-  { nameKey: "svc.voucher", descKey: "svc.voucher", price: null, hasDuration: false, popular: false },
 ];
 
 function ServiceCard({ service, index, onClick, t }: { service: Service; index: number; onClick?: () => void; t: (k: string) => string }) {
@@ -147,7 +144,6 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
 export function Services() {
   const [inView, setInView] = useState(false);
   const [contentInView, setContentInView] = useState(false);
-  const [voucherOpen, setVoucherOpen] = useState(false);
   useEffect(() => {
     setInView(true);
     const t = setTimeout(() => setContentInView(true), 100);
@@ -171,20 +167,12 @@ export function Services() {
           {contentInView ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 [&>div]:h-full">
               {services.map((service, i) => (
-                <ServiceCard
-                  key={service.nameKey}
-                  service={service}
-                  index={i}
-                  t={t}
-                  onClick={service.nameKey === "svc.voucher" ? () => setVoucherOpen(true) : undefined}
-                />
+                <ServiceCard key={service.nameKey} service={service} index={i} t={t} />
               ))}
             </div>
           ) : null}
         </div>
       </div>
-
-      <VoucherModal open={voucherOpen} onClose={() => setVoucherOpen(false)} />
     </section>
   );
 }
