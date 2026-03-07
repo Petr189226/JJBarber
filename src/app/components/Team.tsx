@@ -2,19 +2,19 @@ import { useEffect, useState } from "react";
 import { useLanguage } from "../i18n";
 
 const barbers = [
-  { name: "Kuba", image: "/team/kuba.png", role: "team.founder", exp: "5", spec: "team.spec.fade", rating: 4.9 },
-  { name: "Pepa", image: "/team/pepa.png", role: "team.founder", exp: "5", spec: "team.spec.classic", rating: 4.9 },
-  { name: "Oliver", image: "/team/oliver.png", role: "team.barber", exp: "4", spec: "team.spec.beard", rating: 4.9 },
-  { name: "Milan", image: "/team/milan.png", role: "team.barber", exp: "4", spec: "team.spec.fade", rating: 4.9 },
-  { name: "Honza", image: "/team/honza.png", role: "team.barber", exp: "3", spec: "team.spec.classic", rating: 4.9 },
-  { name: "Ondra", image: "/team/ondra.png", role: "team.barber", exp: "3", spec: "team.spec.beard", rating: 4.9 },
-  { name: "Vojta", image: "/team/vojta.png", role: "team.barber", exp: "3", spec: "team.spec.shave", rating: 4.9 },
-  { name: "Fila", image: "/team/fila.png", role: "team.barber", exp: "2", spec: "team.spec.classic", rating: 4.9 },
+  { name: "Kuba", image: "/team/kuba.png" },
+  { name: "Pepa", image: "/team/pepa.png" },
+  { name: "Oliver", image: "/team/oliver.png" },
+  { name: "Milan", image: "/team/milan.png" },
+  { name: "Honza", image: "/team/honza.png" },
+  { name: "Ondra", image: "/team/ondra.png" },
+  { name: "Vojta", image: "/team/vojta.png" },
+  { name: "Fila", image: "/team/fila.png" },
 ];
 
 const cardAnim = "transition-all duration-500 ease-out";
 
-function TeamCard({ barber, index, t }: { barber: typeof barbers[0]; index: number; t: (k: string) => string }) {
+function TeamCard({ barber, index }: { barber: typeof barbers[0]; index: number }) {
   return (
     <div
       className={`group ${index >= 4 ? "pt-3" : ""} opacity-100 translate-y-0 ${cardAnim}`}
@@ -34,19 +34,10 @@ function TeamCard({ barber, index, t }: { barber: typeof barbers[0]; index: numb
         <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent opacity-80" />
         <div className="absolute bottom-0 left-0 right-0 p-5">
           <span
-            className="text-[#C4BEB4] group-hover:text-[#B5AEA4] transition-colors duration-200 block"
+            className="text-[#C4BEB4] group-hover:text-[#B5AEA4] transition-colors duration-200"
             style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "1.25rem" }}
           >
             {barber.name}
-          </span>
-          <span className="text-[#C9A84C] text-xs" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600 }}>
-            {t(barber.role)} · {barber.exp} {t("team.years")}
-          </span>
-          <span className="text-[#8A8580] text-xs block mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>
-            {t(barber.spec)}
-          </span>
-          <span className="inline-flex items-center gap-0.5 mt-2 text-[#C9A84C] text-xs">
-            ⭐ {barber.rating}
           </span>
         </div>
       </div>
@@ -65,7 +56,7 @@ export function Team() {
   const { t } = useLanguage();
 
   return (
-    <section id="team" className="py-8 md:py-12 lg:py-20 bg-[#0B0B0B] scroll-mt-24">
+    <section id="team" className="py-8 md:py-12 lg:py-20 bg-[#0F0F0F] scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="mb-20">
           <div
@@ -97,7 +88,7 @@ export function Team() {
           {contentInView ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
               {barbers.map((barber, i) => (
-                <TeamCard key={barber.name} barber={barber} index={i} t={t} />
+                <TeamCard key={barber.name} barber={barber} index={i} />
               ))}
             </div>
           ) : null}

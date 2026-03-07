@@ -38,7 +38,7 @@ export function Reviews() {
   const next = () => setActive((a) => (a + 1) % reviews.length);
 
   return (
-    <section id="reviews" className="py-8 md:py-12 lg:py-20 bg-[#0D0D0D] overflow-hidden scroll-mt-24">
+    <section id="reviews" className="py-8 md:py-12 lg:py-20 bg-[#0F0F0F] overflow-hidden scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="mb-20">
           <div
@@ -59,11 +59,8 @@ export function Reviews() {
             >
               {t("rev.heading")}
             </h2>
-            <a
-              href="https://www.google.com/maps/place/?q=place_id:ChIJj7OHo66TC0cR9_vNnPEtFtA"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`flex items-center gap-3 shrink-0 transition-all duration-500 ease-out ${inView ? "opacity-100" : "opacity-0"} hover:opacity-90`}
+            <div
+              className={`flex items-center gap-2 shrink-0 transition-all duration-500 ease-out ${inView ? "opacity-100" : "opacity-0"}`}
               style={{ transitionDelay: inView ? "150ms" : undefined }}
             >
               <div
@@ -77,11 +74,8 @@ export function Reviews() {
                 <div className="text-[#8A8580] mt-1" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem" }}>
                   {t("rev.google")}
                 </div>
-                <div className="text-[#C9A84C] mt-0.5" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.7rem", fontWeight: 500 }}>
-                  {t("rev.count")}
-                </div>
               </div>
-            </a>
+            </div>
           </div>
         </div>
 

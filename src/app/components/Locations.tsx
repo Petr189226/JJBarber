@@ -151,12 +151,12 @@ export function Locations() {
                 />
               </div>
               <div className="p-8">
-                <h2
+                <h3
                   className="text-[#C4BEB4] mb-6"
                   style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.5rem" }}
                 >
-                  Barber {loc.name}
-                </h2>
+                  JJ Barber shop – {loc.name}
+                </h3>
                 <div className="flex items-start gap-3 mb-4">
                   <MapPin size={18} className="text-[#8A8580] flex-shrink-0 mt-0.5" />
                   <span
