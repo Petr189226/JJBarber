@@ -15,7 +15,10 @@ function MiniMap({ loc, openLabel }: { loc: { name: string; mapImage: string; ma
       <img
         src={loc.mapImage}
         alt={`Mapa – ${loc.name}`}
+        width={400}
+        height={130}
         loading="lazy"
+        fetchPriority="low"
         className="w-full h-full object-cover brightness-[0.6] group-hover/map:brightness-[0.75] transition-all duration-300"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/50 via-transparent to-[#0A0A0A]/8" />
@@ -140,6 +143,10 @@ export function Locations() {
                 <img
                   src={loc.image}
                   alt={`Interiér JJ Barber shop ${loc.name}`}
+                  width={800}
+                  height={500}
+                  loading="lazy"
+                  fetchPriority="low"
                   className={`w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500 ease-out ${i === 1 ? "brightness-[0.96]" : ""}`}
                 />
               </div>

@@ -24,6 +24,10 @@ function TeamCard({ barber, index }: { barber: typeof barbers[0]; index: number 
           <img
             src={barber.image}
             alt={barber.name}
+            width={300}
+            height={400}
+            loading="lazy"
+            fetchPriority="low"
             className="w-full h-full object-cover object-top transition-all duration-500 ease-out group-hover:scale-[1.02] group-hover:brightness-105"
           />
         </div>
