@@ -534,10 +534,23 @@ export function AdminApp() {
         }
       }
     }
-    const width = 800;
-    const height = 500;
+    const width = 1024;
+    const height = 682;
     const amountStr = parseAmount(o.service).toLocaleString("cs-CZ");
-    const fullName = `${o.name} ${o.surname || ""}`.trim();
+    const surname = (o.surname || "").trim();
+    // Šablona 1024×682 px. Pozice z voucher-merit.html (X, Y od spodu).
+    const layout = {
+      voucherNo: { top: 32, right: 40 },
+      nameLeft: 417,
+      nameBottom: 272,
+      surnameLeft: 636,
+      surnameBottom: 275,
+      serviceLeft: 437,
+      serviceBottom: 221,
+      serviceRight: 98,
+      amountBottom: 88,
+      branchBottom: 48,
+    };
     const iframe = document.createElement("iframe");
     iframe.setAttribute("style", "position:fixed;left:-9999px;top:0;width:" + width + "px;height:" + height + "px;border:none;");
     document.body.appendChild(iframe);
@@ -548,16 +561,17 @@ export function AdminApp() {
     }
     doc.open();
     doc.write(`
-      <!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="margin:0;background:#0f0f0f;">
+      <!DOCTYPE html><html><head><meta charset="utf-8">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap">
+      </head><body style="margin:0;background:#0f0f0f;">
       <div style="position:relative;width:${width}px;height:${height}px;overflow:hidden;background:#0f0f0f;">
-        <img src="${window.location.origin}/voucher-card.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
-        <div style="position:absolute;top:24px;right:32px;font-size:12px;color:#8a8a8a;font-family:Georgia,serif;z-index:1;">Č. voucheru: ${escapeHtml(voucherNumber)}</div>
-        <div style="position:absolute;bottom:70px;left:0;right:0;text-align:center;font-family:Georgia,serif;padding:0 50px;z-index:1;line-height:1.35;">
-          <div style="font-size:20px;font-weight:600;margin:0 0 6px 0;color:#ffffff;">${escapeHtml(fullName)}</div>
-          <div style="font-size:14px;margin:0 0 6px 0;color:#C4BEB4;">${escapeHtml(o.service)}</div>
-          <div style="font-size:18px;font-weight:600;margin:0 0 8px 0;color:#C9A84C;">${escapeHtml(amountStr)} Kč</div>
-          <div style="font-size:12px;margin:0;color:#8a8a8a;">Pobočka: ${escapeHtml(o.branch)}</div>
-        </div>
+        <img src="${window.location.origin}/voucher-card.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill;" />
+        <div style="position:absolute;top:${layout.voucherNo.top}px;right:${layout.voucherNo.right}px;font-size:11px;color:#8a8a8a;font-family:'Playfair Display',serif;z-index:1;">Č. voucheru: ${escapeHtml(voucherNumber)}</div>
+        <div style="position:absolute;left:${layout.nameLeft}px;bottom:${layout.nameBottom}px;font-size:20px;font-weight:600;line-height:1;color:#ffffff;font-family:'Playfair Display',serif;z-index:1;">${escapeHtml(o.name)}</div>
+        <div style="position:absolute;left:${layout.surnameLeft}px;bottom:${layout.surnameBottom}px;font-size:20px;font-weight:600;line-height:1;color:#ffffff;font-family:'Playfair Display',serif;z-index:1;">${escapeHtml(surname || "–")}</div>
+        <div style="position:absolute;left:${layout.serviceLeft}px;right:${layout.serviceRight}px;bottom:${layout.serviceBottom}px;font-size:17px;line-height:1;color:#C4BEB4;font-family:'Playfair Display',serif;z-index:1;">${escapeHtml(o.service)}</div>
+        <div style="position:absolute;left:${layout.serviceLeft}px;bottom:${layout.amountBottom}px;font-size:19px;font-weight:700;color:#C9A84C;font-family:'Playfair Display',serif;z-index:1;">${escapeHtml(amountStr)} Kč</div>
+        <div style="position:absolute;left:${layout.serviceLeft}px;bottom:${layout.branchBottom}px;font-size:12px;color:#8a8a8a;font-family:'Playfair Display',serif;z-index:1;">Pobočka: ${escapeHtml(o.branch)}</div>
       </div>
       </body></html>
     `);
@@ -575,7 +589,8 @@ export function AdminApp() {
       : Promise.resolve();
     try {
       await imgLoaded;
-      await new Promise((r) => setTimeout(r, 100));
+      if (doc.fonts?.ready) await doc.fonts.ready;
+      await new Promise((r) => setTimeout(r, 150));
       const canvas = await html2canvas(container, {
         scale: 2,
         useCORS: true,

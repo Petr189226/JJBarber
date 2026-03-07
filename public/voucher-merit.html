@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <title>Měření pozic voucheru</title>
+  <style>
+    body { font-family: system-ui, sans-serif; padding: 16px; background: #1a1a1a; color: #eee; }
+    h1 { font-size: 1rem; margin-bottom: 8px; }
+    p { font-size: 14px; color: #999; margin-bottom: 16px; }
+    #coords { font-size: 18px; font-weight: 600; margin-bottom: 24px; }
+    img { display: block; max-width: 100%; height: auto; cursor: crosshair; }
+    .wrap { position: relative; display: inline-block; }
+  </style>
+</head>
+<body>
+  <h1>Měření pozic pro voucher (1024×682 px)</h1>
+  <p>Najetím myší na obrázek uvidíš souřadnice. Y od spodu = 682 − Y (zobrazuje se dole). Klikni pro zkopírování řádku do schránky.</p>
+  <div id="coords">X: — &nbsp; Y: — &nbsp; <strong>Y od spodu: —</strong></div>
+  <div class="wrap">
+    <img id="img" src="/voucher-card.png" alt="Voucher" width="1024" height="682">
+  </div>
+  <script>
+    var img = document.getElementById('img');
+    var coords = document.getElementById('coords');
+    var h = 682;
+    img.addEventListener('mousemove', function(e) {
+      var rect = img.getBoundingClientRect();
+      var x = Math.round(e.clientX - rect.left);
+      var y = Math.round(e.clientY - rect.top);
+      var yFromBottom = h - y;
+      coords.innerHTML = 'X: ' + x + ' &nbsp; Y: ' + y + ' &nbsp; <strong>Y od spodu: ' + yFromBottom + '</strong>';
+    });
+    img.addEventListener('click', function(e) {
+      var rect = img.getBoundingClientRect();
+      var x = Math.round(e.clientX - rect.left);
+      var y = Math.round(e.clientY - rect.top);
+      var yFromBottom = h - y;
+      var line = 'X: ' + x + ', Y od spodu: ' + yFromBottom;
+      navigator.clipboard.writeText(line).then(function() {
+        coords.innerHTML = 'Zkopírováno: ' + line;
+        setTimeout(function() { coords.innerHTML = 'X: ' + x + ' &nbsp; Y: ' + y + ' &nbsp; <strong>Y od spodu: ' + yFromBottom + '</strong>'; }, 1500);
+      });
+    });
+  </script>
+</body>
+</html>
