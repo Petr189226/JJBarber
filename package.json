@@ -9,7 +9,8 @@
     "deploy-forpsi": "npm run build && node scripts/zip-for-forpsi.mjs",
     "deploy-websupport": "node scripts/check-env.mjs && npm run build && node scripts/zip-for-websupport.mjs",
     "supabase:setup": "node scripts/supabase-setup.mjs",
-    "supabase:setup-roles": "node scripts/supabase-setup-roles.mjs"
+    "supabase:setup-roles": "node scripts/supabase-setup-roles.mjs",
+    "supabase:setup-roles-003": "node scripts/supabase-setup-roles-003.mjs"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",

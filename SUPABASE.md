@@ -39,21 +39,27 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 2. Zkopíruj obsah `supabase/migrations/001_voucher_orders.sql`
 3. Spusť (Run)
 
-## 4. Vytvoř admin účet
+## 4. Spusť migraci rolí
 
-1. V Supabase: **Authentication** → **Users** → **Add user**
-2. Zadej e-mail a heslo (např. tvůj firemní e-mail)
-3. Tímto účtem se přihlásíš na `/admin`
+1. Spusť `npm run supabase:setup-roles` – zkopíruje SQL do schránky
+2. V Supabase SQL Editoru vlož a spusť (Run)
+3. Spusť migraci 003: `npm run supabase:setup-roles-003` – zkopíruje SQL, vlož a spusť v Supabase
 
-## 5. Admin rozhraní
+## 5. Vytvoř prvního Majitele (hlavní účet)
+
+1. V Supabase: **Authentication** → **Users** → **Add user** – zadej e-mail a heslo
+2. Zkopíruj **User UID** (klikni na uživatele)
+3. **Table Editor** → **admin_roles** → **Insert row**
+   - `user_id` = UID z kroku 2
+   - `role` = `majitel`
+
+## 6. Admin rozhraní
 
 - **URL:** `https://jjbarbershop.cz/jj-backstage` (skrytá cesta, není v menu)
-- **Přihlášení:** e-mail + heslo z kroku 4
+- **Přihlášení:** e-mail + heslo Majitele
 - **Funkce:** seznam objednávek voucherů, změna stavu (Nový / Rozpracováno / Vyřízeno)
-- **Přidat dalšího správce:** v adminu rozbal „Přidat dalšího správce“ – majitelé si vytvoří účty pro kolegy přímo v UI, bez přístupu do Supabase
+- **Přidat správce:** Majitel může vytvářet další Majitele nebo Barbery přímo v adminu
 - **Role:** Majitel může měnit stavy voucherů a přidávat správce. Barber má jen náhled (read-only).
-
-**Migrace rolí:** Po prvním nastavení spusť `npm run supabase:setup-roles` a v Supabase SQL Editoru spusť migraci. První přihlášený správce si pak v adminu nastaví „Nastavit jako majitel“.
 
 **Tip:** Aby nově vytvoření správci mohli hned přihlásit, vypni v Supabase **Authentication** → **Providers** → **Email** → **Confirm email**.
 

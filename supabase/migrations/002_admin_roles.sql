@@ -25,9 +25,11 @@ create policy "First user or majitel can insert" on admin_roles
 
 -- voucher_orders: jen majitel může UPDATE
 drop policy if exists "Authenticated can read and update" on voucher_orders;
+drop policy if exists "Authenticated can read" on voucher_orders;
 create policy "Authenticated can read" on voucher_orders
   for select using (auth.role() = 'authenticated');
 
+drop policy if exists "Majitel can update voucher status" on voucher_orders;
 create policy "Majitel can update voucher status" on voucher_orders
   for update using (
     exists (select 1 from admin_roles where user_id = auth.uid() and role = 'majitel')

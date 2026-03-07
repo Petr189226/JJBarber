@@ -40,7 +40,7 @@ export function AdminApp() {
   const [newAdminRole, setNewAdminRole] = useState<"majitel" | "barber">("barber");
   const [role, setRole] = useState<AdminRole>(null);
   const [roleLoading, setRoleLoading] = useState(true);
-  const [claimingMajitel, setClaimingMajitel] = useState(false);
+  const [showAddAdmin, setShowAddAdmin] = useState(false);
 
   useEffect(() => {
     const meta = document.createElement("meta");
@@ -118,20 +118,6 @@ export function AdminApp() {
     setUpdatingId(null);
   };
 
-  const claimMajitel = async () => {
-    if (!supabase || !user) return;
-    setClaimingMajitel(true);
-    setAddAdminError("");
-    const { error } = await supabase.from("admin_roles").insert({ user_id: user.id, role: "majitel" });
-    setClaimingMajitel(false);
-    if (!error) {
-      setRole("majitel");
-      setAddAdminError("");
-    } else {
-      setAddAdminError(error.message);
-    }
-  };
-
   const handleAddAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supabase || !newAdminEmail || !newAdminPassword || role !== "majitel") return;
@@ -158,6 +144,7 @@ export function AdminApp() {
         setAddAdminSuccess(true);
         setNewAdminEmail("");
         setNewAdminPassword("");
+        setShowAddAdmin(false);
       }
     }
     setAddAdminLoading(false);
@@ -253,7 +240,7 @@ export function AdminApp() {
 
   const isMajitel = role === "majitel";
   const isBarber = role === "barber";
-  const needsClaim = role === null && !roleLoading;
+  const noRole = role === null && !roleLoading;
 
   return (
     <div className={adminLayout}>
@@ -276,6 +263,14 @@ export function AdminApp() {
             )}
           </div>
           <div className="flex items-center gap-4">
+            {isMajitel && (
+              <button
+                onClick={() => setShowAddAdmin((v) => !v)}
+                className={`text-sm font-medium transition-colors ${showAddAdmin ? "text-[#C9A84C]" : "text-[#8A8580] hover:text-[#C4BEB4]"}`}
+              >
+                + Přidat správce
+              </button>
+            )}
             <a href="/" className="text-[#8A8580] hover:text-[#C4BEB4] text-sm transition-colors">
               ← Web
             </a>
@@ -290,23 +285,23 @@ export function AdminApp() {
       </header>
 
       <main className="max-w-5xl mx-auto px-6 py-8">
-        {needsClaim && (
+        {noRole && (
           <div className="mb-8 p-4 bg-[#111111] border border-[#2A2A2A] rounded-xl">
-            <p className="text-[#B5AEA4] text-sm mb-3">
-              Jste prvním správcem. Nastavte se jako majitel – budete moci měnit stavy voucherů a přidávat další správce.
+            <p className="text-[#B5AEA4] text-sm">
+              Nemáte přiřazenou roli. Přidejte svůj účet do tabulky <code className="text-[#C4BEB4]">admin_roles</code> v Supabase (Table Editor) s rolí <code className="text-[#C4BEB4]">majitel</code> nebo <code className="text-[#C4BEB4]">barber</code>. První Majitel se vytváří ručně v Supabase.
             </p>
-            <button
-              onClick={claimMajitel}
-              disabled={claimingMajitel}
-              className={btnClass}
-            >
-              {claimingMajitel ? "Nastavuji…" : "Nastavit jako majitel"}
-            </button>
-            {addAdminError && <p className="text-red-400 text-sm mt-2">{addAdminError}</p>}
           </div>
         )}
 
-        {ordersLoading ? (
+        {isBarber && (
+          <div className="mb-8 p-4 bg-[#111111] border border-[#2A2A2A] rounded-xl">
+            <p className="text-[#8A8580] text-sm">
+              Jako Barber máte jen náhled – nemůžete měnit stavy voucherů ani přidávat správce.
+            </p>
+          </div>
+        )}
+
+        {!noRole && (ordersLoading ? (
           <div className="flex justify-center py-20">
             <div className="w-8 h-8 border-2 border-[#C9A84C] border-t-transparent rounded-full animate-spin" />
           </div>
@@ -372,9 +367,9 @@ export function AdminApp() {
               </tbody>
             </table>
           </div>
-        )}
+        ))}
 
-        {orders.some((o) => o.note) && (
+        {!noRole && orders.some((o) => o.note) && (
           <details className="mt-8">
             <summary className="text-[#8A8580] text-sm cursor-pointer hover:text-[#C4BEB4]">
               Zobrazit poznámky
@@ -392,12 +387,20 @@ export function AdminApp() {
           </details>
         )}
 
-        {isMajitel && (
-          <details className="mt-12 pt-8 border-t border-[#1F1F1F]">
-            <summary className="text-[#8A8580] text-sm cursor-pointer hover:text-[#C4BEB4]">
-              Přidat dalšího správce
-            </summary>
-            <div className="mt-4 max-w-sm">
+        {isMajitel && (showAddAdmin ? (
+          <div className="mb-8 p-6 bg-[#111111] border border-[#2A2A2A] rounded-xl max-w-md">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[#C4BEB4] font-medium" style={{ fontFamily: "'Playfair Display', serif" }}>
+                Přidat dalšího správce
+              </h2>
+              <button
+                onClick={() => setShowAddAdmin(false)}
+                className="text-[#8A8580] hover:text-[#C4BEB4] text-sm"
+              >
+                Zavřít
+              </button>
+            </div>
+            <div>
               <p className="text-[#6B6B6B] text-xs mb-4">
                 Vytvoř účet pro kolegu. Majitel může měnit stavy voucherů, barber má jen náhled.
               </p>
@@ -438,8 +441,8 @@ export function AdminApp() {
                 </button>
               </form>
             </div>
-          </details>
-        )}
+          </div>
+        ) : null)}
       </main>
       </div>
     </div>
