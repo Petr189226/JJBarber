@@ -564,7 +564,7 @@ export function AdminApp() {
       <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap">
       </head><body style="margin:0;background:#0f0f0f;">
       <div style="position:relative;width:${width}px;height:${height}px;overflow:hidden;background:#0f0f0f;">
-        <img src="${window.location.origin}/voucher-card.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill;" />
+        <img src="${window.location.origin}/voucher-card.png?v=2" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill;" />
         <div style="position:absolute;top:${layout.voucherNo.top}px;right:${layout.voucherNo.right}px;font-size:11px;color:#8a8a8a;font-family:'Playfair Display',serif;z-index:1;">Č. voucheru: ${escapeHtml(voucherNumber)}</div>
         <div style="position:absolute;left:${layout.nameLeft}px;bottom:${layout.nameBottom}px;font-size:20px;font-weight:600;line-height:1;color:#ffffff;font-family:'Playfair Display',serif;z-index:1;">${escapeHtml(o.name)}</div>
         <div style="position:absolute;left:${layout.surnameLeft}px;bottom:${layout.surnameBottom}px;font-size:20px;font-weight:600;line-height:1;color:#ffffff;font-family:'Playfair Display',serif;z-index:1;">${escapeHtml(surname || "–")}</div>
