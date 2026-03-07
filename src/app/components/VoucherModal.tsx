@@ -74,7 +74,10 @@ export function VoucherModal({ open, onClose }: Props) {
       if (err) throw err;
       setSent(true);
     } catch (e) {
-      const msg = e instanceof Error ? e.message : t("voucher.errorSend");
+      const msg =
+        (e && typeof e === "object" && "message" in e && String((e as { message: unknown }).message)) ||
+        (e instanceof Error ? e.message : null) ||
+        t("voucher.errorSend");
       setError(msg);
       console.error("Voucher insert error:", e);
     } finally {

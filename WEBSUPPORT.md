@@ -2,8 +2,19 @@
 
 ## 1. Co máš připravené
 
-- **`jj-barbershop-websupport.zip`** – archiv se všemi soubory webu (vytvořen po `npm run build`)
+- **`jj-barbershop-websupport.zip`** – archiv se všemi soubory webu (vytvořen po `npm run deploy-websupport`)
 - **`.htaccess`** – už je v archivu, zajišťuje správné fungování SPA (hash odkazy)
+
+### Supabase (voucher + admin)
+
+Pro fungování voucher formuláře a admin stránky potřebuješ mít v projektu soubor **`.env`** s hodnotami Supabase:
+
+```
+VITE_SUPABASE_URL=https://jdtijmhosifoccwsgdgx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJ... (tvůj anon key)
+```
+
+Získej je v Supabase Dashboard → **Settings** → **API**. Před buildem musí být `.env` na místě – hodnoty se vloží do buildu při kompilaci.
 
 ## 2. Postup nasazení
 
@@ -59,10 +70,10 @@ Pak znovu spusť `npm run build` a nahraj nový obsah.
 
 ```bash
 cd /Users/petr/jj-barbershop
-npm run build
+npm run deploy-websupport
 ```
 
-Vznikne nová složka `dist/`. Nahraj její obsah do `public_html` (přepíše staré soubory).
+Vznikne `jj-barbershop-websupport.zip`. Rozbal ho a nahraj obsah do `public_html` (přepíše staré soubory).
 
 ---
 
@@ -72,3 +83,5 @@ Po nahrání otevři svou doménu v prohlížeči. Měl bys vidět:
 - Hero sekci s „Tvůj barber shop na Praze 10“
 - Pobočky, Tým, Ceník, Recenze, Rezervace
 - Tlačítko Rezervovat termín (odkaz na Reservio)
+- Dárkový poukaz (formulář) – pokud máš `.env` s Supabase
+- Admin: `https://jjbarbershop.cz/admin` – přihlášení pro správu voucherů

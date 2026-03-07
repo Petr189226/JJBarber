@@ -7,7 +7,8 @@
     "build": "vite build",
     "dev": "vite",
     "deploy-forpsi": "npm run build && node scripts/zip-for-forpsi.mjs",
-    "deploy-websupport": "npm run build && node scripts/zip-for-websupport.mjs"
+    "deploy-websupport": "node scripts/check-env.mjs && npm run build && node scripts/zip-for-websupport.mjs",
+    "supabase:setup": "node scripts/supabase-setup.mjs"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",

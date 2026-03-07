@@ -1,5 +1,19 @@
 # Supabase – voucher objednávky a admin
 
+## ⚠️ PŘED PRVNÍM ODESLÁNÍM VOUCHERU
+
+**Tabulka `voucher_orders` musí existovat v databázi.** Spusť migraci:
+
+```bash
+npm run supabase:setup
+```
+
+Skript zkopíruje SQL do schránky a otevře Supabase SQL Editor. Vlož (Ctrl+V) a klikni **RUN**.
+
+Bez toho uvidíš chybu: *"Could not find the table 'public.voucher_orders'"*.
+
+---
+
 ## 1. Vytvoř projekt na Supabase
 
 1. Jdi na [supabase.com](https://supabase.com) a založ účet

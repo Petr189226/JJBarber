@@ -7,7 +7,8 @@ import { fileURLToPath } from 'url';
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const root = join(__dirname, '..');
 const dist = join(root, 'dist');
-const zipPath = join(root, 'jj-barbershop-websupport.zip');
+const desktop = join(process.env.HOME || process.env.USERPROFILE || '', 'Desktop');
+const zipPath = join(desktop, 'jj-barbershop-websupport.zip');
 
 if (!existsSync(dist)) {
   console.error('Složka dist/ neexistuje. Spusť nejdřív: npm run build');
@@ -16,7 +17,7 @@ if (!existsSync(dist)) {
 
 try {
   execSync(`cd "${dist}" && zip -r "${zipPath}" .`, { stdio: 'inherit' });
-  console.log('\n✓ Vytvořeno: jj-barbershop-websupport.zip');
+  console.log('\n✓ Vytvořeno na ploše:', zipPath);
   console.log('  Postup nahrání viz WEBSUPPORT.md');
 } catch (e) {
   console.error('Příkaz zip selhal (na Windows může chybět).');
