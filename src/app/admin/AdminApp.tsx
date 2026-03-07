@@ -538,7 +538,6 @@ export function AdminApp() {
     const height = 682;
     const amountStr = parseAmount(o.service).toLocaleString("cs-CZ");
     const surname = (o.surname || "").trim();
-    // Šablona 1024×682 px. Pozice z voucher-merit.html (X, Y od spodu).
     const layout = {
       voucherNo: { top: 32, right: 40 },
       nameLeft: 417,

@@ -6,3 +6,4 @@ dist/
 forpsi-deploy.zip
 jj-barbershop-websupport.zip
 supabase/.temp/
+.DS_Store
