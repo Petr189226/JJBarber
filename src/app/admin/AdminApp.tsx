@@ -57,11 +57,11 @@ const statusLabels: Record<Status, string> = {
 };
 
 const statusConfig: Record<Status, { color: string; bg: string; icon: React.ReactNode }> = {
-  new: { color: "text-blue-400", bg: "bg-blue-600/25 border-blue-500/50", icon: <ClockIcon size={12} /> },
-  done: { color: "text-emerald-400", bg: "bg-emerald-600/25 border-emerald-500/50", icon: <CheckIcon size={12} /> },
-  pending: { color: "text-amber-400", bg: "bg-amber-600/25 border-amber-500/50", icon: <ClockIcon size={12} /> },
-  awaiting_payment: { color: "text-yellow-400", bg: "bg-yellow-600/25 border-yellow-500/50", icon: <AlertCircleIcon size={12} /> },
-  storno: { color: "text-red-400", bg: "bg-red-600/25 border-red-500/50", icon: <XIcon size={12} /> },
+  new: { color: "text-blue-600", bg: "bg-blue-100 border-blue-300", icon: <ClockIcon size={12} /> },
+  done: { color: "text-emerald-600", bg: "bg-emerald-100 border-emerald-300", icon: <CheckIcon size={12} /> },
+  pending: { color: "text-amber-600", bg: "bg-amber-100 border-amber-300", icon: <ClockIcon size={12} /> },
+  awaiting_payment: { color: "text-yellow-700", bg: "bg-yellow-100 border-yellow-300", icon: <AlertCircleIcon size={12} /> },
+  storno: { color: "text-red-600", bg: "bg-red-100 border-red-300", icon: <XIcon size={12} /> },
 };
 
 function parseAmount(service: string): number {
@@ -91,10 +91,10 @@ function StatsCard({
   color: string;
 }) {
   return (
-    <div className="bg-[#0f0f0f] border border-[#1e1e1e] rounded-lg px-4 py-3 flex flex-col gap-0.5">
-      <span className="text-[#555] text-[10px] uppercase tracking-wider">{label}</span>
+    <div className="bg-white border border-gray-200 rounded-lg px-4 py-3 flex flex-col gap-0.5">
+      <span className="text-gray-600 text-[10px] uppercase tracking-wider font-medium">{label}</span>
       <span className={`text-2xl font-semibold tabular-nums ${color}`}>{value}</span>
-      {sub && <span className="text-[#444] text-[11px]">{sub}</span>}
+      {sub && <span className="text-gray-600 text-[11px]">{sub}</span>}
     </div>
   );
 }
@@ -323,9 +323,28 @@ export function AdminApp() {
     if (!supabase || !email || !password) return;
     setLoginLoading(true);
     setLoginError("");
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoginLoading(false);
-    if (error) setLoginError(error.message);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        const msg = error.message;
+        const cause = (error as Error & { cause?: Error })?.cause?.message;
+        setLoginError(
+          msg === "Failed to fetch"
+            ? `Síťová chyba: ${cause || msg}. Zkontrolujte Supabase Dashboard → Auth → URL Configuration (Site URL, Redirect URLs). Vypněte adblocker.`
+            : msg
+        );
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      const cause = err instanceof Error && err.cause instanceof Error ? err.cause.message : "";
+      setLoginError(
+        msg === "Failed to fetch"
+          ? `Síťová chyba: ${cause || msg}. Zkontrolujte Supabase URL Configuration a síťové připojení.`
+          : msg
+      );
+    } finally {
+      setLoginLoading(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -582,17 +601,17 @@ export function AdminApp() {
   const adminLayout = "min-h-screen relative";
 
   const inputClass =
-    "w-full bg-[#111111] border border-[#2A2A2A] focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/25 text-[#C4BEB4] rounded-xl px-4 py-3 outline-none transition-all";
-  const btnClass = "px-6 py-3 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-xl font-semibold transition-all";
+    "w-full bg-white border border-gray-300 focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/25 text-gray-900 rounded-xl px-4 py-3 outline-none transition-all";
+  const btnClass = "px-6 py-3 bg-[#C9A84C] hover:bg-[#D4B85A] text-gray-900 rounded-xl font-semibold transition-all";
 
   if (!isSupabaseConfigured()) {
     return (
-      <div className={`${adminLayout} flex items-center justify-center p-6 bg-[#0a0a0a]`}>
+      <div className={`${adminLayout} flex items-center justify-center p-6 bg-white`}>
         <div className="max-w-md text-center">
-          <h1 className="text-[#C4BEB4] text-xl mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h1 className="text-gray-800 text-xl mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
             Admin není nakonfigurován
           </h1>
-          <p className="text-[#8A8580] text-sm leading-relaxed">
+          <p className="text-gray-600 text-sm leading-relaxed">
             Přidej VITE_SUPABASE_URL a VITE_SUPABASE_ANON_KEY do .env. Viz .env.example.
           </p>
         </div>
@@ -602,7 +621,7 @@ export function AdminApp() {
 
   if (loading) {
     return (
-      <div className={`${adminLayout} flex items-center justify-center bg-[#0a0a0a]`} role="status" aria-live="polite">
+      <div className={`${adminLayout} flex items-center justify-center bg-white`} role="status" aria-live="polite">
         <div className="w-8 h-8 border-2 border-[#C9A84C] border-t-transparent rounded-full animate-spin" aria-hidden />
         <span className="sr-only">Načítám…</span>
       </div>
@@ -611,12 +630,12 @@ export function AdminApp() {
 
   if (!user) {
     return (
-      <div className={`${adminLayout} flex items-center justify-center p-6 bg-[#0a0a0a]`}>
+      <div className={`${adminLayout} flex items-center justify-center p-6 bg-white`}>
         <div className="w-full max-w-sm">
-          <h1 className="text-[#C4BEB4] text-2xl mb-2 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h1 className="text-gray-800 text-2xl mb-2 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
             J&J Admin
           </h1>
-          <p className="text-[#8A8580] text-sm mb-8 text-center">Přihlášení pro správu voucherů</p>
+          <p className="text-gray-600 text-sm mb-8 text-center">Přihlášení pro správu voucherů</p>
 
           <form onSubmit={handleLogin} className="space-y-4">
             <input
@@ -652,24 +671,24 @@ export function AdminApp() {
   const noRole = role === null && !roleLoading;
 
   return (
-    <div className={`${adminLayout} min-h-screen bg-[#0a0a0a] text-white`} style={{ fontFamily: "Inter, sans-serif" }}>
+    <div className={`${adminLayout} min-h-screen bg-white text-gray-900`} style={{ fontFamily: "Inter, sans-serif" }}>
       <div>
-        <header className="border-b border-[#1e1e1e] bg-[#0a0a0a] px-4 sm:px-8 py-3 flex items-center justify-between sticky top-0 z-40">
+        <header className="border-b border-gray-200 bg-white px-4 sm:px-8 py-3 flex items-center justify-between sticky top-0 z-40">
           <div className="flex items-center gap-4">
             <div className="w-9 h-9 bg-[#c9a84c] rounded-lg flex items-center justify-center flex-shrink-0">
               <ScissorsIcon size={18} className="text-[#080808]" />
             </div>
             <div>
-              <h1 className="text-white text-lg font-medium" style={{ fontFamily: "Playfair Display, serif" }}>
+              <h1 className="text-gray-900 text-lg font-medium" style={{ fontFamily: "Playfair Display, serif" }}>
                 Barber Admin
               </h1>
-              <span className="text-[#555] text-xs">Správa dárkových poukazů</span>
+              <span className="text-gray-600 text-xs">Správa dárkových poukazů</span>
             </div>
             {role && (
-              <div className="flex items-center gap-2 pl-4 border-l border-[#222]">
+              <div className="flex items-center gap-2 pl-4 border-l border-gray-200">
                 <span
                   className={`text-xs px-2.5 py-1 rounded-md font-medium ${
-                    isMajitel ? "bg-[#c9a84c]/15 text-[#c9a84c] border border-[#c9a84c]/30" : "bg-[#1a1a1a] text-[#888] border border-[#2a2a2a]"
+                    isMajitel ? "bg-[#c9a84c]/15 text-[#c9a84c] border border-[#c9a84c]/30" : "bg-gray-50 text-gray-600 border border-gray-200"
                   }`}
                 >
                   {isMajitel ? "Majitel" : "Barber"}
@@ -683,8 +702,8 @@ export function AdminApp() {
                 onClick={() => setShowAddAdmin((v) => !v)}
                 className={`text-sm px-4 py-2 rounded-lg font-medium transition-colors border ${
                   showAddAdmin
-                    ? "bg-[#c9a84c] text-[#080808] border-[#c9a84c]"
-                    : "bg-transparent text-[#999] border-[#333] hover:border-[#444] hover:text-[#ccc]"
+                    ? "bg-[#c9a84c] text-gray-900 border-[#c9a84c]"
+                    : "bg-transparent text-gray-600 border-gray-400 hover:border-gray-500 hover:text-gray-800"
                 }`}
                 aria-expanded={showAddAdmin}
                 aria-label={showAddAdmin ? "Skrýt formulář pro přidání správce" : "Přidat nového správce"}
@@ -694,13 +713,13 @@ export function AdminApp() {
             )}
             <a
               href="/"
-              className="text-[#666] hover:text-[#999] text-sm px-3 py-2 rounded-lg transition-colors"
+              className="text-gray-600 hover:text-gray-800 text-sm px-3 py-2 rounded-lg transition-colors"
             >
               ← Web
             </a>
             <button
               onClick={handleLogout}
-              className="text-[#666] hover:text-[#999] text-sm px-3 py-2 rounded-lg transition-colors"
+              className="text-gray-600 hover:text-gray-800 text-sm px-3 py-2 rounded-lg transition-colors"
               aria-label="Odhlásit se"
             >
               Odhlásit
@@ -710,16 +729,16 @@ export function AdminApp() {
 
         <main className="px-4 sm:px-8 py-4 sm:py-6 max-w-[1920px] mx-auto w-full">
           {noRole && (
-            <div className="mb-6 p-3 bg-[#111] border border-[#222] rounded-lg">
-              <p className="text-[#666] text-sm">
-                Nemáte přiřazenou roli. Přidejte svůj účet do tabulky <code className="text-[#888]">admin_roles</code> v Supabase s rolí <code className="text-[#888]">majitel</code> nebo <code className="text-[#888]">barber</code>.
+            <div className="mb-6 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className="text-gray-700 text-sm">
+                Nemáte přiřazenou roli. Přidejte svůj účet do tabulky <code className="text-gray-600">admin_roles</code> v Supabase s rolí <code className="text-gray-600">majitel</code> nebo <code className="text-gray-600">barber</code>.
               </p>
             </div>
           )}
 
           {isBarber && (
-            <div className="mb-6 p-3 bg-[#111] border border-[#222] rounded-lg">
-              <p className="text-[#666] text-sm">
+            <div className="mb-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-gray-700 text-sm">
                 Jste přihlášen jako barber. Máte přístup pouze ke čtení bez možnosti měnit stavy voucherů a správu uživatelů.
               </p>
             </div>
@@ -728,10 +747,10 @@ export function AdminApp() {
           {!noRole && (
             <>
               {fetchError && (
-                <div className="mb-5 flex items-center gap-2 px-4 py-2 bg-red-900/20 border border-red-600/30 rounded-lg">
-                  <AlertCircleIcon size={16} className="text-red-400" />
-                  <span className="text-sm text-red-300">{fetchError}</span>
-                  <button onClick={() => fetchOrders()} className="ml-2 text-xs text-red-400 hover:text-red-300 underline">
+                <div className="mb-5 flex items-center gap-2 px-4 py-2 bg-red-50 border border-red-200 rounded-lg">
+                  <AlertCircleIcon size={16} className="text-red-600" />
+                  <span className="text-sm text-red-700">{fetchError}</span>
+                  <button onClick={() => fetchOrders()} className="ml-2 text-xs text-red-600 hover:text-red-700 underline">
                     Zkusit znovu
                   </button>
                 </div>
@@ -739,17 +758,17 @@ export function AdminApp() {
               {(metrics.staryNovy > 0 || metrics.bezTelefonu > 0) && (
                 <div className="mb-5 flex flex-wrap gap-2">
                   {metrics.staryNovy > 0 && (
-                    <div className="flex items-center gap-2 px-4 py-2 bg-amber-900/20 border border-amber-600/30 rounded-lg">
-                      <AlertTriangleIcon size={16} className="text-amber-400" />
-                      <span className="text-sm text-amber-300">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+                      <AlertTriangleIcon size={16} className="text-amber-600" />
+                      <span className="text-sm text-amber-800">
                         {metrics.staryNovy} nezpracovaných starších než 24 h
                       </span>
                     </div>
                   )}
                   {metrics.bezTelefonu > 0 && (
-                    <div className="flex items-center gap-2 px-4 py-2 bg-amber-900/20 border border-amber-600/30 rounded-lg">
-                      <PhoneOffIcon size={16} className="text-amber-400" />
-                      <span className="text-sm text-amber-300">
+                    <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+                      <PhoneOffIcon size={16} className="text-amber-600" />
+                      <span className="text-sm text-amber-800">
                         {metrics.bezTelefonu} objednávek bez telefonu
                       </span>
                     </div>
@@ -774,20 +793,20 @@ export function AdminApp() {
                   label="Nové"
                   value={counts.novy}
                   sub={metrics.novyDnes > 0 ? `${metrics.novyDnes} dnes` : "čekají"}
-                  color="text-blue-400"
+                  color="text-blue-600"
                 />
-                <StatsCard label="Vyřízeno" value={counts.vyrizeno} sub="celkem" color="text-emerald-400" />
+                <StatsCard label="Vyřízeno" value={counts.vyrizeno} sub="celkem" color="text-emerald-600" />
                 <StatsCard
                   label="Čeká / rozpracováno"
                   value={counts.ceka + counts.pending}
                   sub="platba nebo v práci"
-                  color="text-amber-400"
+                  color="text-amber-600"
                 />
                 <StatsCard
                   label="Průměr voucheru"
                   value={`${metrics.prumer.toLocaleString("cs-CZ")} Kč`}
                   sub={metrics.topService ? metrics.topService.split("–")[0]?.trim() || "" : ""}
-                  color="text-[#888]"
+                  color="text-gray-600"
                 />
               </div>
 
@@ -797,15 +816,15 @@ export function AdminApp() {
                   <span className="sr-only">Načítám objednávky…</span>
                 </div>
               ) : (
-                <div className="bg-[#0d0d0d] border border-[#1e1e1e] rounded-xl overflow-hidden">
-                  <div className="px-5 py-4 border-b border-[#1e1e1e] bg-[#0a0a0a] flex flex-col gap-3">
+                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                  <div className="px-5 py-4 border-b border-gray-200 bg-white flex flex-col gap-3">
                     <div className="flex items-center justify-between gap-4">
-                      <h2 className="text-white font-medium text-base">
+                      <h2 className="text-gray-900 font-medium text-base">
                         Objednávky voucherů
                       </h2>
                       {selectedIds.size > 0 ? (
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-[#888] text-sm">{selectedIds.size} vybráno</span>
+                          <span className="text-gray-600 text-sm">{selectedIds.size} vybráno</span>
                           <button
                             onClick={bulkExportCsv}
                             className="px-3 py-1.5 text-xs bg-[#c9a84c]/20 text-[#c9a84c] border border-[#c9a84c]/40 rounded-lg hover:bg-[#c9a84c]/30 transition-colors"
@@ -822,7 +841,7 @@ export function AdminApp() {
                               }
                               setSelectedIds(new Set());
                             }}
-                            className="px-3 py-1.5 text-xs bg-[#222] border border-[#2a2a2a] rounded-lg text-[#ccc] cursor-pointer"
+                            className="px-3 py-1.5 text-xs bg-white border border-gray-300 rounded-lg text-gray-700 cursor-pointer"
                           >
                             <option value="">Změnit stav…</option>
                             {(["new", "pending", "awaiting_payment", "done", "storno"] as Status[]).map((s) => (
@@ -833,33 +852,33 @@ export function AdminApp() {
                           </select>
                           <button
                             onClick={() => setSelectedIds(new Set())}
-                            className="px-3 py-1.5 text-xs text-[#666] hover:text-[#999]"
+                            className="px-3 py-1.5 text-xs text-gray-600 hover:text-gray-800"
                           >
                             Zrušit výběr
                           </button>
                         </div>
                       ) : (
-                        <span className="text-[#666] text-sm">
+                        <span className="text-gray-600 text-sm">
                           Zobrazeno {filtered.length} z {orders.length}
                         </span>
                       )}
                     </div>
                     <div className="flex flex-wrap items-center gap-2 overflow-x-auto pb-1 -mx-1">
                       <div className="relative">
-                        <SearchIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#555]" />
+                        <SearchIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                         <input
                           type="text"
                           placeholder="Hledat jméno, email, telefon..."
                           value={search}
                           onChange={(e) => setSearch(e.target.value)}
-                          className="bg-[#141414] border border-[#2a2a2a] rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#c9a84c]/60 w-40 sm:w-52 min-w-[140px]"
+                          className="bg-white border border-gray-300 rounded-lg pl-9 pr-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#c9a84c]/60 w-40 sm:w-52 min-w-[140px]"
                           aria-label="Hledat v objednávkách"
                         />
                       </div>
                       <select
                         value={filterStatus}
                         onChange={(e) => setFilterStatus(e.target.value as Status | "Vše")}
-                        className="bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-[#bbb] focus:outline-none focus:border-[#c9a84c]/60 cursor-pointer"
+                        className="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-[#c9a84c]/60 cursor-pointer"
                       >
                         <option value="Vše">Všechny stavy</option>
                         {(["new", "pending", "awaiting_payment", "done", "storno"] as Status[]).map((s) => (
@@ -871,7 +890,7 @@ export function AdminApp() {
                       <select
                         value={filterPobocka}
                         onChange={(e) => setFilterPobocka(e.target.value)}
-                        className="bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-[#bbb] focus:outline-none focus:border-[#c9a84c]/60 cursor-pointer"
+                        className="bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-[#c9a84c]/60 cursor-pointer"
                       >
                         {branches.map((p) => (
                           <option key={p} value={p}>
@@ -892,7 +911,7 @@ export function AdminApp() {
                             className={`px-2.5 py-1.5 rounded text-xs font-medium transition-colors ${
                               filterDatePreset === p.id
                                 ? "bg-[#c9a84c]/20 text-[#c9a84c] border border-[#c9a84c]/40"
-                                : "bg-[#141414] text-[#888] border border-[#2a2a2a] hover:text-[#bbb] hover:border-[#333]"
+                                : "bg-white text-gray-600 border border-gray-300 hover:text-gray-800 hover:border-gray-400"
                             }`}
                             title={p.id === "dnes" ? "Dnešní datum (lokální čas)" : undefined}
                           >
@@ -900,30 +919,30 @@ export function AdminApp() {
                           </button>
                         ))}
                         {filterDatePreset === "custom" && (
-                          <span className="px-2.5 py-1.5 text-xs text-[#666] border border-[#2a2a2a] rounded">
+                          <span className="px-2.5 py-1.5 text-xs text-gray-600 border border-gray-300 rounded">
                             Vlastní
                           </span>
                         )}
                       </div>
                       <div className="flex items-center gap-1">
-                        <span className="text-[#555] text-xs">Od</span>
+                        <span className="text-gray-500 text-xs">Od</span>
                         <input
                           type="date"
                           value={filterDateFrom}
                           onChange={(e) => handleDateFromChange(e.target.value)}
-                          className={`bg-[#141414] border rounded-lg px-3 py-2 text-sm text-[#bbb] focus:outline-none focus:border-[#c9a84c]/60 ${
-                            !dateRangeValid ? "border-red-500/50" : "border-[#2a2a2a]"
+                          className={`bg-white border rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-[#c9a84c]/60 ${
+                            !dateRangeValid ? "border-red-500/50" : "border-gray-300"
                           }`}
                         />
                       </div>
                       <div className="flex items-center gap-1">
-                        <span className="text-[#555] text-xs">Do</span>
+                        <span className="text-gray-500 text-xs">Do</span>
                         <input
                           type="date"
                           value={filterDateTo}
                           onChange={(e) => handleDateToChange(e.target.value)}
-                          className={`bg-[#141414] border rounded-lg px-3 py-2 text-sm text-[#bbb] focus:outline-none focus:border-[#c9a84c]/60 ${
-                            !dateRangeValid ? "border-red-500/50" : "border-[#2a2a2a]"
+                          className={`bg-white border rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-[#c9a84c]/60 ${
+                            !dateRangeValid ? "border-red-500/50" : "border-gray-300"
                           }`}
                           title={!dateRangeValid ? "Datum Do musí být po datu Od" : undefined}
                         />
@@ -931,18 +950,18 @@ export function AdminApp() {
                       {!dateRangeValid && (
                         <span className="text-red-400 text-xs">Od musí být před Do</span>
                       )}
-                      <label className="flex items-center gap-2 bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 cursor-pointer hover:border-[#333] transition-colors">
+                      <label className="flex items-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-2 cursor-pointer hover:border-gray-400 transition-colors">
                         <input
                           type="checkbox"
                           checked={filterJenNove}
                           onChange={(e) => setFilterJenNove(e.target.checked)}
-                          className="rounded border-[#444] bg-[#0d0d0d] text-[#c9a84c] focus:ring-[#c9a84c]/50"
+                          className="rounded border-gray-400 bg-white text-[#c9a84c] focus:ring-[#c9a84c]/50"
                         />
-                        <span className="text-sm text-[#ccc]">Jen nové</span>
+                        <span className="text-sm text-gray-700">Jen nové</span>
                       </label>
                       <button
                         onClick={() => fetchOrders()}
-                        className="p-2 bg-[#222] border border-[#2a2a2a] rounded-lg text-[#666] hover:text-[#c9a84c] hover:bg-[#282828] transition-colors"
+                        className="p-2 bg-white border border-gray-300 rounded-lg text-gray-600 hover:text-[#c9a84c] hover:bg-gray-50 transition-colors"
                         aria-label="Obnovit seznam"
                         title="Obnovit"
                       >
@@ -950,14 +969,14 @@ export function AdminApp() {
                       </button>
                       <button
                         onClick={resetFilters}
-                        className="px-3 py-2 bg-[#222] border border-[#2a2a2a] rounded-lg text-sm text-[#888] hover:text-[#ccc] hover:bg-[#282828] transition-colors"
+                        className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-50 transition-colors"
                         aria-label="Resetovat filtry"
                       >
                         Reset
                       </button>
                       <button
                         onClick={exportCsv}
-                        className="flex items-center gap-2 px-3 py-2 bg-[#222] border border-[#2a2a2a] rounded-lg text-sm text-[#888] hover:text-[#c9a84c] hover:bg-[#282828] hover:border-[#c9a84c]/30 transition-colors"
+                        className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm text-gray-600 hover:text-[#c9a84c] hover:bg-gray-50 hover:border-[#c9a84c]/30 transition-colors"
                         aria-label="Exportovat CSV"
                       >
                         <DownloadIcon size={14} aria-hidden />
@@ -968,24 +987,24 @@ export function AdminApp() {
 
                   <div className="overflow-auto max-h-[calc(100vh-380px)] sm:max-h-[calc(100vh-420px)]">
                     <table className="w-full min-w-[720px]" role="grid" aria-label="Tabulka objednávek voucherů">
-                      <thead className="sticky top-0 z-10 bg-[#0a0a0a]">
-                        <tr className="border-b border-[#1a1a1a]">
+                      <thead className="sticky top-0 z-10 bg-white border-b-2 border-gray-200">
+                        <tr>
                           {isMajitel && (
                             <th className="w-10 px-2 py-3">
                               <input
                                 type="checkbox"
                                 checked={selectedIds.size === sortedFiltered.length && sortedFiltered.length > 0}
                                 onChange={toggleSelectAll}
-                                className="rounded border-[#444] bg-[#0d0d0d] text-[#c9a84c] focus:ring-[#c9a84c]/50"
+                                className="rounded border-gray-400 bg-white text-[#c9a84c] focus:ring-[#c9a84c]/50"
                                 aria-label="Vybrat vše"
                               />
                             </th>
                           )}
-                          <th className="px-4 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium first:pl-5">
+                          <th className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold first:pl-5">
                             ID
                           </th>
                           <th
-                            className="px-4 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium cursor-pointer hover:text-[#888] select-none"
+                            className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold cursor-pointer hover:text-gray-900 select-none"
                             onClick={() => { setSortCol("created_at"); setSortAsc((v) => !v); }}
                           >
                             <span className="inline-flex items-center gap-1">
@@ -994,7 +1013,7 @@ export function AdminApp() {
                             </span>
                           </th>
                           <th
-                            className="px-4 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium cursor-pointer hover:text-[#888] select-none"
+                            className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold cursor-pointer hover:text-gray-900 select-none"
                             onClick={() => { setSortCol("name"); setSortAsc((v) => !v); }}
                           >
                             <span className="inline-flex items-center gap-1">
@@ -1002,11 +1021,11 @@ export function AdminApp() {
                               {sortCol === "name" ? (sortAsc ? <ChevronUpIcon size={12} /> : <ChevronDownIcon size={12} />) : null}
                             </span>
                           </th>
-                          <th className="px-4 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium">E-MAIL</th>
-                          <th className="px-4 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium">TELEFON</th>
-                          <th className="px-4 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium">SLUŽBA</th>
+                          <th className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold">E-MAIL</th>
+                          <th className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold">TELEFON</th>
+                          <th className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold">SLUŽBA</th>
                           <th
-                            className="px-4 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium cursor-pointer hover:text-[#888] select-none"
+                            className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold cursor-pointer hover:text-gray-900 select-none"
                             onClick={() => { setSortCol("branch"); setSortAsc((v) => !v); }}
                           >
                             <span className="inline-flex items-center gap-1">
@@ -1015,7 +1034,7 @@ export function AdminApp() {
                             </span>
                           </th>
                           <th
-                            className="px-4 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium cursor-pointer hover:text-[#888] select-none"
+                            className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold cursor-pointer hover:text-gray-900 select-none"
                             onClick={() => { setSortCol("status"); setSortAsc((v) => !v); }}
                           >
                             <span className="inline-flex items-center gap-1">
@@ -1023,7 +1042,7 @@ export function AdminApp() {
                               {sortCol === "status" ? (sortAsc ? <ChevronUpIcon size={12} /> : <ChevronDownIcon size={12} />) : null}
                             </span>
                           </th>
-                          <th className="px-2 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium w-14"></th>
+                          <th className="px-2 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold w-14"></th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1031,7 +1050,7 @@ export function AdminApp() {
                           <tr>
                             <td colSpan={isMajitel ? 10 : 9} className="py-20 text-center">
                               <div className="flex flex-col items-center gap-2">
-                                <span className="text-[#555] text-sm">
+                                <span className="text-gray-700 text-sm">
                                   {orders.length === 0 ? "Zatím žádné objednávky" : "Žádné výsledky podle filtrů"}
                                 </span>
                                 {orders.length > 0 && (
@@ -1050,12 +1069,12 @@ export function AdminApp() {
                             <tr
                               key={o.id}
                               onClick={() => handleSelectOrder(o)}
-                              className={`border-b border-[#1a1a1a] transition-colors group cursor-pointer ${
+                              className={`border-b border-gray-100 transition-colors group cursor-pointer ${
                                 selectedOrder?.id === o.id
-                                  ? "bg-[#1a1a1a] ring-inset ring-1 ring-[#c9a84c]/30"
+                                  ? "bg-amber-50 ring-inset ring-1 ring-[#c9a84c]/40"
                                   : i % 2 === 0
-                                    ? "bg-[#0d0d0d] hover:bg-[#141414]"
-                                    : "bg-[#0a0a0a] hover:bg-[#141414]"
+                                    ? "bg-white hover:bg-gray-50"
+                                    : "bg-gray-50 hover:bg-gray-100"
                               } ${o.status === "new" ? "border-l-2 border-l-blue-500/50" : ""}`}
                             >
                               {isMajitel && (
@@ -1064,7 +1083,7 @@ export function AdminApp() {
                                     type="checkbox"
                                     checked={selectedIds.has(o.id)}
                                     onChange={() => toggleSelect(o.id)}
-                                    className="rounded border-[#444] bg-[#0d0d0d] text-[#c9a84c] focus:ring-[#c9a84c]/50"
+                                    className="rounded border-gray-400 bg-white text-[#c9a84c] focus:ring-[#c9a84c]/50"
                                     aria-label={`Vybrat ${o.name}`}
                                   />
                                 </td>
@@ -1072,16 +1091,16 @@ export function AdminApp() {
                               <td className="px-4 pl-5 py-3 text-xs text-[#c9a84c] font-mono">
                                 {o.id.slice(0, 8)}…
                               </td>
-                              <td className="px-4 py-3 text-xs text-[#777] whitespace-nowrap">{formatDate(o.created_at)}</td>
-                              <td className="px-4 py-3 text-sm text-[#ddd] whitespace-nowrap">
+                              <td className="px-4 py-3 text-xs text-gray-700 whitespace-nowrap">{formatDate(o.created_at)}</td>
+                              <td className="px-4 py-3 text-sm text-gray-900 font-medium whitespace-nowrap">
                                 {o.name} {o.surname || ""}
                               </td>
-                              <td className="px-4 py-3 text-xs text-[#888]">
+                              <td className="px-4 py-3 text-xs text-gray-700">
                                 <a href={`mailto:${o.email}`} className="hover:text-[#c9a84c] transition-colors">
                                   {o.email}
                                 </a>
                               </td>
-                              <td className="px-4 py-3 text-xs text-[#888] whitespace-nowrap">
+                              <td className="px-4 py-3 text-xs text-gray-700 whitespace-nowrap">
                                 {o.phone ? (
                                   <a href={`tel:${o.phone}`} className="hover:text-[#c9a84c] transition-colors">
                                     {o.phone}
@@ -1090,10 +1109,10 @@ export function AdminApp() {
                                   "–"
                                 )}
                               </td>
-                              <td className="px-4 py-3 text-xs text-[#aaa] max-w-[180px] truncate" title={o.service}>
+                              <td className="px-4 py-3 text-xs text-gray-700 max-w-[180px] truncate" title={o.service}>
                                 {o.service}
                               </td>
-                              <td className="px-4 py-3 text-xs text-[#888]">{o.branch}</td>
+                              <td className="px-4 py-3 text-xs text-gray-700">{o.branch}</td>
                               <td className="px-4 py-3 relative">
                                 {isMajitel ? (
                                   <>
@@ -1106,25 +1125,25 @@ export function AdminApp() {
                                       aria-haspopup="listbox"
                                     >
                                       {updatingId === o.id ? (
-                                        <Loader2Icon size={12} className="animate-spin text-[#666]" />
+                                        <Loader2Icon size={12} className="animate-spin text-gray-500" />
                                       ) : (
                                         <>
                                           <StatusBadge status={o.status} />
                                           <ChevronDownIcon
                                             size={10}
-                                            className="text-[#444] group-hover/btn:text-[#888] transition-colors"
+                                            className="text-gray-400 group-hover/btn:text-gray-600 transition-colors"
                                           />
                                         </>
                                       )}
                                     </button>
                                     {openDropdown === o.id && (
-                                      <div className="absolute left-4 top-full mt-1 bg-[#161616] border border-[#2a2a2a] rounded-lg overflow-hidden z-50 shadow-2xl min-w-[155px]">
+                                      <div className="absolute left-4 top-full mt-1 bg-white border border-gray-200 rounded-lg overflow-hidden z-50 shadow-xl min-w-[155px]">
                                         {(["new", "pending", "awaiting_payment", "done", "storno"] as Status[]).map((s) => (
                                           <button
                                             key={s}
                                             onClick={(e) => { e.stopPropagation(); updateStatus(o.id, s); }}
-                                            className={`w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-[#222] transition-colors ${
-                                              o.status === s ? "text-[#c9a84c]" : "text-[#aaa]"
+                                            className={`w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-gray-50 transition-colors ${
+                                              o.status === s ? "text-[#c9a84c]" : "text-gray-600"
                                             }`}
                                           >
                                             {o.status === s && <CheckIcon size={10} className="text-[#c9a84c]" />}
@@ -1146,17 +1165,17 @@ export function AdminApp() {
                                       e.stopPropagation();
                                       setOpenActionMenu(openActionMenu === o.id ? null : o.id);
                                     }}
-                                    className="p-2 rounded text-[#555] hover:text-[#c9a84c] hover:bg-[#222] transition-colors"
+                                    className="p-2 rounded text-gray-500 hover:text-[#c9a84c] hover:bg-gray-100 transition-colors"
                                     aria-label="Akce"
                                     aria-expanded={openActionMenu === o.id}
                                   >
                                     <MoreVerticalIcon size={16} aria-hidden />
                                   </button>
                                   {openActionMenu === o.id && (
-                                    <div className="absolute right-0 top-full mt-0.5 bg-[#161616] border border-[#2a2a2a] rounded-lg overflow-hidden z-50 shadow-2xl min-w-[180px] py-1">
+                                    <div className="absolute right-0 top-full mt-0.5 bg-white border border-gray-200 rounded-lg overflow-hidden z-50 shadow-xl min-w-[180px] py-1">
                                       <button
                                         onClick={(e) => { e.stopPropagation(); handleSelectOrder(o); setOpenActionMenu(null); }}
-                                        className="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-[#222] text-[#ccc]"
+                                        className="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-gray-50 text-gray-700"
                                       >
                                         <EyeIcon size={14} />
                                         Detail
@@ -1164,7 +1183,7 @@ export function AdminApp() {
                                       {isMajitel && (
                                         <button
                                           onClick={(e) => { e.stopPropagation(); setOpenDropdown(o.id); setOpenActionMenu(null); }}
-                                          className="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-[#222] text-[#ccc]"
+                                          className="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-gray-50 text-gray-700"
                                         >
                                           <CheckIcon size={14} />
                                           Změnit stav
@@ -1172,14 +1191,14 @@ export function AdminApp() {
                                       )}
                                       <button
                                         onClick={(e) => { e.stopPropagation(); handleSelectOrder(o); setOpenActionMenu(null); }}
-                                        className="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-[#222] text-[#ccc]"
+                                        className="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-gray-50 text-gray-700"
                                       >
                                         <FileTextIcon size={14} />
                                         Poznámka
                                       </button>
                                       <button
                                         onClick={(e) => { e.stopPropagation(); printVoucher(o); setOpenActionMenu(null); }}
-                                        className="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-[#222] text-[#ccc]"
+                                        className="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-gray-50 text-gray-700"
                                       >
                                         <PrinterIcon size={14} />
                                         Tisk voucheru
@@ -1195,11 +1214,11 @@ export function AdminApp() {
                     </table>
                   </div>
 
-                  <div className="px-5 py-3 border-t border-[#1a1a1a] flex items-center justify-between">
-                    <span className="text-xs text-[#444]">
+                  <div className="px-5 py-3 border-t border-gray-200 flex items-center justify-between bg-white">
+                    <span className="text-xs text-gray-600">
                       Zobrazeno {filtered.length} z {orders.length} záznamů
                     </span>
-                    <span className="text-xs text-[#444]">
+                    <span className="text-xs text-gray-600">
                       Celkem{" "}
                       {filtered
                         .filter((o) => o.status !== "storno")
@@ -1215,25 +1234,25 @@ export function AdminApp() {
 
           {isMajitel && showAddAdmin && (
             <div
-              className="mt-6 sm:mt-8 p-4 sm:p-6 bg-[#111] border border-[#2a2a2a] rounded-xl max-w-md"
+              className="mt-6 sm:mt-8 p-4 sm:p-6 bg-white border border-gray-200 rounded-xl max-w-md"
               role="region"
               aria-labelledby="add-admin-title"
               aria-busy={addAdminLoading}
             >
               <div className="flex items-center justify-between mb-4">
-                <h2 id="add-admin-title" className="text-[#c4beb4] font-medium" style={{ fontFamily: "Playfair Display, serif" }}>
+                <h2 id="add-admin-title" className="text-gray-800 font-medium" style={{ fontFamily: "Playfair Display, serif" }}>
                   Přidat dalšího správce
                 </h2>
                 <button
                   onClick={() => setShowAddAdmin(false)}
-                  className="text-[#8a8580] hover:text-[#c4beb4] text-sm p-1 disabled:opacity-50"
+                  className="text-gray-500 hover:text-gray-700 text-sm p-1 disabled:opacity-50"
                   disabled={addAdminLoading}
                   aria-label="Zavřít formulář"
                 >
                   Zavřít
                 </button>
               </div>
-              <p className="text-[#6b6b6b] text-xs mb-4">
+              <p className="text-gray-600 text-xs mb-4">
                 Vytvoř účet pro kolegu. Majitel může měnit stavy voucherů, barber má jen náhled.
               </p>
               <form onSubmit={handleAddAdmin} className="space-y-3" aria-describedby={addAdminError ? "add-admin-error" : addAdminSuccess ? "add-admin-success" : undefined}>
@@ -1304,27 +1323,27 @@ export function AdminApp() {
 
       {showDetail && selectedOrder && (
         <>
-          <div className="fixed inset-0 z-40 bg-black/40" onClick={handleCloseDetail} aria-hidden />
+          <div className="fixed inset-0 z-40 bg-black/30" onClick={handleCloseDetail} aria-hidden />
           <div
             ref={detailPanelRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="detail-panel-title"
-            className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-md bg-[#0d0d0d] border-l border-[#222] shadow-2xl flex flex-col overflow-hidden"
+            className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-md bg-white border-l border-gray-200 shadow-2xl flex flex-col overflow-hidden"
           >
-            <div className="flex items-center justify-between px-5 py-4 border-b border-[#1e1e1e] flex-shrink-0">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 flex-shrink-0 bg-white">
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-[#c9a84c] text-xs font-mono">{selectedOrder.id.slice(0, 8)}…</span>
                   <StatusBadge status={selectedOrder.status} />
                 </div>
-                <h3 id="detail-panel-title" className="mt-1 font-medium text-white">
+                <h3 id="detail-panel-title" className="mt-1 font-medium text-gray-900">
                   {selectedOrder.name} {selectedOrder.surname || ""}
                 </h3>
               </div>
               <button
                 onClick={handleCloseDetail}
-                className="p-2 rounded-lg text-[#555] hover:text-[#999] hover:bg-[#222] transition-colors"
+                className="p-2 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-200 transition-colors"
                 aria-label="Zavřít detail"
               >
                 <XIcon size={20} />
@@ -1340,33 +1359,33 @@ export function AdminApp() {
                 { label: "Částka", value: `${parseAmount(selectedOrder.service).toLocaleString("cs-CZ")} Kč` },
               ].map((row) => (
                 <div key={row.label} className="flex justify-between items-start gap-4">
-                  <span className="text-xs text-[#555] uppercase tracking-wider flex-shrink-0">{row.label}</span>
-                  <span className="text-sm text-[#ccc] text-right break-all">{row.value}</span>
+                  <span className="text-xs text-gray-500 uppercase tracking-wider flex-shrink-0">{row.label}</span>
+                  <span className="text-sm text-gray-800 text-right break-all">{row.value}</span>
                 </div>
               ))}
               {selectedOrder.note && (
-                <div className="pt-4 border-t border-[#1e1e1e]">
-                  <span className="text-xs text-[#555] uppercase tracking-wider block mb-2">Poznámka zákazníka</span>
-                  <p className="text-sm text-[#999]">{selectedOrder.note}</p>
+                <div className="pt-4 border-t border-gray-200">
+                  <span className="text-xs text-gray-500 uppercase tracking-wider block mb-2">Poznámka zákazníka</span>
+                  <p className="text-sm text-gray-600">{selectedOrder.note}</p>
                 </div>
               )}
               {isMajitel && (
-                <div className="pt-4 border-t border-[#1e1e1e]">
-                  <span className="text-xs text-[#555] uppercase tracking-wider block mb-2">Admin poznámka</span>
+                <div className="pt-4 border-t border-gray-200">
+                  <span className="text-xs text-gray-500 uppercase tracking-wider block mb-2">Admin poznámka</span>
                   <textarea
                     value={adminNote}
                     onChange={(e) => setAdminNote(e.target.value)}
                     onBlur={saveAdminNote}
                     placeholder="Interní poznámka..."
                     rows={3}
-                    className="w-full bg-[#111] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-[#ccc] placeholder-[#555] focus:outline-none focus:border-[#c9a84c]/50 resize-none"
+                    className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#c9a84c]/50 resize-none"
                   />
                   <div className="mt-2">
                     <button
                       type="button"
                       onClick={saveAdminNote}
                       disabled={savingNote || adminNote === (selectedOrder.admin_note || "")}
-                      className="px-3 py-1.5 text-xs bg-[#222] border border-[#2a2a2a] rounded-lg text-[#888] hover:text-[#c9a84c] hover:border-[#c9a84c]/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="px-3 py-1.5 text-xs bg-gray-100 border border-gray-300 rounded-lg text-gray-600 hover:text-[#c9a84c] hover:border-[#c9a84c]/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       {savingNote ? "Ukládám…" : "Uložit"}
                     </button>
@@ -1374,7 +1393,7 @@ export function AdminApp() {
                 </div>
               )}
             </div>
-            <div className="px-5 py-4 border-t border-[#1e1e1e] flex flex-col gap-2 flex-shrink-0">
+            <div className="px-5 py-4 border-t border-gray-200 flex flex-col gap-2 flex-shrink-0 bg-white">
               {isMajitel && selectedOrder.status !== "done" && selectedOrder.status !== "storno" && (
                 <button
                   onClick={() => { updateStatus(selectedOrder.id, "done"); handleCloseDetail(); }}
@@ -1392,18 +1411,18 @@ export function AdminApp() {
               {selectedOrder.phone ? (
                 <a
                   href={`tel:${selectedOrder.phone}`}
-                  className="w-full py-2.5 bg-[#1a1a1a] hover:bg-[#222] border border-[#2a2a2a] text-[#ccc] rounded-lg text-sm text-center transition-colors"
+                  className="w-full py-2.5 bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 rounded-lg text-sm text-center transition-colors"
                 >
                   Zavolat
                 </a>
               ) : (
-                <span className="w-full py-2.5 bg-[#111] border border-[#222] text-[#555] rounded-lg text-sm text-center">
+                <span className="w-full py-2.5 bg-gray-100 border border-gray-200 text-gray-500 rounded-lg text-sm text-center">
                   Bez telefonu
                 </span>
               )}
               <button
                 onClick={() => printVoucher(selectedOrder)}
-                className="w-full py-2.5 bg-[#1a1a1a] hover:bg-[#222] border border-[#2a2a2a] text-[#ccc] rounded-lg text-sm flex items-center justify-center gap-2 transition-colors"
+                className="w-full py-2.5 bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors"
               >
                 <PrinterIcon size={16} />
                 Tisk voucheru
