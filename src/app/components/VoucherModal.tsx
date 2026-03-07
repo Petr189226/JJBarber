@@ -79,7 +79,6 @@ export function VoucherModal({ open, onClose }: Props) {
         (e instanceof Error ? e.message : null) ||
         t("voucher.errorSend");
       setError(msg);
-      console.error("Voucher insert error:", e);
     } finally {
       setSending(false);
     }

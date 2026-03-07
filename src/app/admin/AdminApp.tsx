@@ -52,8 +52,7 @@ export function AdminApp() {
       .order("created_at", { ascending: false })
       .then(({ data, error }) => {
         setOrdersLoading(false);
-        if (error) console.error(error);
-        else setOrders((data as VoucherOrder[]) ?? []);
+        if (!error) setOrders((data as VoucherOrder[]) ?? []);
       });
   }, [user]);
 

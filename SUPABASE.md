@@ -47,7 +47,7 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ## 5. Admin rozhraní
 
-- **URL:** `https://tvojedomena.cz/admin`
+- **URL:** `https://jjbarbershop.cz/admin`
 - **Přihlášení:** e-mail + heslo z kroku 4
 - **Funkce:** seznam objednávek voucherů, změna stavu (Nový / Rozpracováno / Vyřízeno)
 
