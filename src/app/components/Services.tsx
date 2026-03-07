@@ -70,17 +70,18 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
           : "border-[#1F1F1F] bg-[#111111] hover:border-white/[0.08]"
       } ${onClick ? "cursor-pointer" : ""}`}
     >
-      {service.popular && (
-        <div
-          className="absolute -top-3 left-6 right-6 px-4 py-2 bg-gradient-to-r from-[#C9A84C]/20 to-[#D4B85A]/15 border border-[#C9A84C]/50 text-[#D4B85A] text-[0.7rem] tracking-[0.2em] uppercase shadow-[0_0_16px_rgba(201,168,76,0.2)] text-center"
-          style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}
-        >
-          ⭐ {t("svc.popular")}
-        </div>
-      )}
-
       <div className="flex min-h-0 flex-1 flex-col p-8">
-        <ServiceIconBadge icon={icon} popular={service.popular} />
+        <div className="flex items-center justify-between gap-3">
+          <ServiceIconBadge icon={icon} popular={service.popular} />
+          {service.popular && (
+            <span
+              className="shrink-0 px-3 py-1 rounded-lg bg-[#C9A84C]/15 border border-[#C9A84C]/30 text-[#D4B85A] text-[0.65rem] tracking-[0.12em] uppercase"
+              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600 }}
+            >
+              {t("svc.popular")}
+            </span>
+          )}
+        </div>
 
         <h3
           className="text-[#C4BEB4] mb-1"

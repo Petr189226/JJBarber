@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { X, Gift, Send, Loader2 } from "lucide-react";
 import { useLanguage } from "../i18n";
-
-const WEB3FORMS_KEY = "023e0516-f33d-4063-b6dc-afba879de144";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 const BRANCHES = ["Vršovice", "Strašnice"];
 
@@ -53,34 +52,29 @@ export function VoucherModal({ open, onClose }: Props) {
     e.preventDefault();
     if (!canSubmit) return;
 
+    if (!isSupabaseConfigured()) {
+      setError("Konfigurace chybí. Kontaktujte provozovatele.");
+      return;
+    }
+
     setSending(true);
     setError("");
 
     try {
-      const res = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          access_key: WEB3FORMS_KEY,
-          subject: `Dárkový poukaz – ${form.service}`,
-          from_name: `${form.name} ${form.surname}`.trim(),
-          name: `${form.name} ${form.surname}`.trim(),
-          email: form.email,
-          phone: form.phone || "–",
-          service: form.service,
-          branch: form.branch,
-          note: form.note || "–",
-        }),
+      const { error: err } = await supabase!.from("voucher_orders").insert({
+        name: form.name.trim(),
+        surname: form.surname.trim() || null,
+        email: form.email.trim(),
+        phone: form.phone.trim() || null,
+        service: form.service,
+        branch: form.branch,
+        note: form.note.trim() || null,
       });
 
-      const data = await res.json();
-      if (data.success) {
-        setSent(true);
-      } else {
-        setError(t("voucher.errorSend"));
-      }
+      if (err) throw err;
+      setSent(true);
     } catch {
-      setError(t("voucher.errorConn"));
+      setError(t("voucher.errorSend"));
     } finally {
       setSending(false);
     }
