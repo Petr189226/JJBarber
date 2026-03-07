@@ -63,6 +63,21 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 **Tip:** Aby nově vytvoření správci mohli hned přihlásit, vypni v Supabase **Authentication** → **Providers** → **Email** → **Confirm email**.
 
+## 7. Edge Function pro přidávání správců (důležité!)
+
+Bez nasazené Edge Function by se při přidání nového správce přepnula session na nového uživatele a Majitel by byl „vyhozen“ z adminu. Edge Function vytváří uživatele na serveru, takže session zůstane.
+
+**Nasazení:**
+
+1. Nainstaluj [Supabase CLI](https://supabase.com/docs/guides/cli): `npm install -g supabase`
+2. Přihlas se: `supabase login`
+3. Propoj projekt: `supabase link --project-ref jdtijmhosifoccwsgdgx` (nebo tvé project ref)
+4. Nastav secret: `supabase secrets set SUPABASE_SERVICE_ROLE_KEY=tvůj_service_role_key`  
+   (Service role key: Supabase Dashboard → Settings → API → service_role)
+5. Nasad funkci: `supabase functions deploy create-admin`
+
+Bez nasazené funkce přidávání správců v adminu nebude fungovat (chyba při volání).
+
 ## Kde se databáze spravuje
 
 **Supabase Dashboard** → [app.supabase.com](https://app.supabase.com)

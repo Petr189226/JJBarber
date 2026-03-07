@@ -124,29 +124,36 @@ export function AdminApp() {
     setAddAdminLoading(true);
     setAddAdminError("");
     setAddAdminSuccess(false);
-    const { data, error } = await supabase.auth.signUp({
-      email: newAdminEmail.trim(),
-      password: newAdminPassword,
-      options: { emailRedirectTo: window.location.origin + window.location.pathname.replace(/\/$/, "") || "/jj-backstage" },
-    });
-    if (error) {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+    const url = import.meta.env.VITE_SUPABASE_URL;
+    if (!token || !url) {
+      setAddAdminError("Chybí přihlášení nebo konfigurace");
       setAddAdminLoading(false);
-      setAddAdminError(error.message);
       return;
     }
-    if (data.user) {
-      const { error: roleErr } = await supabase.from("admin_roles").insert({
-        user_id: data.user.id,
+    const res = await fetch(`${url}/functions/v1/create-admin`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        email: newAdminEmail.trim(),
+        password: newAdminPassword,
         role: newAdminRole,
-      });
-      if (roleErr) setAddAdminError(roleErr.message);
-      else {
-        setAddAdminSuccess(true);
-        setNewAdminEmail("");
-        setNewAdminPassword("");
-        setShowAddAdmin(false);
-      }
+      }),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setAddAdminError(json.error || `Chyba ${res.status}`);
+      setAddAdminLoading(false);
+      return;
     }
+    setAddAdminSuccess(true);
+    setNewAdminEmail("");
+    setNewAdminPassword("");
+    setShowAddAdmin(false);
     setAddAdminLoading(false);
   };
 

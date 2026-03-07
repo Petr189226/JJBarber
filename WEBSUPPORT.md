@@ -53,6 +53,8 @@ public_html/hero-768.webp
 
 **FileZilla:** Zapni zobrazení skrytých souborů (Server → Force showing hidden files), aby se nahrál `.htaccess`. Bez něj funguje SPA díky složce `jj-backstage/`.
 
+**Bílá stránka?** Zkontroluj, že soubory jsou přímo v `public_html`, ne v `public_html/jj-barbershop-websupport/`. Rozbal ZIP a nahraj *obsah* (index.html, assets/, atd.), ne celou složku.
+
 ### Krok 3: Propojit doménu
 V nastavení hostingu přiřaď svou doménu k tomuto účtu (pokud ještě není).
 

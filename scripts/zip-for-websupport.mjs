@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { execSync } from 'child_process';
-import { existsSync, mkdirSync, copyFileSync } from 'fs';
+import { existsSync, mkdirSync, copyFileSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -16,16 +16,28 @@ if (!existsSync(dist)) {
 }
 
 // Fallback pro /jj-backstage a /admin – když .htaccess nefunguje (skrytý soubor ve FileZilla)
+// V podsložkách musí být cesty ../ místo ./ (assets, obrázky)
 const indexHtml = join(dist, 'index.html');
+let indexContent = readFileSync(indexHtml, 'utf8');
 for (const dir of ['jj-backstage', 'admin']) {
   const adminDir = join(dist, dir);
   if (!existsSync(adminDir)) mkdirSync(adminDir, { recursive: true });
-  copyFileSync(indexHtml, join(adminDir, 'index.html'));
+  const subIndex = indexContent.replace(/href="\.\//g, 'href="../').replace(/src="\.\//g, 'src="../');
+  writeFileSync(join(adminDir, 'index.html'), subIndex);
 }
 
 try {
   execSync(`cd "${dist}" && zip -r "${zipPath}" .`, { stdio: 'inherit' });
-  console.log('\n✓ Vytvořeno na ploše:', zipPath);
+  // CSV a návod pro import admin_roles
+  const supabase = join(root, 'supabase');
+  if (existsSync(join(supabase, 'admin_roles_import.csv'))) {
+    copyFileSync(join(supabase, 'admin_roles_import.csv'), join(desktop, 'admin_roles_import.csv'));
+  }
+  if (existsSync(join(supabase, 'ADMIN_ROLES_IMPORT.md'))) {
+    copyFileSync(join(supabase, 'ADMIN_ROLES_IMPORT.md'), join(desktop, 'ADMIN_ROLES_IMPORT.md'));
+  }
+  console.log('\n✓ Na ploše:', zipPath);
+  console.log('  admin_roles_import.csv, ADMIN_ROLES_IMPORT.md');
   console.log('  Postup nahrání viz WEBSUPPORT.md');
 } catch (e) {
   console.error('Příkaz zip selhal (na Windows může chybět).');
