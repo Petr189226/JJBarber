@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { execSync } from 'child_process';
-import { existsSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -11,16 +11,23 @@ const desktop = join(process.env.HOME || process.env.USERPROFILE || '', 'Desktop
 const zipPath = join(desktop, 'forpsi-deploy.zip');
 
 if (!existsSync(dist)) {
-  console.error('Složka dist/ neexistuje. Spusť nejdřív: npm run build');
+  console.error('dist/ missing. Run npm run build first.');
   process.exit(1);
+}
+
+const adminHtml = join(dist, 'admin.html');
+const adminContent = readFileSync(adminHtml, 'utf8');
+for (const dir of ['jj-backstage', 'admin']) {
+  const adminDir = join(dist, dir);
+  if (!existsSync(adminDir)) mkdirSync(adminDir, { recursive: true });
+  const subIndex = adminContent.replace(/href="\.\//g, 'href="../').replace(/src="\.\//g, 'src="../');
+  writeFileSync(join(adminDir, 'index.html'), subIndex);
 }
 
 try {
   execSync(`cd "${dist}" && zip -r "${zipPath}" .`, { stdio: 'inherit' });
-  console.log('\n✓ Vytvořeno na ploše:', zipPath);
-  console.log('  Nahraj tento soubor do kořene webu na Forpsi (např. public_html) a rozbal.');
-} catch (e) {
-  console.error('Příkaz zip selhal (na Windows může chybět).');
-  console.error('Složku dist/ zabal ručně do ZIP a nahraj na Forpsi.');
+  console.log(zipPath);
+} catch {
+  console.error('zip failed');
   process.exit(1);
 }

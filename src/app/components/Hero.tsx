@@ -39,7 +39,7 @@ export function Hero() {
 
   useEffect(() => {
     if (branch) {
-      try { localStorage.setItem("jj-branch", branch); } catch { /* noop */ }
+      try { localStorage.setItem("jj-branch", branch); } catch {}
     }
   }, [branch]);
 
@@ -62,7 +62,6 @@ export function Hero() {
 
   return (
     <section className="relative h-screen min-h-[700px] flex items-center justify-center overflow-hidden">
-      {/* Background image – responsive WebP with fallback */}
       <div className="absolute inset-0">
         <picture className="block w-full h-full">
           <source
@@ -90,10 +89,8 @@ export function Hero() {
         />
       </div>
 
-      {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 w-full">
         <div className="max-w-2xl">
-          {/* Label */}
           <div className="flex items-center gap-3 mb-6">
             <div className="w-8 h-px bg-[#8A8580]" />
             <span
@@ -104,7 +101,6 @@ export function Hero() {
             </span>
           </div>
 
-          {/* Headline */}
           <h1
             className="text-[#C4BEB4] mb-4 flex flex-col gap-2"
             style={{
@@ -119,7 +115,6 @@ export function Hero() {
             <span><em style={{ fontStyle: "italic", color: "#C9A84C", letterSpacing: "0.02em" }}>{t("hero.headline2")} {t("hero.headline3")}</em></span>
           </h1>
 
-          {/* Subheadline */}
           <p
             className="text-[#B5AEA4] mb-10 max-w-md"
             style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "1rem", lineHeight: 1.8 }}
@@ -127,7 +122,6 @@ export function Hero() {
             {t("hero.sub")}
           </p>
 
-          {/* Booking pre-step */}
           <div>
             <label
               htmlFor="hero-branch"
@@ -173,7 +167,6 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Scroll indicator */}
       <button
         onClick={scrollToServices}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[#8A8580] hover:text-[#B5AEA4] transition-colors duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent focus-visible:rounded-xl"

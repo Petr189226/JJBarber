@@ -20,10 +20,6 @@ function SectionFallback({ minH = "40vh" }: { minH?: string }) {
   return <div style={{ minHeight: minH }} aria-hidden />;
 }
 
-/**
- * Renders children (lazy chunk) only when the sentinel scrolls into view.
- * Uses useInView so the hook lives in the main bundle and lazy chunks don't pull it (shorter critical chain).
- */
 function LazySection({ children, minH = "40vh" }: { children: ReactNode; minH?: string }) {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const inView = useInView(sentinelRef, { once: true, margin: "0px 0px -25% 0px" });

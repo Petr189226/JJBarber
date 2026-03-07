@@ -27,9 +27,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           setTranslations(m.translations);
         }
       })
-      .catch(() => {
-        // If translations fail to load, we keep falling back to keys.
-      });
+      .catch(() => {});
 
     return () => {
       isCancelled = true;

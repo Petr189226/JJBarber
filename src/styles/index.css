@@ -3,7 +3,6 @@
 @import './theme.css';
 @import './brand.css';
 
-/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -18,30 +17,25 @@
   background: #C9A84C;
 }
 
-/* Smooth scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* Date input dark styling */
 input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(0.4) sepia(1) saturate(2) hue-rotate(5deg);
   cursor: pointer;
 }
 
-/* Select options dark styling */
 select option {
   background-color: #111111;
   color: #E8DCC8;
 }
 
-/* Global focus: neutral ring fallback (components override with gold for CTA) */
 :focus-visible {
   outline: 2px solid rgba(255, 255, 255, 0.25);
   outline-offset: 2px;
 }
 
-/* Reduced motion: disable transitions & animations for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

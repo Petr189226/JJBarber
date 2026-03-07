@@ -1,10 +1,4 @@
-/**
- * Design tokens – luxury editorial, gold accent only.
- * Gold = primary CTA and key accent. Everything else = muted/neutral.
- */
-
 export const TOKENS = {
-  // ── Colors ──
   colors: {
     bg: {
       base: "#0A0A0A",
@@ -31,8 +25,6 @@ export const TOKENS = {
       accent: "rgba(201,168,76,0.15)",
     },
   },
-
-  // ── Typography ──
   typography: {
     font: {
       display: "'Playfair Display', serif",
@@ -46,15 +38,11 @@ export const TOKENS = {
     bodySmall: { weight: 400, lineHeight: 1.7 },
     label: { weight: 600, letterSpacing: "0.2em" },
   },
-
-  // ── Motion ──
   motion: {
     hover: { duration: 0.18, ease: [0.22, 1, 0.36, 1] },
     transition: { duration: 0.25, ease: [0.22, 1, 0.36, 1] },
     reveal: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
   },
-
-  // ── Radii & Shadows ──
   radius: {
     sm: "2px",
     md: "4px",

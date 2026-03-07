@@ -11,36 +11,27 @@ const desktop = join(process.env.HOME || process.env.USERPROFILE || '', 'Desktop
 const zipPath = join(desktop, 'jj-barbershop-websupport.zip');
 
 if (!existsSync(dist)) {
-  console.error('Složka dist/ neexistuje. Spusť nejdřív: npm run build');
+  console.error('dist/ missing. Run npm run build first.');
   process.exit(1);
 }
 
-// Fallback pro /jj-backstage a /admin – když .htaccess nefunguje (skrytý soubor ve FileZilla)
-// V podsložkách musí být cesty ../ místo ./ (assets, obrázky)
-const indexHtml = join(dist, 'index.html');
-let indexContent = readFileSync(indexHtml, 'utf8');
+const adminHtml = join(dist, 'admin.html');
+const adminContent = readFileSync(adminHtml, 'utf8');
 for (const dir of ['jj-backstage', 'admin']) {
   const adminDir = join(dist, dir);
   if (!existsSync(adminDir)) mkdirSync(adminDir, { recursive: true });
-  const subIndex = indexContent.replace(/href="\.\//g, 'href="../').replace(/src="\.\//g, 'src="../');
+  const subIndex = adminContent.replace(/href="\.\//g, 'href="../').replace(/src="\.\//g, 'src="../');
   writeFileSync(join(adminDir, 'index.html'), subIndex);
 }
 
 try {
   execSync(`cd "${dist}" && zip -r "${zipPath}" .`, { stdio: 'inherit' });
-  // CSV a návod pro import admin_roles
   const supabase = join(root, 'supabase');
   if (existsSync(join(supabase, 'admin_roles_import.csv'))) {
     copyFileSync(join(supabase, 'admin_roles_import.csv'), join(desktop, 'admin_roles_import.csv'));
   }
-  if (existsSync(join(supabase, 'ADMIN_ROLES_IMPORT.md'))) {
-    copyFileSync(join(supabase, 'ADMIN_ROLES_IMPORT.md'), join(desktop, 'ADMIN_ROLES_IMPORT.md'));
-  }
-  console.log('\n✓ Na ploše:', zipPath);
-  console.log('  admin_roles_import.csv, ADMIN_ROLES_IMPORT.md');
-  console.log('  Postup nahrání viz WEBSUPPORT.md');
-} catch (e) {
-  console.error('Příkaz zip selhal (na Windows může chybět).');
-  console.error('Složku dist/ zabal ručně do ZIP a nahraj do public_html.');
+  console.log(zipPath);
+} catch {
+  console.error('zip failed');
   process.exit(1);
 }

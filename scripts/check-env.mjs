@@ -8,8 +8,7 @@ const root = join(__dirname, '..');
 const envPath = join(root, '.env');
 
 if (!existsSync(envPath)) {
-  console.warn('\n⚠️  Soubor .env neexistuje – voucher formulář a admin nebudou fungovat.');
-  console.warn('   Zkopíruj .env.example na .env a doplň Supabase URL + anon key.\n');
+  console.error('.env missing. Copy .env.example and add Supabase credentials.');
   process.exit(1);
 }
 
@@ -19,11 +18,9 @@ const keyMatch = env.match(/VITE_SUPABASE_ANON_KEY=(.+)/);
 const url = (urlMatch?.[1] || '').trim();
 const key = (keyMatch?.[1] || '').trim();
 const hasUrl = url && url.includes('supabase.co') && !url.includes('xxx');
-const hasKey = key && key.startsWith('eyJ') && key.length > 50;
+const hasKey = key && (key.startsWith('eyJ') || key.startsWith('sb_publishable_')) && key.length > 30;
 
 if (!hasUrl || !hasKey) {
-  console.warn('\n⚠️  .env nemá platné VITE_SUPABASE_URL nebo VITE_SUPABASE_ANON_KEY.');
-  console.warn('   Zkopíruj .env.example na .env a doplň hodnoty z Supabase Dashboard → Settings → API.');
-  console.warn('   Voucher formulář a admin nebudou fungovat na ostré verzi.\n');
+  console.error('.env: invalid VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY');
   process.exit(1);
 }

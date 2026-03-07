@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { Component } from "react";
-import App from "./app/App.tsx";
+import { AdminApp } from "./app/admin/AdminApp";
 import "./styles/index.css";
 
 class ErrorBoundary extends Component<{ children: React.ReactNode }, { error: Error | null }> {
@@ -25,7 +25,6 @@ class ErrorBoundary extends Component<{ children: React.ReactNode }, { error: Er
 
 createRoot(document.getElementById("root")!).render(
   <ErrorBoundary>
-    <App />
+    <AdminApp />
   </ErrorBoundary>
 );
-  

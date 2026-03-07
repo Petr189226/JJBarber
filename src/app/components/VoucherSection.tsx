@@ -17,7 +17,6 @@ export function VoucherSection() {
       id="voucher"
       className="relative py-16 md:py-24 lg:py-28 overflow-hidden scroll-mt-24"
     >
-      {/* Gradient background: black → dark gold/brown */}
       <div
         className="absolute inset-0"
         style={{
@@ -27,7 +26,6 @@ export function VoucherSection() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          {/* Left: text */}
           <div
             className={`transition-all duration-700 ease-out ${
               inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-6"
@@ -65,7 +63,6 @@ export function VoucherSection() {
             </button>
           </div>
 
-          {/* Right: voucher card image */}
           <div
             className={`relative flex justify-center lg:justify-end transition-all duration-700 ease-out delay-150 ${
               inView ? "opacity-100 translate-x-0" : "opacity-0 translate-x-6"

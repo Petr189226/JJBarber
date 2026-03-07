@@ -82,7 +82,6 @@ export function Reviews() {
         <div style={{ minHeight: contentInView ? undefined : "400px" }} aria-hidden={!contentInView}>
           {contentInView ? (
         <>
-        {/* Desktop grid */}
         <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-5">
           {reviews.map((review, i) => (
             <div
@@ -116,7 +115,6 @@ export function Reviews() {
           ))}
         </div>
 
-        {/* Mobile carousel */}
         <div className="md:hidden">
           <div
             key={active}

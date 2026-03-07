@@ -18,7 +18,6 @@ export function Booking() {
     <section id="booking" className="py-8 md:py-12 lg:py-20 bg-[#0B0B0B] scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          {/* Left column */}
           <div>
             <div
               className={`flex items-center gap-3 mb-5 transition-all duration-500 ease-out ${inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-5"}`}
@@ -96,7 +95,6 @@ export function Booking() {
             </div>
           </div>
 
-          {/* Right column – lazy to reduce initial DOM */}
           <div style={{ minHeight: rightInView ? undefined : "320px" }} aria-hidden={!rightInView}>
             {rightInView ? (
           <div className="space-y-6 opacity-100 translate-x-0 transition-all duration-500 ease-out">

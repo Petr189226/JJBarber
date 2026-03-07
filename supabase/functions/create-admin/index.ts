@@ -34,16 +34,17 @@ Deno.serve(async (req) => {
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
       auth: { autoRefreshToken: false, persistSession: false },
     });
+    const token = authHeader.replace(/^Bearer\s+/i, "");
     const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey || supabaseServiceKey, {
       global: { headers: { Authorization: authHeader } },
     });
 
-    const { data: { user: caller } } = await supabaseAuth.auth.getUser();
-    if (!caller) {
-      return Response.json({ error: "Neplatný token" }, {
-        status: 401,
-        headers: corsHeaders,
-      });
+    const { data: { user: caller }, error: userError } = await supabaseAuth.auth.getUser(token);
+    if (!caller || userError) {
+      return Response.json(
+        { error: userError?.message || "Neplatný token" },
+        { status: 401, headers: corsHeaders }
+      );
     }
 
     const { data: roleRow } = await supabaseAdmin

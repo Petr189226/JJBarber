@@ -18,14 +18,10 @@ function FlagGB({ size = 20 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 120 80" className="rounded-lg overflow-hidden">
       <rect width="120" height="80" fill="#012169" />
-      {/* White diagonal stripes (St Andrew) */}
       <path d="M-4,-4 L124,84 L132,76 L4,-12 Z M124,-4 L-4,84 L-12,76 L116,-12 Z" fill="#fff" />
-      {/* Red diagonal stripes (St Patrick) – simplified */}
       <path d="M0,15 L105,80 L113,72 L8,7 Z M120,15 L15,80 L7,72 L112,7 Z M15,0 L120,65 L112,73 L7,8 Z M105,0 L0,65 L8,73 L113,8 Z" fill="#C8102E" />
-      {/* White cross (St George) */}
       <rect x="38" y="0" width="44" height="80" fill="#fff" />
       <rect x="0" y="18" width="120" height="44" fill="#fff" />
-      {/* Red cross (St George) */}
       <rect x="46" y="0" width="28" height="80" fill="#C8102E" />
       <rect x="0" y="26" width="120" height="28" fill="#C8102E" />
     </svg>
@@ -117,7 +113,6 @@ export function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
-            {/* Logo */}
             <a
               href="#"
               onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
@@ -139,7 +134,6 @@ export function Navbar() {
               </picture>
             </a>
 
-            {/* Desktop Nav */}
             <nav className="hidden lg:flex items-center gap-1">
               {navLinks.map((link) => {
                 const isActive = activeSection === link.id;
@@ -164,7 +158,6 @@ export function Navbar() {
               })}
             </nav>
 
-            {/* CTA + Language + Mobile toggle */}
             <div className="flex items-center gap-3 lg:gap-4 lg:pl-4 lg:border-l lg:border-white/[0.06]">
               <LanguageSwitcher />
               <BookButton
@@ -187,7 +180,6 @@ export function Navbar() {
         </div>
       </header>
 
-      {/* Mobile Menu */}
       {mobileOpen && (
         <div className="fixed top-20 left-0 right-0 z-40 bg-[#0A0A0A]/98 backdrop-blur-xl border-b border-white/[0.06] lg:hidden">
           <nav className="flex flex-col px-6 py-6 gap-2">

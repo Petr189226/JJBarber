@@ -5,3 +5,4 @@ dist/
 .env.local
 forpsi-deploy.zip
 jj-barbershop-websupport.zip
+supabase/.temp/

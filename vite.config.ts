@@ -3,7 +3,6 @@ import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 
-/** Make Vite-injected CSS load async so it doesn't block FCP/LCP. */
 function nonBlockingCss() {
   return {
     name: 'non-blocking-css',
@@ -22,22 +21,31 @@ function nonBlockingCss() {
 }
 
 export default defineConfig({
-  base: './',
+  base: process.env.NODE_ENV === 'development' ? '/' : './',
   plugins: [
     react(),
     tailwindcss(),
     nonBlockingCss(),
+    {
+      name: 'rewrite-admin',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.url === '/admin' || req.url === '/admin/') {
+            req.url = '/admin.html';
+          }
+          next();
+        });
+      },
+    },
   ],
   build: {
     rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        admin: path.resolve(__dirname, 'admin.html'),
+      },
       output: {
         manualChunks(id) {
-          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
-            return 'react-vendor';
-          }
-          if (id.includes('node_modules/scheduler/')) {
-            return 'react-vendor';
-          }
           if (id.includes('node_modules/lucide-react')) {
             return 'lucide';
           }
@@ -47,12 +55,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      // Alias @ to the src directory
       '@': path.resolve(__dirname, './src'),
     },
+    dedupe: ['react', 'react-dom'],
   },
-
-
-  // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
 })

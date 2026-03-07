@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /jj-backstage
+Disallow: /admin
 
 Sitemap: https://jjbarbershop.cz/sitemap.xml

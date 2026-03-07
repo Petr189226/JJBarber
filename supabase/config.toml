@@ -1,0 +1,10 @@
+# Supabase project config – Edge Functions
+# verify_jwt = false: gateway nepřesměruje request, funkce sama ověří JWT
+[functions.create-admin]
+verify_jwt = false
+
+[functions.manage-admins]
+verify_jwt = false
+
+[functions.notify-voucher]
+verify_jwt = false

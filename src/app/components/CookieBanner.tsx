@@ -20,7 +20,6 @@ export function CookieBanner() {
     try {
       localStorage.setItem(STORAGE_KEY, "accepted");
     } catch {
-      /* noop */
     }
     setVisible(false);
   };

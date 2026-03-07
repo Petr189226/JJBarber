@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
 import {
   getPresetRange,
   getStartOfDayLocal,
@@ -67,6 +69,12 @@ const statusConfig: Record<Status, { color: string; bg: string; icon: React.Reac
 function parseAmount(service: string): number {
   const m = service.match(/(\d+)\s*Kč/);
   return m ? parseInt(m[1], 10) : 0;
+}
+
+function escapeHtml(text: string): string {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 function StatusBadge({ status }: { status: Status }) {
@@ -506,26 +514,54 @@ export function AdminApp() {
     setSelectedIds(new Set());
   };
 
-  const printVoucher = (o: VoucherOrder) => {
-    const w = window.open("", "_blank");
-    if (!w) return;
-    w.document.write(`
-      <!DOCTYPE html><html><head><title>Voucher ${o.id}</title>
-      <style>body{font-family:sans-serif;padding:40px;max-width:400px;margin:0 auto}
-      h1{font-size:24px;margin-bottom:8px}.meta{color:#666;font-size:12px;margin-bottom:24px}
-      .service{font-size:18px;font-weight:600;margin:16px 0}.amount{font-size:20px;color:#c9a84c}
-      </style></head><body>
-      <h1>J&J Barber Shop</h1>
-      <p class="meta">Dárkový poukaz · ${o.id.slice(0, 8)}</p>
-      <p><strong>${o.name} ${o.surname || ""}</strong></p>
-      <p class="service">${o.service}</p>
-      <p class="amount">${parseAmount(o.service).toLocaleString("cs-CZ")} Kč</p>
-      <p class="meta">Pobočka: ${o.branch}</p>
-      </body></html>
-    `);
-    w.document.close();
-    w.print();
-    w.close();
+  const generateVoucherPdf = async (o: VoucherOrder) => {
+    const width = 800;
+    const height = 500;
+    const container = document.createElement("div");
+    container.style.cssText = `position:fixed;left:-9999px;top:0;width:${width}px;height:${height}px;background:#0f0f0f;`;
+    const amountStr = parseAmount(o.service).toLocaleString("cs-CZ");
+    const fullName = `${o.name} ${o.surname || ""}`.trim();
+    container.innerHTML = `
+      <div style="position:relative;width:100%;height:100%;overflow:hidden;">
+        <img src="/voucher-card.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
+        <div style="position:absolute;bottom:80px;left:0;right:0;text-align:center;color:#C9A84C;font-family:Georgia,serif;padding:0 60px;z-index:1;">
+          <div style="font-size:28px;font-weight:600;margin-bottom:12px;color:#fff;">${escapeHtml(fullName)}</div>
+          <div style="font-size:18px;margin-bottom:8px;color:#C4BEB4;">${escapeHtml(o.service)}</div>
+          <div style="font-size:24px;font-weight:600;color:#C9A84C;">${escapeHtml(amountStr)} Kč</div>
+          <div style="font-size:14px;color:#8a8a8a;margin-top:12px;">Pobočka: ${escapeHtml(o.branch)}</div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(container);
+    const img = container.querySelector("img");
+    const imgLoaded = img
+      ? new Promise<void>((resolve, reject) => {
+          if (img.complete) resolve();
+          else {
+            img.onload = () => resolve();
+            img.onerror = () => reject(new Error("Nepodařilo se načíst obrázek voucheru"));
+          }
+        })
+      : Promise.resolve();
+    try {
+      await imgLoaded;
+      await new Promise((r) => setTimeout(r, 100));
+      const canvas = await html2canvas(container, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: "#0f0f0f",
+        logging: false,
+      });
+      document.body.removeChild(container);
+      const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: [width, height] });
+      pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, width, height);
+      const safeName = `${o.name}-${o.surname || ""}`.trim().replace(/\s+/g, "-").replace(/[^\w\u00C0-\u024F\-]/gi, "") || "voucher";
+      pdf.save(`voucher-${safeName}.pdf`);
+    } catch (e) {
+      if (container.parentNode) document.body.removeChild(container);
+      throw e;
+    }
   };
 
   const exportCsv = () => {
@@ -1197,11 +1233,11 @@ export function AdminApp() {
                                         Poznámka
                                       </button>
                                       <button
-                                        onClick={(e) => { e.stopPropagation(); printVoucher(o); setOpenActionMenu(null); }}
+                                        onClick={(e) => { e.stopPropagation(); generateVoucherPdf(o).catch((err) => alert(err?.message ?? "Chyba při generování PDF")); setOpenActionMenu(null); }}
                                         className="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-gray-50 text-gray-700"
                                       >
                                         <PrinterIcon size={14} />
-                                        Tisk voucheru
+                                        Vygenerovat voucher
                                       </button>
                                     </div>
                                   )}
@@ -1421,11 +1457,11 @@ export function AdminApp() {
                 </span>
               )}
               <button
-                onClick={() => printVoucher(selectedOrder)}
+                onClick={() => generateVoucherPdf(selectedOrder).catch((err) => alert(err?.message ?? "Chyba při generování PDF"))}
                 className="w-full py-2.5 bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors"
               >
                 <PrinterIcon size={16} />
-                Tisk voucheru
+                Vygenerovat voucher
               </button>
             </div>
           </div>
