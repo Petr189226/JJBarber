@@ -43,11 +43,11 @@ interface Service {
 }
 
 const services: Service[] = [
+  { nameKey: "svc.combo", descKey: "svc.combo", price: "790", hasDuration: true, popular: true },
   { nameKey: "svc.classic", descKey: "svc.classic", price: "490", hasDuration: true, popular: false },
   { nameKey: "svc.long", descKey: "svc.long", price: "690", hasDuration: true, popular: false },
   { nameKey: "svc.beard", descKey: "svc.beard", price: "390", hasDuration: true, popular: false },
   { nameKey: "svc.shave", descKey: "svc.shave", price: "390", hasDuration: true, popular: false },
-  { nameKey: "svc.combo", descKey: "svc.combo", price: "790", hasDuration: true, popular: true },
   { nameKey: "svc.kids", descKey: "svc.kids", price: "450", hasDuration: true, popular: false },
   { nameKey: "svc.voucher", descKey: "svc.voucher", price: null, hasDuration: false, popular: false },
 ];
@@ -72,10 +72,10 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
     >
       {service.popular && (
         <div
-          className="absolute -top-2.5 left-6 px-3 py-1.5 bg-[#1A1A1A] border border-[#C9A84C]/40 text-[#D4B85A] text-[0.65rem] tracking-[0.15em] uppercase shadow-[0_0_12px_rgba(201,168,76,0.15)]"
-          style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600 }}
+          className="absolute -top-3 left-6 right-6 px-4 py-2 bg-gradient-to-r from-[#C9A84C]/20 to-[#D4B85A]/15 border border-[#C9A84C]/50 text-[#D4B85A] text-[0.7rem] tracking-[0.2em] uppercase shadow-[0_0_16px_rgba(201,168,76,0.2)] text-center"
+          style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700 }}
         >
-          {t("svc.popular")}
+          ⭐ {t("svc.popular")}
         </div>
       )}
 
@@ -155,7 +155,7 @@ export function Services() {
   const { t } = useLanguage();
 
   return (
-    <section id="services" className="py-8 md:py-12 lg:py-20 bg-[#0B0B0B] scroll-mt-24">
+    <section id="services" className="py-8 md:py-12 lg:py-20 bg-[#0A0A0A] scroll-mt-24">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="mb-20">
           <h2

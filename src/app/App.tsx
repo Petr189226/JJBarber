@@ -6,6 +6,7 @@ import { TermsModal } from "./components/TermsModal";
 import { LanguageProvider } from "./i18n";
 import { useInView } from "./hooks/useInView";
 
+const WhyUs = lazy(() => import("./components/WhyUs").then((m) => ({ default: m.WhyUs })));
 const Locations = lazy(() => import("./components/Locations").then((m) => ({ default: m.Locations })));
 const Team = lazy(() => import("./components/Team").then((m) => ({ default: m.Team })));
 const Services = lazy(() => import("./components/Services").then((m) => ({ default: m.Services })));
@@ -67,6 +68,7 @@ export default function App() {
         <Navbar />
         <main>
           <Hero />
+          <LazySection><WhyUs /></LazySection>
           <LazySection><Locations /></LazySection>
           <LazySection><Team /></LazySection>
           <LazySection><Services /></LazySection>

@@ -104,27 +104,34 @@ export function Hero() {
             </span>
           </div>
 
-          {/* Headline */}
+          {/* Headline – konverzní + SEO (Barber Praha 10) */}
           <h1
             className="text-[#C4BEB4] mb-4 flex flex-col gap-2"
             style={{
               fontFamily: "'Playfair Display', serif",
               fontWeight: 900,
-              fontSize: "clamp(3.5rem, 8vw, 6.5rem)",
+              fontSize: "clamp(2.8rem, 6.5vw, 5.5rem)",
               lineHeight: 1.12,
               letterSpacing: "-0.02em",
             }}
           >
             <span>{t("hero.headline1")}</span>
-            <span><em style={{ fontStyle: "italic", color: "#C9A84C", letterSpacing: "0.02em" }}>{t("hero.headline2")} {t("hero.headline3")}</em></span>
+            <span><em style={{ fontStyle: "italic", color: "#C9A84C", letterSpacing: "0.02em" }}>{t("hero.headline2")}</em></span>
           </h1>
 
-          {/* Subheadline */}
+          {/* Social proof subheadline */}
           <p
-            className="text-[#B5AEA4] mb-10 max-w-md"
-            style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "1rem", lineHeight: 1.8 }}
+            className="text-[#C9A84C] mb-2 flex items-center gap-2"
+            style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: "1rem" }}
           >
+            <span className="inline-flex items-center gap-1">⭐</span>
             {t("hero.sub")}
+          </p>
+          <p
+            className="text-[#B5AEA4] mb-8 max-w-md"
+            style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.95rem", lineHeight: 1.7 }}
+          >
+            {t("hero.sub2")}
           </p>
 
           {/* Booking pre-step */}

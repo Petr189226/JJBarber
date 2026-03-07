@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "../i18n";
-import { BookButton } from "./BookButton";
 
 const RESERVIO_URL = "https://j-j-barbershop.reservio.com/";
 
@@ -10,7 +9,7 @@ export function StickyBookBar() {
 
   useEffect(() => {
     const onScroll = () => {
-      setVisible(window.scrollY > window.innerHeight * 0.8);
+      setVisible(window.scrollY > window.innerHeight * 0.3);
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -20,17 +19,18 @@ export function StickyBookBar() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-40 sm:hidden"
+      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
     >
-      <div className="bg-[#0A0A0A]/95 backdrop-blur-md border-t border-white/[0.06] px-4 py-3">
-        <BookButton
-          href={RESERVIO_URL}
-          label={t("sticky.book")}
-          size="md"
-          className="w-full justify-center py-3.5"
-        />
-      </div>
+      <a
+        href={RESERVIO_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-2 px-6 py-4 bg-gradient-to-b from-[#D4B85A] to-[#C9A84C] hover:from-[#DDC268] hover:to-[#D4B85A] text-[#0A0A0A] rounded-xl shadow-[0_4px_24px_rgba(201,168,76,0.35)] hover:shadow-[0_6px_28px_rgba(201,168,76,0.4)] hover:-translate-y-0.5 transition-all duration-200 font-semibold"
+        style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "0.95rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
+      >
+        {t("sticky.book")}
+      </a>
     </div>
   );
 }

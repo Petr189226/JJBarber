@@ -15,6 +15,7 @@ export function Footer() {
       title: t("footer.nav"),
       links: [
         { label: t("footer.home"), href: "#" },
+        { label: t("nav.why"), href: "#why" },
         { label: t("nav.locations"), href: "#locations" },
         { label: t("nav.team"), href: "#team" },
         { label: t("nav.services"), href: "#services" },

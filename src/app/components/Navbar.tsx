@@ -64,7 +64,7 @@ function LanguageSwitcher() {
   );
 }
 
-const SECTION_IDS = ["locations", "team", "services", "reviews", "booking"] as const;
+const SECTION_IDS = ["why", "locations", "team", "services", "reviews", "booking"] as const;
 
 export function Navbar() {
   const { t } = useLanguage();
@@ -73,6 +73,7 @@ export function Navbar() {
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
   const navLinks = [
+    { label: t("nav.why"), href: "#why", id: "why" },
     { label: t("nav.locations"), href: "#locations", id: "locations" },
     { label: t("nav.team"), href: "#team", id: "team" },
     { label: t("nav.services"), href: "#services", id: "services" },
