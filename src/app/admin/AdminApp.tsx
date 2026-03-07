@@ -517,29 +517,39 @@ export function AdminApp() {
   const generateVoucherPdf = async (o: VoucherOrder) => {
     const width = 800;
     const height = 500;
-    const container = document.createElement("div");
-    container.style.cssText = `position:fixed;left:-9999px;top:0;width:${width}px;height:${height}px;background:#0f0f0f;`;
     const amountStr = parseAmount(o.service).toLocaleString("cs-CZ");
     const fullName = `${o.name} ${o.surname || ""}`.trim();
-    container.innerHTML = `
-      <div style="position:relative;width:100%;height:100%;overflow:hidden;">
-        <img src="/voucher-card.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
-        <div style="position:absolute;bottom:80px;left:0;right:0;text-align:center;color:#C9A84C;font-family:Georgia,serif;padding:0 60px;z-index:1;">
-          <div style="font-size:28px;font-weight:600;margin-bottom:12px;color:#fff;">${escapeHtml(fullName)}</div>
+    const iframe = document.createElement("iframe");
+    iframe.setAttribute("style", "position:fixed;left:-9999px;top:0;width:" + width + "px;height:" + height + "px;border:none;");
+    document.body.appendChild(iframe);
+    const doc = iframe.contentDocument ?? iframe.contentWindow?.document;
+    if (!doc) {
+      document.body.removeChild(iframe);
+      throw new Error("Nepodařilo se vytvořit iframe pro generování voucheru");
+    }
+    doc.open();
+    doc.write(`
+      <!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="margin:0;background:#0f0f0f;">
+      <div style="position:relative;width:${width}px;height:${height}px;overflow:hidden;background:#0f0f0f;">
+        <img src="${window.location.origin}/voucher-card.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
+        <div style="position:absolute;bottom:80px;left:0;right:0;text-align:center;font-family:Georgia,serif;padding:0 60px;z-index:1;">
+          <div style="font-size:28px;font-weight:600;margin-bottom:12px;color:#ffffff;">${escapeHtml(fullName)}</div>
           <div style="font-size:18px;margin-bottom:8px;color:#C4BEB4;">${escapeHtml(o.service)}</div>
           <div style="font-size:24px;font-weight:600;color:#C9A84C;">${escapeHtml(amountStr)} Kč</div>
           <div style="font-size:14px;color:#8a8a8a;margin-top:12px;">Pobočka: ${escapeHtml(o.branch)}</div>
         </div>
       </div>
-    `;
-    document.body.appendChild(container);
+      </body></html>
+    `);
+    doc.close();
+    const container = doc.body;
     const img = container.querySelector("img");
     const imgLoaded = img
       ? new Promise<void>((resolve, reject) => {
-          if (img.complete) resolve();
+          if ((img as HTMLImageElement).complete) resolve();
           else {
-            img.onload = () => resolve();
-            img.onerror = () => reject(new Error("Nepodařilo se načíst obrázek voucheru"));
+            (img as HTMLImageElement).onload = () => resolve();
+            (img as HTMLImageElement).onerror = () => reject(new Error("Nepodařilo se načíst obrázek voucheru"));
           }
         })
       : Promise.resolve();
@@ -553,13 +563,13 @@ export function AdminApp() {
         backgroundColor: "#0f0f0f",
         logging: false,
       });
-      document.body.removeChild(container);
+      document.body.removeChild(iframe);
       const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: [width, height] });
       pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, width, height);
       const safeName = `${o.name}-${o.surname || ""}`.trim().replace(/\s+/g, "-").replace(/[^\w\u00C0-\u024F\-]/gi, "") || "voucher";
       pdf.save(`voucher-${safeName}.pdf`);
     } catch (e) {
-      if (container.parentNode) document.body.removeChild(container);
+      if (iframe.parentNode) document.body.removeChild(iframe);
       throw e;
     }
   };
