@@ -21,7 +21,7 @@ function nonBlockingCss() {
 }
 
 export default defineConfig({
-  base: process.env.NODE_ENV === 'development' ? '/' : './',
+  base: '/',
   plugins: [
     react(),
     tailwindcss(),
