@@ -1,12 +1,14 @@
 {
-  "name": "@figma/my-make-file",
+  "name": "jj-barbershop",
   "private": true,
   "version": "0.0.1",
   "type": "module",
   "scripts": {
     "build": "vite build",
     "dev": "vite",
-    "deploy-forpsi": "npm run build && node scripts/zip-for-forpsi.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "deploy-forpsi": "node scripts/check-env.mjs && npm run build && node scripts/zip-for-forpsi.mjs",
     "deploy-websupport": "node scripts/check-env.mjs && npm run build && node scripts/zip-for-websupport.mjs",
     "supabase:setup": "node scripts/supabase-setup.mjs",
     "supabase:setup-roles": "node scripts/supabase-setup-roles.mjs",
@@ -73,7 +75,8 @@
     "@tailwindcss/vite": "4.1.12",
     "@vitejs/plugin-react": "4.7.0",
     "tailwindcss": "4.1.12",
-    "vite": "6.3.5"
+    "vite": "6.3.5",
+    "vitest": "^4.0.18"
   },
   "peerDependencies": {
     "react": "18.3.1",

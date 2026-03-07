@@ -21,6 +21,14 @@ import {
 } from "lucide-react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
+import {
+  getPresetRange,
+  getStartOfDayLocal,
+  getEndOfDayLocal,
+  detectPresetFromRange,
+  isDateRangeValid,
+  type DatePresetId,
+} from "./utils/dateFilter";
 
 type Status = "new" | "pending" | "done" | "awaiting_payment" | "storno";
 
@@ -115,7 +123,7 @@ export function AdminApp() {
   const [filterPobocka, setFilterPobocka] = useState("Všechny pobočky");
   const [filterDateFrom, setFilterDateFrom] = useState("");
   const [filterDateTo, setFilterDateTo] = useState("");
-  const [filterDatePreset, setFilterDatePreset] = useState<string>("");
+  const [filterDatePreset, setFilterDatePreset] = useState<DatePresetId>("");
   const [filterJenNove, setFilterJenNove] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [openActionMenu, setOpenActionMenu] = useState<string | null>(null);
@@ -202,7 +210,10 @@ export function AdminApp() {
       });
   }, [user]);
 
+  const dateRangeValid = isDateRangeValid(filterDateFrom, filterDateTo);
+
   const filtered = useMemo(() => {
+    if (!dateRangeValid) return orders;
     return orders.filter((o) => {
       const fullName = `${o.name} ${o.surname || ""}`.toLowerCase();
       const q = search.toLowerCase();
@@ -214,36 +225,29 @@ export function AdminApp() {
         o.id.toLowerCase().includes(q);
       const matchStatus = filterStatus === "Vše" || o.status === filterStatus;
       const matchPobocka = filterPobocka === "Všechny pobočky" || o.branch === filterPobocka;
-      const d = new Date(o.created_at).getTime();
-      const fromOk = !filterDateFrom || d >= new Date(filterDateFrom).setHours(0, 0, 0, 0);
-      const toOk = !filterDateTo || d <= new Date(filterDateTo).setHours(23, 59, 59, 999);
+      const orderTime = new Date(o.created_at).getTime();
+      const fromOk = !filterDateFrom || orderTime >= getStartOfDayLocal(filterDateFrom);
+      const toOk = !filterDateTo || orderTime <= getEndOfDayLocal(filterDateTo);
       const matchJenNove = !filterJenNove || o.status === "new";
       return matchSearch && matchStatus && matchPobocka && fromOk && toOk && matchJenNove;
     });
-  }, [orders, search, filterStatus, filterPobocka, filterDateFrom, filterDateTo, filterJenNove]);
+  }, [orders, search, filterStatus, filterPobocka, filterDateFrom, filterDateTo, filterJenNove, dateRangeValid]);
 
-  const applyDatePreset = (preset: string) => {
-    setFilterDatePreset(preset);
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    if (preset === "dnes") {
-      setFilterDateFrom(today.toISOString().slice(0, 10));
-      setFilterDateTo(today.toISOString().slice(0, 10));
-    } else if (preset === "tyden") {
-      const mon = new Date(today);
-      mon.setDate(mon.getDate() - ((today.getDay() + 6) % 7));
-      setFilterDateFrom(mon.toISOString().slice(0, 10));
-      setFilterDateTo(today.toISOString().slice(0, 10));
-    } else if (preset === "mesic") {
-      const first = new Date(today.getFullYear(), today.getMonth(), 1);
-      setFilterDateFrom(first.toISOString().slice(0, 10));
-      setFilterDateTo(today.toISOString().slice(0, 10));
-    } else if (preset === "30dni") {
-      const d30 = new Date(today);
-      d30.setDate(d30.getDate() - 30);
-      setFilterDateFrom(d30.toISOString().slice(0, 10));
-      setFilterDateTo(today.toISOString().slice(0, 10));
-    }
+  const applyDatePreset = (preset: Exclude<DatePresetId, "custom" | "">) => {
+    const range = getPresetRange(preset);
+    setFilterDateFrom(range.from);
+    setFilterDateTo(range.to);
+    setFilterDatePreset(range.preset);
+  };
+
+  const handleDateFromChange = (value: string) => {
+    setFilterDateFrom(value);
+    setFilterDatePreset(detectPresetFromRange(value, filterDateTo));
+  };
+
+  const handleDateToChange = (value: string) => {
+    setFilterDateTo(value);
+    setFilterDatePreset(detectPresetFromRange(filterDateFrom, value));
   };
 
   const branches = useMemo(() => {
@@ -877,10 +881,10 @@ export function AdminApp() {
                       </select>
                       <div className="flex items-center gap-1.5 flex-wrap">
                         {[
-                          { id: "dnes", label: "Dnes" },
-                          { id: "tyden", label: "Týden" },
-                          { id: "mesic", label: "Měsíc" },
-                          { id: "30dni", label: "30 dní" },
+                          { id: "dnes" as const, label: "Dnes" },
+                          { id: "tyden" as const, label: "Týden" },
+                          { id: "mesic" as const, label: "Měsíc" },
+                          { id: "30dni" as const, label: "30 dní" },
                         ].map((p) => (
                           <button
                             key={p.id}
@@ -890,18 +894,26 @@ export function AdminApp() {
                                 ? "bg-[#c9a84c]/20 text-[#c9a84c] border border-[#c9a84c]/40"
                                 : "bg-[#141414] text-[#888] border border-[#2a2a2a] hover:text-[#bbb] hover:border-[#333]"
                             }`}
+                            title={p.id === "dnes" ? "Dnešní datum (lokální čas)" : undefined}
                           >
                             {p.label}
                           </button>
                         ))}
+                        {filterDatePreset === "custom" && (
+                          <span className="px-2.5 py-1.5 text-xs text-[#666] border border-[#2a2a2a] rounded">
+                            Vlastní
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center gap-1">
                         <span className="text-[#555] text-xs">Od</span>
                         <input
                           type="date"
                           value={filterDateFrom}
-                          onChange={(e) => { setFilterDateFrom(e.target.value); setFilterDatePreset(""); }}
-                          className="bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-[#bbb] focus:outline-none focus:border-[#c9a84c]/60"
+                          onChange={(e) => handleDateFromChange(e.target.value)}
+                          className={`bg-[#141414] border rounded-lg px-3 py-2 text-sm text-[#bbb] focus:outline-none focus:border-[#c9a84c]/60 ${
+                            !dateRangeValid ? "border-red-500/50" : "border-[#2a2a2a]"
+                          }`}
                         />
                       </div>
                       <div className="flex items-center gap-1">
@@ -909,10 +921,16 @@ export function AdminApp() {
                         <input
                           type="date"
                           value={filterDateTo}
-                          onChange={(e) => { setFilterDateTo(e.target.value); setFilterDatePreset(""); }}
-                          className="bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-[#bbb] focus:outline-none focus:border-[#c9a84c]/60"
+                          onChange={(e) => handleDateToChange(e.target.value)}
+                          className={`bg-[#141414] border rounded-lg px-3 py-2 text-sm text-[#bbb] focus:outline-none focus:border-[#c9a84c]/60 ${
+                            !dateRangeValid ? "border-red-500/50" : "border-[#2a2a2a]"
+                          }`}
+                          title={!dateRangeValid ? "Datum Do musí být po datu Od" : undefined}
                         />
                       </div>
+                      {!dateRangeValid && (
+                        <span className="text-red-400 text-xs">Od musí být před Do</span>
+                      )}
                       <label className="flex items-center gap-2 bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 cursor-pointer hover:border-[#333] transition-colors">
                         <input
                           type="checkbox"
