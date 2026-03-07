@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { execSync } from 'child_process';
-import { existsSync } from 'fs';
+import { existsSync, mkdirSync, copyFileSync } from 'fs';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -14,6 +14,12 @@ if (!existsSync(dist)) {
   console.error('Složka dist/ neexistuje. Spusť nejdřív: npm run build');
   process.exit(1);
 }
+
+// Fallback pro /admin – když .htaccess nefunguje (skrytý soubor ve FileZilla)
+const adminDir = join(dist, 'admin');
+const indexHtml = join(dist, 'index.html');
+if (!existsSync(adminDir)) mkdirSync(adminDir, { recursive: true });
+copyFileSync(indexHtml, join(adminDir, 'index.html'));
 
 try {
   execSync(`cd "${dist}" && zip -r "${zipPath}" .`, { stdio: 'inherit' });
