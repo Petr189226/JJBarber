@@ -1,6 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import {
+  ScissorsIcon,
+  SearchIcon,
+  LogOutIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  XIcon,
+  CheckIcon,
+  ClockIcon,
+  AlertCircleIcon,
+  RefreshCwIcon,
+  EyeIcon,
+  Loader2Icon,
+  AlertTriangleIcon,
+  PhoneOffIcon,
+  DownloadIcon,
+} from "lucide-react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
+
+type Status = "new" | "pending" | "done" | "awaiting_payment";
 
 type VoucherOrder = {
   id: string;
@@ -11,16 +30,63 @@ type VoucherOrder = {
   service: string;
   branch: string;
   note: string | null;
-  status: "new" | "pending" | "done";
+  admin_note?: string | null;
+  status: Status;
   created_at: string;
 };
 
 type AdminRole = "majitel" | "barber" | null;
 
-const inputClass =
-  "w-full bg-[#111111] border border-[#2A2A2A] focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/25 text-[#C4BEB4] rounded-xl px-4 py-3 outline-none transition-all";
-const btnClass =
-  "px-6 py-3 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-xl font-semibold transition-all";
+const statusLabels: Record<Status, string> = {
+  new: "Nový",
+  pending: "Rozpracováno",
+  done: "Vyřízeno",
+  awaiting_payment: "Čeká na platbu",
+};
+
+const statusConfig: Record<Status, { color: string; bg: string; icon: React.ReactNode }> = {
+  new: { color: "text-blue-400", bg: "bg-blue-600/25 border-blue-500/50", icon: <ClockIcon size={12} /> },
+  done: { color: "text-emerald-400", bg: "bg-emerald-600/25 border-emerald-500/50", icon: <CheckIcon size={12} /> },
+  pending: { color: "text-amber-400", bg: "bg-amber-600/25 border-amber-500/50", icon: <ClockIcon size={12} /> },
+  awaiting_payment: { color: "text-yellow-400", bg: "bg-yellow-600/25 border-yellow-500/50", icon: <AlertCircleIcon size={12} /> },
+};
+
+function parseAmount(service: string): number {
+  const m = service.match(/(\d+)\s*Kč/);
+  return m ? parseInt(m[1], 10) : 0;
+}
+
+function StatusBadge({ status }: { status: Status }) {
+  const cfg = statusConfig[status];
+  return (
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-medium ${cfg.color} ${cfg.bg}`}>
+      {cfg.icon}
+      {statusLabels[status]}
+    </span>
+  );
+}
+
+function StatsCard({
+  label,
+  value,
+  sub,
+  color,
+}: {
+  label: string;
+  value: number | string;
+  sub?: string;
+  color: string;
+}) {
+  return (
+    <div className="bg-[#111] border border-[#222] rounded-lg px-4 py-3 flex flex-col gap-0.5">
+      <span className="text-[#555] text-[10px] uppercase tracking-wider">{label}</span>
+      <span className={`text-xl font-semibold ${color}`}>
+        {value}
+      </span>
+      {sub && <span className="text-[#444] text-[11px]">{sub}</span>}
+    </div>
+  );
+}
 
 export function AdminApp() {
   const [user, setUser] = useState<User | null>(null);
@@ -41,6 +107,21 @@ export function AdminApp() {
   const [role, setRole] = useState<AdminRole>(null);
   const [roleLoading, setRoleLoading] = useState(true);
   const [showAddAdmin, setShowAddAdmin] = useState(false);
+  const [search, setSearch] = useState("");
+  const [filterStatus, setFilterStatus] = useState<Status | "Vše">("Vše");
+  const [filterPobocka, setFilterPobocka] = useState("Všechny pobočky");
+  const [filterDateFrom, setFilterDateFrom] = useState("");
+  const [filterDateTo, setFilterDateTo] = useState("");
+  const [filterJenNove, setFilterJenNove] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<VoucherOrder | null>(null);
+  const [showDetail, setShowDetail] = useState(false);
+  const [sortCol, setSortCol] = useState<"created_at" | "name" | "branch" | "status" | "service">("created_at");
+  const [sortAsc, setSortAsc] = useState(false);
+  const [adminNote, setAdminNote] = useState("");
+  const [savingNote, setSavingNote] = useState(false);
+  const [fetchError, setFetchError] = useState("");
+  const detailPanelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const meta = document.createElement("meta");
@@ -56,24 +137,43 @@ export function AdminApp() {
       setUser(session?.user ?? null);
       setLoading(false);
     });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
     return () => subscription.unsubscribe();
   }, []);
 
-  useEffect(() => {
+  const fetchOrders = useCallback(() => {
     if (!user || !supabase) return;
     setOrdersLoading(true);
+    setFetchError("");
     supabase
       .from("voucher_orders")
       .select("*")
       .order("created_at", { ascending: false })
       .then(({ data, error }) => {
         setOrdersLoading(false);
-        if (!error) setOrders((data as VoucherOrder[]) ?? []);
+        if (error) {
+          setFetchError(error.message);
+          return;
+        }
+        const list = (data as VoucherOrder[]) ?? [];
+        setOrders(list);
+        setSelectedOrder((prev) => (prev ? list.find((o) => o.id === prev.id) ?? prev : null));
       });
   }, [user]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
+
+  useEffect(() => {
+    if (!user || !supabase) return;
+    const interval = setInterval(fetchOrders, 60000);
+    return () => clearInterval(interval);
+  }, [user, fetchOrders]);
 
   useEffect(() => {
     if (!user || !supabase) {
@@ -96,6 +196,90 @@ export function AdminApp() {
       });
   }, [user]);
 
+  const filtered = useMemo(() => {
+    return orders.filter((o) => {
+      const fullName = `${o.name} ${o.surname || ""}`.toLowerCase();
+      const q = search.toLowerCase();
+      const matchSearch =
+        !search ||
+        fullName.includes(q) ||
+        o.email.toLowerCase().includes(q) ||
+        (o.phone && o.phone.includes(search)) ||
+        o.id.toLowerCase().includes(q);
+      const matchStatus = filterStatus === "Vše" || o.status === filterStatus;
+      const matchPobocka = filterPobocka === "Všechny pobočky" || o.branch === filterPobocka;
+      const d = new Date(o.created_at).getTime();
+      const fromOk = !filterDateFrom || d >= new Date(filterDateFrom).setHours(0, 0, 0, 0);
+      const toOk = !filterDateTo || d <= new Date(filterDateTo).setHours(23, 59, 59, 999);
+      const matchJenNove = !filterJenNove || o.status === "new";
+      return matchSearch && matchStatus && matchPobocka && fromOk && toOk && matchJenNove;
+    });
+  }, [orders, search, filterStatus, filterPobocka, filterDateFrom, filterDateTo, filterJenNove]);
+
+  const branches = useMemo(() => {
+    const set = new Set(orders.map((o) => o.branch));
+    return ["Všechny pobočky", ...Array.from(set).sort()];
+  }, [orders]);
+
+  const totalRevenue = useMemo(
+    () => orders.filter((o) => o.status !== "awaiting_payment").reduce((s, o) => s + parseAmount(o.service), 0),
+    [orders]
+  );
+  const counts = useMemo(
+    () => ({
+      novy: orders.filter((o) => o.status === "new").length,
+      vyrizeno: orders.filter((o) => o.status === "done").length,
+      ceka: orders.filter((o) => o.status === "awaiting_payment").length,
+      pending: orders.filter((o) => o.status === "pending").length,
+    }),
+    [orders]
+  );
+
+  const todayStart = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  }, []);
+
+  const dayAgo = useMemo(() => Date.now() - 24 * 60 * 60 * 1000, []);
+
+  const metrics = useMemo(() => {
+    const novyDnes = orders.filter((o) => o.status === "new" && new Date(o.created_at).getTime() >= todayStart).length;
+    const trzbyDnes = orders
+      .filter((o) => new Date(o.created_at).getTime() >= todayStart && o.status !== "awaiting_payment")
+      .reduce((s, o) => s + parseAmount(o.service), 0);
+    const sHodnotou = orders.filter((o) => o.status !== "awaiting_payment");
+    const prumer = sHodnotou.length
+      ? Math.round(sHodnotou.reduce((s, o) => s + parseAmount(o.service), 0) / sHodnotou.length)
+      : 0;
+    const serviceCounts = orders.reduce((acc, o) => {
+      acc[o.service] = (acc[o.service] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    const topService = Object.entries(serviceCounts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+    const staryNovy = orders.filter((o) => o.status === "new" && new Date(o.created_at).getTime() < dayAgo).length;
+    const bezTelefonu = orders.filter((o) => !o.phone || o.phone.trim() === "").length;
+    return { novyDnes, trzbyDnes, prumer, topService, staryNovy, bezTelefonu };
+  }, [orders, todayStart, dayAgo]);
+
+  const sortedFiltered = useMemo(() => {
+    const arr = [...filtered];
+    const mult = sortAsc ? 1 : -1;
+    arr.sort((a, b) => {
+      if (sortCol === "created_at") {
+        return mult * (new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+      }
+      if (sortCol === "name") {
+        return mult * `${a.name} ${a.surname}`.localeCompare(`${b.name} ${b.surname}`);
+      }
+      if (sortCol === "branch") return mult * a.branch.localeCompare(b.branch);
+      if (sortCol === "status") return mult * a.status.localeCompare(b.status);
+      if (sortCol === "service") return mult * a.service.localeCompare(b.service);
+      return 0;
+    });
+    return arr;
+  }, [filtered, sortCol, sortAsc]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supabase || !email || !password) return;
@@ -110,12 +294,54 @@ export function AdminApp() {
     await supabase?.auth.signOut();
   };
 
-  const updateStatus = async (id: string, status: VoucherOrder["status"]) => {
+  const saveAdminNote = async () => {
+    if (!supabase || !selectedOrder || savingNote) return;
+    setSavingNote(true);
+    try {
+      await supabase.from("voucher_orders").update({ admin_note: adminNote || null }).eq("id", selectedOrder.id);
+      setOrders((prev) => prev.map((o) => (o.id === selectedOrder.id ? { ...o, admin_note: adminNote || null } : o)));
+      setSelectedOrder((prev) => (prev?.id === selectedOrder.id ? { ...prev, admin_note: adminNote || null } : prev));
+    } finally {
+      setSavingNote(false);
+    }
+  };
+
+  const saveAdminNoteFor = useCallback(
+    (id: string, note: string) => {
+      if (!supabase) return;
+      supabase.from("voucher_orders").update({ admin_note: note || null }).eq("id", id).then(() => {
+        setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, admin_note: note || null } : o)));
+      });
+    },
+    []
+  );
+
+  const handleSelectOrder = (o: VoucherOrder) => {
+    if (selectedOrder && selectedOrder.id !== o.id && adminNote !== (selectedOrder.admin_note || "")) {
+      saveAdminNoteFor(selectedOrder.id, adminNote);
+    }
+    setSelectedOrder(o);
+    setShowDetail(true);
+  };
+
+  const handleCloseDetail = useCallback(() => {
+    if (selectedOrder && adminNote !== (selectedOrder.admin_note || "")) {
+      saveAdminNoteFor(selectedOrder.id, adminNote);
+    }
+    setShowDetail(false);
+  }, [selectedOrder, adminNote, saveAdminNoteFor]);
+
+  const updateStatus = async (id: string, status: Status) => {
     if (!supabase) return;
     setUpdatingId(id);
-    await supabase.from("voucher_orders").update({ status }).eq("id", id);
-    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
-    setUpdatingId(null);
+    try {
+      await supabase.from("voucher_orders").update({ status }).eq("id", id);
+      setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
+      setSelectedOrder((prev) => (prev?.id === id ? { ...prev, status } : prev));
+    } finally {
+      setUpdatingId(null);
+      setOpenDropdown(null);
+    }
   };
 
   const handleAddAdmin = async (e: React.FormEvent) => {
@@ -124,7 +350,9 @@ export function AdminApp() {
     setAddAdminLoading(true);
     setAddAdminError("");
     setAddAdminSuccess(false);
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     const token = session?.access_token;
     const url = import.meta.env.VITE_SUPABASE_URL;
     if (!token || !url) {
@@ -168,22 +396,94 @@ export function AdminApp() {
     });
   };
 
+  const resetFilters = () => {
+    setSearch("");
+    setFilterStatus("Vše");
+    setFilterPobocka("Všechny pobočky");
+    setFilterDateFrom("");
+    setFilterDateTo("");
+    setFilterJenNove(false);
+  };
+
+  const exportCsv = () => {
+    const headers = ["ID", "Datum", "Jméno", "E-mail", "Telefon", "Služba", "Pobočka", "Stav", "Částka", "Admin poznámka"];
+    const rows = sortedFiltered.map((o) => [
+      o.id,
+      formatDate(o.created_at),
+      `${o.name} ${o.surname || ""}`.trim(),
+      o.email,
+      o.phone || "",
+      o.service,
+      o.branch,
+      statusLabels[o.status],
+      parseAmount(o.service).toString(),
+      o.admin_note || "",
+    ]);
+    const csv = [headers.join(";"), ...rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(";"))].join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `voucher-objednavky-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  useEffect(() => {
+    if (selectedOrder) setAdminNote(selectedOrder.admin_note || "");
+  }, [selectedOrder?.id]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (openDropdown) setOpenDropdown(null);
+        else if (showDetail) handleCloseDetail();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [openDropdown, showDetail, handleCloseDetail]);
+
+  useEffect(() => {
+    if (showDetail && selectedOrder && detailPanelRef.current) {
+      const panel = detailPanelRef.current;
+      const focusable = panel.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const first = focusable[0];
+      if (first) first.focus();
+      const trap = (e: KeyboardEvent) => {
+        if (e.key !== "Tab") return;
+        const list = Array.from(focusable).filter((el) => !el.hasAttribute("disabled"));
+        const idx = list.indexOf(document.activeElement as HTMLElement);
+        if (idx === -1) return;
+        if (e.shiftKey) {
+          if (idx === 0) {
+            e.preventDefault();
+            (list[list.length - 1] as HTMLElement).focus();
+          }
+        } else {
+          if (idx === list.length - 1) {
+            e.preventDefault();
+            (list[0] as HTMLElement).focus();
+          }
+        }
+      };
+      panel.addEventListener("keydown", trap);
+      return () => panel.removeEventListener("keydown", trap);
+    }
+  }, [showDetail, selectedOrder]);
+
   const adminLayout = "min-h-screen relative";
-  const adminBg = (
-    <>
-      <div
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat bg-[#0A0A0A]"
-        style={{ backgroundImage: "url(/admin-bg.png)" }}
-      />
-      <div className="fixed inset-0 bg-gradient-to-b from-[#0A0A0A]/70 via-[#0A0A0A]/80 to-[#0A0A0A]/95 z-[1]" />
-    </>
-  );
+
+  const inputClass =
+    "w-full bg-[#111111] border border-[#2A2A2A] focus:border-[#C9A84C] focus:ring-2 focus:ring-[#C9A84C]/25 text-[#C4BEB4] rounded-xl px-4 py-3 outline-none transition-all";
+  const btnClass = "px-6 py-3 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-xl font-semibold transition-all";
 
   if (!isSupabaseConfigured()) {
     return (
-      <div className={`${adminLayout} flex items-center justify-center p-6`}>
-        {adminBg}
-        <div className="relative z-10 max-w-md text-center">
+      <div className={`${adminLayout} flex items-center justify-center p-6 bg-[#0a0a0a]`}>
+        <div className="max-w-md text-center">
           <h1 className="text-[#C4BEB4] text-xl mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
             Admin není nakonfigurován
           </h1>
@@ -197,18 +497,17 @@ export function AdminApp() {
 
   if (loading) {
     return (
-      <div className={`${adminLayout} flex items-center justify-center`}>
-        {adminBg}
-        <div className="relative z-10 w-8 h-8 border-2 border-[#C9A84C] border-t-transparent rounded-full animate-spin" />
+      <div className={`${adminLayout} flex items-center justify-center bg-[#0a0a0a]`} role="status" aria-live="polite">
+        <div className="w-8 h-8 border-2 border-[#C9A84C] border-t-transparent rounded-full animate-spin" aria-hidden />
+        <span className="sr-only">Načítám…</span>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className={`${adminLayout} flex items-center justify-center p-6`}>
-        {adminBg}
-        <div className="relative z-10 w-full max-w-sm">
+      <div className={`${adminLayout} flex items-center justify-center p-6 bg-[#0a0a0a]`}>
+        <div className="w-full max-w-sm">
           <h1 className="text-[#C4BEB4] text-2xl mb-2 text-center" style={{ fontFamily: "'Playfair Display', serif" }}>
             J&J Admin
           </h1>
@@ -233,9 +532,7 @@ export function AdminApp() {
               className={inputClass}
               autoComplete="current-password"
             />
-            {loginError && (
-              <p className="text-red-400 text-sm">{loginError}</p>
-            )}
+            {loginError && <p className="text-red-400 text-sm">{loginError}</p>}
             <button type="submit" disabled={loginLoading} className={`w-full ${btnClass}`}>
               {loginLoading ? "Přihlašuji…" : "Přihlásit"}
             </button>
@@ -250,172 +547,440 @@ export function AdminApp() {
   const noRole = role === null && !roleLoading;
 
   return (
-    <div className={adminLayout}>
-      {adminBg}
-      <div className="relative z-10">
-      <header className="border-b border-[#1F1F1F] px-6 py-4">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
+    <div className={`${adminLayout} min-h-screen bg-[#0a0a0a] text-white`} style={{ fontFamily: "Inter, sans-serif" }}>
+      <div>
+        <header className="border-b border-[#1e1e1e] bg-[#080808] px-4 sm:px-6 py-4 flex items-center justify-between sticky top-0 z-40">
           <div className="flex items-center gap-3">
-            <h1 className="text-[#C4BEB4] text-xl" style={{ fontFamily: "'Playfair Display', serif" }}>
-              Objednávky voucherů
-            </h1>
+            <div className="w-8 h-8 bg-[#c9a84c] rounded-lg flex items-center justify-center">
+              <ScissorsIcon size={16} className="text-[#080808]" />
+            </div>
+            <div>
+              <h1 className="text-white" style={{ fontFamily: "Playfair Display, serif" }}>
+                Barber Admin
+              </h1>
+              <span className="text-[#555] text-xs">Správa dárkových poukazů</span>
+            </div>
             {role && (
               <span
-                className={`text-xs px-2 py-0.5 rounded ${
-                  isMajitel ? "bg-[#C9A84C]/20 text-[#C9A84C]" : "bg-[#2A2A2A] text-[#8A8580]"
+                className={`text-xs px-2 py-0.5 rounded-full ${
+                  isMajitel ? "bg-[#c9a84c]/20 text-[#c9a84c] border border-[#c9a84c]/30" : "bg-[#2a2a2a] text-[#8a8580]"
                 }`}
               >
                 {isMajitel ? "Majitel" : "Barber"}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {isMajitel && (
               <button
                 onClick={() => setShowAddAdmin((v) => !v)}
-                className={`text-sm font-medium transition-colors ${showAddAdmin ? "text-[#C9A84C]" : "text-[#8A8580] hover:text-[#C4BEB4]"}`}
+                className={`text-sm px-4 py-2 rounded-lg transition-colors ${
+                  showAddAdmin ? "bg-[#c9a84c] text-[#080808]" : "text-[#666] hover:text-[#999] hover:bg-[#111]"
+                }`}
+                aria-expanded={showAddAdmin}
+                aria-label={showAddAdmin ? "Skrýt formulář pro přidání správce" : "Přidat nového správce"}
               >
                 + Přidat správce
               </button>
             )}
-            <a href="/" className="text-[#8A8580] hover:text-[#C4BEB4] text-sm transition-colors">
+            <a href="/" className="text-[#666] hover:text-[#999] text-sm px-3 py-2 rounded-lg hover:bg-[#111] transition-colors">
               ← Web
             </a>
             <button
               onClick={handleLogout}
-              className="text-[#8A8580] hover:text-[#C4BEB4] text-sm transition-colors"
+              className="flex items-center gap-2 text-[#666] hover:text-[#999] text-sm px-3 py-2 rounded-lg hover:bg-[#111] transition-colors"
             >
+              <LogOutIcon size={14} />
               Odhlásit
             </button>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-8">
-        {noRole && (
-          <div className="mb-8 p-4 bg-[#111111] border border-[#2A2A2A] rounded-xl">
-            <p className="text-[#B5AEA4] text-sm">
-              Nemáte přiřazenou roli. Přidejte svůj účet do tabulky <code className="text-[#C4BEB4]">admin_roles</code> v Supabase (Table Editor) s rolí <code className="text-[#C4BEB4]">majitel</code> nebo <code className="text-[#C4BEB4]">barber</code>. První Majitel se vytváří ručně v Supabase.
-            </p>
-          </div>
-        )}
+        <main className="px-4 sm:px-6 py-4 sm:py-6 max-w-[1600px] mx-auto">
+          {noRole && (
+            <div className="mb-6 p-3 bg-[#111] border border-[#222] rounded-lg">
+              <p className="text-[#666] text-sm">
+                Nemáte přiřazenou roli. Přidejte svůj účet do tabulky <code className="text-[#888]">admin_roles</code> v Supabase s rolí <code className="text-[#888]">majitel</code> nebo <code className="text-[#888]">barber</code>.
+              </p>
+            </div>
+          )}
 
-        {isBarber && (
-          <div className="mb-8 p-4 bg-[#111111] border border-[#2A2A2A] rounded-xl">
-            <p className="text-[#8A8580] text-sm">
-              Jako Barber máte jen náhled – nemůžete měnit stavy voucherů ani přidávat správce.
-            </p>
-          </div>
-        )}
+          {isBarber && (
+            <div className="mb-6 p-3 bg-[#111] border border-[#222] rounded-lg">
+              <p className="text-[#666] text-sm">
+                Jste přihlášen jako barber. Máte přístup pouze ke čtení bez možnosti měnit stavy voucherů a správu uživatelů.
+              </p>
+            </div>
+          )}
 
-        {!noRole && (ordersLoading ? (
-          <div className="flex justify-center py-20">
-            <div className="w-8 h-8 border-2 border-[#C9A84C] border-t-transparent rounded-full animate-spin" />
-          </div>
-        ) : orders.length === 0 ? (
-          <p className="text-[#8A8580] text-center py-20">Zatím žádné objednávky.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-[#1F1F1F]">
-                  <th className="py-3 pr-4 text-[#8A8580] text-xs font-semibold uppercase tracking-wider">Datum</th>
-                  <th className="py-3 pr-4 text-[#8A8580] text-xs font-semibold uppercase tracking-wider">Jméno</th>
-                  <th className="py-3 pr-4 text-[#8A8580] text-xs font-semibold uppercase tracking-wider">E-mail</th>
-                  <th className="py-3 pr-4 text-[#8A8580] text-xs font-semibold uppercase tracking-wider">Telefon</th>
-                  <th className="py-3 pr-4 text-[#8A8580] text-xs font-semibold uppercase tracking-wider">Služba</th>
-                  <th className="py-3 pr-4 text-[#8A8580] text-xs font-semibold uppercase tracking-wider">Pobočka</th>
-                  <th className="py-3 pr-4 text-[#8A8580] text-xs font-semibold uppercase tracking-wider">Stav</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((o) => (
-                  <tr key={o.id} className="border-b border-[#1A1A1A] hover:bg-[#111111]/50">
-                    <td className="py-4 pr-4 text-[#B5AEA4] text-sm whitespace-nowrap">{formatDate(o.created_at)}</td>
-                    <td className="py-4 pr-4 text-[#C4BEB4]">
-                      {o.name} {o.surname || ""}
-                    </td>
-                    <td className="py-4 pr-4 text-[#B5AEA4] text-sm">
-                      <a href={`mailto:${o.email}`} className="hover:text-[#C9A84C] transition-colors">
-                        {o.email}
-                      </a>
-                    </td>
-                    <td className="py-4 pr-4 text-[#B5AEA4] text-sm">
-                      {o.phone ? (
-                        <a href={`tel:${o.phone}`} className="hover:text-[#C9A84C] transition-colors">
-                          {o.phone}
-                        </a>
-                      ) : (
-                        "–"
-                      )}
-                    </td>
-                    <td className="py-4 pr-4 text-[#B5AEA4] text-sm">{o.service}</td>
-                    <td className="py-4 pr-4 text-[#B5AEA4] text-sm">{o.branch}</td>
-                    <td className="py-4 pr-4">
-                      {isMajitel ? (
-                        <select
-                          value={o.status}
-                          onChange={(e) => updateStatus(o.id, e.target.value as VoucherOrder["status"])}
-                          disabled={updatingId === o.id}
-                          className="bg-[#111111] border border-[#2A2A2A] text-[#C4BEB4] text-sm rounded-lg px-2 py-1.5 cursor-pointer"
-                        >
-                          <option value="new">Nový</option>
-                          <option value="pending">Rozpracováno</option>
-                          <option value="done">Vyřízeno</option>
-                        </select>
-                      ) : (
-                        <span className="text-[#B5AEA4] text-sm">
-                          {o.status === "new" ? "Nový" : o.status === "pending" ? "Rozpracováno" : "Vyřízeno"}
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ))}
-
-        {!noRole && orders.some((o) => o.note) && (
-          <details className="mt-8">
-            <summary className="text-[#8A8580] text-sm cursor-pointer hover:text-[#C4BEB4]">
-              Zobrazit poznámky
-            </summary>
-            <div className="mt-4 space-y-4">
-              {orders.filter((o) => o.note).map((o) => (
-                <div key={o.id} className="bg-[#111111] rounded-xl p-4 border border-[#1F1F1F]">
-                  <div className="text-[#8A8580] text-xs mb-1">
-                    {o.name} {o.surname} · {formatDate(o.created_at)}
-                  </div>
-                  <p className="text-[#B5AEA4] text-sm">{o.note}</p>
+          {!noRole && (
+            <>
+              {fetchError && (
+                <div className="mb-5 flex items-center gap-2 px-4 py-2 bg-red-900/20 border border-red-600/30 rounded-lg">
+                  <AlertCircleIcon size={16} className="text-red-400" />
+                  <span className="text-sm text-red-300">{fetchError}</span>
+                  <button onClick={() => fetchOrders()} className="ml-2 text-xs text-red-400 hover:text-red-300 underline">
+                    Zkusit znovu
+                  </button>
                 </div>
-              ))}
-            </div>
-          </details>
-        )}
+              )}
+              {(metrics.staryNovy > 0 || metrics.bezTelefonu > 0) && (
+                <div className="mb-5 flex flex-wrap gap-2">
+                  {metrics.staryNovy > 0 && (
+                    <div className="flex items-center gap-2 px-4 py-2 bg-amber-900/20 border border-amber-600/30 rounded-lg">
+                      <AlertTriangleIcon size={16} className="text-amber-400" />
+                      <span className="text-sm text-amber-300">
+                        {metrics.staryNovy} nezpracovaných starších než 24 h
+                      </span>
+                    </div>
+                  )}
+                  {metrics.bezTelefonu > 0 && (
+                    <div className="flex items-center gap-2 px-4 py-2 bg-amber-900/20 border border-amber-600/30 rounded-lg">
+                      <PhoneOffIcon size={16} className="text-amber-400" />
+                      <span className="text-sm text-amber-300">
+                        {metrics.bezTelefonu} objednávek bez telefonu
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
 
-        {isMajitel && (showAddAdmin ? (
-          <div className="mb-8 p-6 bg-[#111111] border border-[#2A2A2A] rounded-xl max-w-md">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[#C4BEB4] font-medium" style={{ fontFamily: "'Playfair Display', serif" }}>
-                Přidat dalšího správce
-              </h2>
-              <button
-                onClick={() => setShowAddAdmin(false)}
-                className="text-[#8A8580] hover:text-[#C4BEB4] text-sm"
-              >
-                Zavřít
-              </button>
-            </div>
-            <div>
-              <p className="text-[#6B6B6B] text-xs mb-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-3 mb-4 sm:mb-5">
+                <StatsCard
+                  label="Celkové tržby"
+                  value={`${totalRevenue.toLocaleString("cs-CZ")} Kč`}
+                  sub="bez čekajících"
+                  color="text-[#c9a84c]"
+                />
+                <StatsCard
+                  label="Tržby dnes"
+                  value={`${metrics.trzbyDnes.toLocaleString("cs-CZ")} Kč`}
+                  sub="vyřízené dnes"
+                  color="text-[#c9a84c]"
+                />
+                <StatsCard
+                  label="Nové"
+                  value={counts.novy}
+                  sub={metrics.novyDnes > 0 ? `${metrics.novyDnes} dnes` : "čekají"}
+                  color="text-blue-400"
+                />
+                <StatsCard label="Vyřízeno" value={counts.vyrizeno} sub="celkem" color="text-emerald-400" />
+                <StatsCard
+                  label="Čeká / rozpracováno"
+                  value={counts.ceka + counts.pending}
+                  sub="platba nebo v práci"
+                  color="text-amber-400"
+                />
+                <StatsCard
+                  label="Průměr voucheru"
+                  value={`${metrics.prumer.toLocaleString("cs-CZ")} Kč`}
+                  sub={metrics.topService ? metrics.topService.split("–")[0]?.trim() || "" : ""}
+                  color="text-[#888]"
+                />
+              </div>
+
+              {ordersLoading ? (
+                <div className="flex justify-center py-20" role="status" aria-live="polite">
+                  <div className="w-8 h-8 border-2 border-[#c9a84c] border-t-transparent rounded-full animate-spin" aria-hidden />
+                  <span className="sr-only">Načítám objednávky…</span>
+                </div>
+              ) : (
+                <div className="bg-[#0d0d0d] border border-[#1e1e1e] rounded-xl overflow-hidden">
+                  <div className="px-5 py-4 border-b border-[#1e1e1e] bg-[#0a0a0a] flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-white font-medium text-base">
+                        Objednávky voucherů
+                      </h2>
+                      <span className="text-[#666] text-sm">
+                        Zobrazeno {filtered.length} z {orders.length}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 overflow-x-auto pb-1 -mx-1">
+                      <div className="relative">
+                        <SearchIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#555]" />
+                        <input
+                          type="text"
+                          placeholder="Hledat jméno, email, telefon..."
+                          value={search}
+                          onChange={(e) => setSearch(e.target.value)}
+                          className="bg-[#141414] border border-[#2a2a2a] rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-[#555] focus:outline-none focus:border-[#c9a84c]/60 w-40 sm:w-52 min-w-[140px]"
+                          aria-label="Hledat v objednávkách"
+                        />
+                      </div>
+                      <select
+                        value={filterStatus}
+                        onChange={(e) => setFilterStatus(e.target.value as Status | "Vše")}
+                        className="bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-[#bbb] focus:outline-none focus:border-[#c9a84c]/60 cursor-pointer"
+                      >
+                        <option value="Vše">Všechny stavy</option>
+                        {(["new", "pending", "awaiting_payment", "done"] as Status[]).map((s) => (
+                          <option key={s} value={s}>
+                            {statusLabels[s]}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        value={filterPobocka}
+                        onChange={(e) => setFilterPobocka(e.target.value)}
+                        className="bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-[#bbb] focus:outline-none focus:border-[#c9a84c]/60 cursor-pointer"
+                      >
+                        {branches.map((p) => (
+                          <option key={p} value={p}>
+                            {p}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="flex items-center gap-1">
+                        <span className="text-[#555] text-xs">Od</span>
+                        <input
+                          type="date"
+                          value={filterDateFrom}
+                          onChange={(e) => setFilterDateFrom(e.target.value)}
+                          className="bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-[#bbb] focus:outline-none focus:border-[#c9a84c]/60"
+                        />
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <span className="text-[#555] text-xs">Do</span>
+                        <input
+                          type="date"
+                          value={filterDateTo}
+                          onChange={(e) => setFilterDateTo(e.target.value)}
+                          className="bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-[#bbb] focus:outline-none focus:border-[#c9a84c]/60"
+                        />
+                      </div>
+                      <label className="flex items-center gap-2 bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 cursor-pointer hover:border-[#333] transition-colors">
+                        <input
+                          type="checkbox"
+                          checked={filterJenNove}
+                          onChange={(e) => setFilterJenNove(e.target.checked)}
+                          className="rounded border-[#444] bg-[#0d0d0d] text-[#c9a84c] focus:ring-[#c9a84c]/50"
+                        />
+                        <span className="text-sm text-[#ccc]">Jen nové</span>
+                      </label>
+                      <button
+                        onClick={() => fetchOrders()}
+                        className="p-2 bg-[#222] border border-[#2a2a2a] rounded-lg text-[#666] hover:text-[#c9a84c] hover:bg-[#282828] transition-colors"
+                        aria-label="Obnovit seznam"
+                        title="Obnovit"
+                      >
+                        <RefreshCwIcon size={14} className={ordersLoading ? "animate-spin" : ""} aria-hidden />
+                      </button>
+                      <button
+                        onClick={resetFilters}
+                        className="px-3 py-2 bg-[#222] border border-[#2a2a2a] rounded-lg text-sm text-[#888] hover:text-[#ccc] hover:bg-[#282828] transition-colors"
+                        aria-label="Resetovat filtry"
+                      >
+                        Reset
+                      </button>
+                      <button
+                        onClick={exportCsv}
+                        className="flex items-center gap-2 px-3 py-2 bg-[#222] border border-[#2a2a2a] rounded-lg text-sm text-[#888] hover:text-[#c9a84c] hover:bg-[#282828] hover:border-[#c9a84c]/30 transition-colors"
+                        aria-label="Exportovat CSV"
+                      >
+                        <DownloadIcon size={14} aria-hidden />
+                        Export CSV
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="overflow-auto max-h-[calc(100vh-380px)] sm:max-h-[calc(100vh-420px)]">
+                    <table className="w-full min-w-[720px]" role="grid" aria-label="Tabulka objednávek voucherů">
+                      <thead className="sticky top-0 z-10 bg-[#0d0d0d]">
+                        <tr className="border-b border-[#1a1a1a]">
+                          <th className="px-4 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium first:pl-5">
+                            ID
+                          </th>
+                          <th
+                            className="px-4 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium cursor-pointer hover:text-[#888] select-none"
+                            onClick={() => { setSortCol("created_at"); setSortAsc((v) => !v); }}
+                          >
+                            <span className="inline-flex items-center gap-1">
+                              DATUM
+                              {sortCol === "created_at" ? (sortAsc ? <ChevronUpIcon size={12} /> : <ChevronDownIcon size={12} />) : null}
+                            </span>
+                          </th>
+                          <th
+                            className="px-4 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium cursor-pointer hover:text-[#888] select-none"
+                            onClick={() => { setSortCol("name"); setSortAsc((v) => !v); }}
+                          >
+                            <span className="inline-flex items-center gap-1">
+                              JMÉNO
+                              {sortCol === "name" ? (sortAsc ? <ChevronUpIcon size={12} /> : <ChevronDownIcon size={12} />) : null}
+                            </span>
+                          </th>
+                          <th className="px-4 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium">E-MAIL</th>
+                          <th className="px-4 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium">TELEFON</th>
+                          <th className="px-4 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium">SLUŽBA</th>
+                          <th
+                            className="px-4 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium cursor-pointer hover:text-[#888] select-none"
+                            onClick={() => { setSortCol("branch"); setSortAsc((v) => !v); }}
+                          >
+                            <span className="inline-flex items-center gap-1">
+                              POBOČKA
+                              {sortCol === "branch" ? (sortAsc ? <ChevronUpIcon size={12} /> : <ChevronDownIcon size={12} />) : null}
+                            </span>
+                          </th>
+                          <th
+                            className="px-4 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium cursor-pointer hover:text-[#888] select-none"
+                            onClick={() => { setSortCol("status"); setSortAsc((v) => !v); }}
+                          >
+                            <span className="inline-flex items-center gap-1">
+                              STAV
+                              {sortCol === "status" ? (sortAsc ? <ChevronUpIcon size={12} /> : <ChevronDownIcon size={12} />) : null}
+                            </span>
+                          </th>
+                          <th className="px-4 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium w-12"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sortedFiltered.length === 0 ? (
+                          <tr>
+                            <td colSpan={9} className="py-16 text-center text-[#444] text-sm">
+                              Žádné výsledky nenalezeny
+                            </td>
+                          </tr>
+                        ) : (
+                          sortedFiltered.map((o, i) => (
+                            <tr
+                              key={o.id}
+                              onClick={() => handleSelectOrder(o)}
+                              className={`border-b border-[#161616] hover:bg-[#141414] transition-colors group cursor-pointer ${
+                                i % 2 === 0 ? "" : "bg-[#0b0b0b]"
+                              } ${o.status === "new" ? "border-l-2 border-l-blue-500/50" : ""}`}
+                            >
+                              <td className="px-4 pl-5 py-3 text-xs text-[#c9a84c] font-mono">
+                                {o.id.slice(0, 8)}…
+                              </td>
+                              <td className="px-4 py-3 text-xs text-[#777] whitespace-nowrap">{formatDate(o.created_at)}</td>
+                              <td className="px-4 py-3 text-sm text-[#ddd] whitespace-nowrap">
+                                {o.name} {o.surname || ""}
+                              </td>
+                              <td className="px-4 py-3 text-xs text-[#888]">
+                                <a href={`mailto:${o.email}`} className="hover:text-[#c9a84c] transition-colors">
+                                  {o.email}
+                                </a>
+                              </td>
+                              <td className="px-4 py-3 text-xs text-[#888] whitespace-nowrap">
+                                {o.phone ? (
+                                  <a href={`tel:${o.phone}`} className="hover:text-[#c9a84c] transition-colors">
+                                    {o.phone}
+                                  </a>
+                                ) : (
+                                  "–"
+                                )}
+                              </td>
+                              <td className="px-4 py-3 text-xs text-[#aaa] max-w-[180px] truncate" title={o.service}>
+                                {o.service}
+                              </td>
+                              <td className="px-4 py-3 text-xs text-[#888]">{o.branch}</td>
+                              <td className="px-4 py-3 relative">
+                                {isMajitel ? (
+                                  <>
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); setOpenDropdown(openDropdown === o.id ? null : o.id); }}
+                                      className="flex items-center gap-1.5 group/btn"
+                                      disabled={updatingId === o.id}
+                                      aria-label={`Změnit stav objednávky ${o.id}`}
+                                      aria-expanded={openDropdown === o.id}
+                                      aria-haspopup="listbox"
+                                    >
+                                      {updatingId === o.id ? (
+                                        <Loader2Icon size={12} className="animate-spin text-[#666]" />
+                                      ) : (
+                                        <>
+                                          <StatusBadge status={o.status} />
+                                          <ChevronDownIcon
+                                            size={10}
+                                            className="text-[#444] group-hover/btn:text-[#888] transition-colors"
+                                          />
+                                        </>
+                                      )}
+                                    </button>
+                                    {openDropdown === o.id && (
+                                      <div className="absolute left-4 top-full mt-1 bg-[#161616] border border-[#2a2a2a] rounded-lg overflow-hidden z-50 shadow-2xl min-w-[155px]">
+                                        {(["new", "pending", "awaiting_payment", "done"] as Status[]).map((s) => (
+                                          <button
+                                            key={s}
+                                            onClick={(e) => { e.stopPropagation(); updateStatus(o.id, s); }}
+                                            className={`w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-[#222] transition-colors ${
+                                              o.status === s ? "text-[#c9a84c]" : "text-[#aaa]"
+                                            }`}
+                                          >
+                                            {o.status === s && <CheckIcon size={10} className="text-[#c9a84c]" />}
+                                            {o.status !== s && <span className="w-[10px]" />}
+                                            {statusLabels[s]}
+                                          </button>
+                                        ))}
+                                      </div>
+                                    )}
+                                  </>
+                                ) : (
+                                  <StatusBadge status={o.status} />
+                                )}
+                              </td>
+                              <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); handleSelectOrder(o); }}
+                                    className="p-2 rounded text-[#555] hover:text-[#c9a84c] hover:bg-[#c9a84c]/10 transition-colors"
+                                    aria-label={`Detail objednávky ${o.name} ${o.surname || ""}`}
+                                    title="Detail"
+                                  >
+                                    <EyeIcon size={14} aria-hidden />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="px-5 py-3 border-t border-[#1a1a1a] flex items-center justify-between">
+                    <span className="text-xs text-[#444]">
+                      Zobrazeno {filtered.length} z {orders.length} záznamů
+                    </span>
+                    <span className="text-xs text-[#444]">
+                      Celkem{" "}
+                      {filtered.reduce((s, o) => s + parseAmount(o.service), 0).toLocaleString("cs-CZ")} Kč (filtrováno)
+                    </span>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {isMajitel && showAddAdmin && (
+            <div
+              className="mt-6 sm:mt-8 p-4 sm:p-6 bg-[#111] border border-[#2a2a2a] rounded-xl max-w-md"
+              role="region"
+              aria-labelledby="add-admin-title"
+              aria-busy={addAdminLoading}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 id="add-admin-title" className="text-[#c4beb4] font-medium" style={{ fontFamily: "Playfair Display, serif" }}>
+                  Přidat dalšího správce
+                </h2>
+                <button
+                  onClick={() => setShowAddAdmin(false)}
+                  className="text-[#8a8580] hover:text-[#c4beb4] text-sm p-1 disabled:opacity-50"
+                  disabled={addAdminLoading}
+                  aria-label="Zavřít formulář"
+                >
+                  Zavřít
+                </button>
+              </div>
+              <p className="text-[#6b6b6b] text-xs mb-4">
                 Vytvoř účet pro kolegu. Majitel může měnit stavy voucherů, barber má jen náhled.
               </p>
-              <form onSubmit={handleAddAdmin} className="space-y-3">
+              <form onSubmit={handleAddAdmin} className="space-y-3" aria-describedby={addAdminError ? "add-admin-error" : addAdminSuccess ? "add-admin-success" : undefined}>
                 <select
                   value={newAdminRole}
                   onChange={(e) => setNewAdminRole(e.target.value as "majitel" | "barber")}
                   className={inputClass}
+                  disabled={addAdminLoading}
+                  aria-label="Role nového správce"
                 >
                   <option value="barber">Barber (jen náhled)</option>
                   <option value="majitel">Majitel (plný přístup)</option>
@@ -423,35 +988,157 @@ export function AdminApp() {
                 <input
                   type="email"
                   value={newAdminEmail}
-                  onChange={(e) => { setNewAdminEmail(e.target.value); setAddAdminError(""); }}
+                  onChange={(e) => {
+                    setNewAdminEmail(e.target.value);
+                    setAddAdminError("");
+                  }}
                   placeholder="E-mail nového správce"
                   required
                   className={inputClass}
+                  disabled={addAdminLoading}
+                  aria-invalid={!!addAdminError}
+                  aria-describedby={addAdminError ? "add-admin-error" : undefined}
                 />
                 <input
                   type="password"
                   value={newAdminPassword}
-                  onChange={(e) => { setNewAdminPassword(e.target.value); setAddAdminError(""); }}
+                  onChange={(e) => {
+                    setNewAdminPassword(e.target.value);
+                    setAddAdminError("");
+                  }}
                   placeholder="Heslo (min. 6 znaků)"
                   required
                   minLength={6}
                   className={inputClass}
+                  disabled={addAdminLoading}
+                  aria-invalid={!!addAdminError}
                 />
-                {addAdminError && <p className="text-red-400 text-sm">{addAdminError}</p>}
+                {addAdminError && (
+                  <p id="add-admin-error" className="text-red-400 text-sm" role="alert">
+                    {addAdminError}
+                  </p>
+                )}
                 {addAdminSuccess && (
-                  <p className="text-emerald-400 text-sm">
+                  <p id="add-admin-success" className="text-emerald-400 text-sm" role="status">
                     Účet vytvořen. Nový správce se může přihlásit na e-mail a heslo.
                   </p>
                 )}
-                <button type="submit" disabled={addAdminLoading} className={btnClass}>
+                <button type="submit" disabled={addAdminLoading} className={btnClass} aria-busy={addAdminLoading}>
                   {addAdminLoading ? "Vytvářím…" : "Vytvořit účet"}
                 </button>
               </form>
             </div>
-          </div>
-        ) : null)}
-      </main>
+          )}
+        </main>
       </div>
+
+      {openDropdown && (
+        <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} aria-hidden="true" />
+      )}
+
+      {showDetail && selectedOrder && (
+        <>
+          <div className="fixed inset-0 z-40 bg-black/40" onClick={handleCloseDetail} aria-hidden />
+          <div
+            ref={detailPanelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="detail-panel-title"
+            className="fixed right-0 top-0 bottom-0 z-50 w-full max-w-md bg-[#0d0d0d] border-l border-[#222] shadow-2xl flex flex-col overflow-hidden"
+          >
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[#1e1e1e] flex-shrink-0">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[#c9a84c] text-xs font-mono">{selectedOrder.id.slice(0, 8)}…</span>
+                  <StatusBadge status={selectedOrder.status} />
+                </div>
+                <h3 id="detail-panel-title" className="mt-1 font-medium text-white">
+                  {selectedOrder.name} {selectedOrder.surname || ""}
+                </h3>
+              </div>
+              <button
+                onClick={handleCloseDetail}
+                className="p-2 rounded-lg text-[#555] hover:text-[#999] hover:bg-[#222] transition-colors"
+                aria-label="Zavřít detail"
+              >
+                <XIcon size={20} />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+              {[
+                { label: "Datum", value: formatDate(selectedOrder.created_at) },
+                { label: "E-mail", value: selectedOrder.email },
+                { label: "Telefon", value: selectedOrder.phone || "–" },
+                { label: "Služba", value: selectedOrder.service },
+                { label: "Pobočka", value: selectedOrder.branch },
+                { label: "Částka", value: `${parseAmount(selectedOrder.service).toLocaleString("cs-CZ")} Kč` },
+              ].map((row) => (
+                <div key={row.label} className="flex justify-between items-start gap-4">
+                  <span className="text-xs text-[#555] uppercase tracking-wider flex-shrink-0">{row.label}</span>
+                  <span className="text-sm text-[#ccc] text-right break-all">{row.value}</span>
+                </div>
+              ))}
+              {selectedOrder.note && (
+                <div className="pt-4 border-t border-[#1e1e1e]">
+                  <span className="text-xs text-[#555] uppercase tracking-wider block mb-2">Poznámka zákazníka</span>
+                  <p className="text-sm text-[#999]">{selectedOrder.note}</p>
+                </div>
+              )}
+              {isMajitel && (
+                <div className="pt-4 border-t border-[#1e1e1e]">
+                  <span className="text-xs text-[#555] uppercase tracking-wider block mb-2">Admin poznámka</span>
+                  <textarea
+                    value={adminNote}
+                    onChange={(e) => setAdminNote(e.target.value)}
+                    onBlur={saveAdminNote}
+                    placeholder="Interní poznámka..."
+                    rows={3}
+                    className="w-full bg-[#111] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-[#ccc] placeholder-[#555] focus:outline-none focus:border-[#c9a84c]/50 resize-none"
+                  />
+                  <div className="mt-2">
+                    <button
+                      type="button"
+                      onClick={saveAdminNote}
+                      disabled={savingNote || adminNote === (selectedOrder.admin_note || "")}
+                      className="px-3 py-1.5 text-xs bg-[#222] border border-[#2a2a2a] rounded-lg text-[#888] hover:text-[#c9a84c] hover:border-[#c9a84c]/40 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {savingNote ? "Ukládám…" : "Uložit"}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="px-5 py-4 border-t border-[#1e1e1e] flex flex-col gap-2 flex-shrink-0">
+              {isMajitel && selectedOrder.status !== "done" && (
+                <button
+                  onClick={() => { updateStatus(selectedOrder.id, "done"); handleCloseDetail(); }}
+                  className="w-full py-2.5 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 rounded-lg text-sm font-medium transition-colors"
+                >
+                  Označit jako vyřízené
+                </button>
+              )}
+              <a
+                href={`mailto:${selectedOrder.email}`}
+                className="w-full py-2.5 bg-[#c9a84c] hover:bg-[#d4b85a] text-[#0a0a0a] rounded-lg text-sm font-medium text-center transition-colors"
+              >
+                Odeslat e-mail
+              </a>
+              {selectedOrder.phone ? (
+                <a
+                  href={`tel:${selectedOrder.phone}`}
+                  className="w-full py-2.5 bg-[#1a1a1a] hover:bg-[#222] border border-[#2a2a2a] text-[#ccc] rounded-lg text-sm text-center transition-colors"
+                >
+                  Zavolat
+                </a>
+              ) : (
+                <span className="w-full py-2.5 bg-[#111] border border-[#222] text-[#555] rounded-lg text-sm text-center">
+                  Bez telefonu
+                </span>
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
