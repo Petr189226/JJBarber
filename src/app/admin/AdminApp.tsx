@@ -15,11 +15,14 @@ import {
   AlertTriangleIcon,
   PhoneOffIcon,
   DownloadIcon,
+  MoreVerticalIcon,
+  FileTextIcon,
+  PrinterIcon,
 } from "lucide-react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
 
-type Status = "new" | "pending" | "done" | "awaiting_payment";
+type Status = "new" | "pending" | "done" | "awaiting_payment" | "storno";
 
 type VoucherOrder = {
   id: string;
@@ -42,6 +45,7 @@ const statusLabels: Record<Status, string> = {
   pending: "Rozpracováno",
   done: "Vyřízeno",
   awaiting_payment: "Čeká na platbu",
+  storno: "Storno",
 };
 
 const statusConfig: Record<Status, { color: string; bg: string; icon: React.ReactNode }> = {
@@ -49,6 +53,7 @@ const statusConfig: Record<Status, { color: string; bg: string; icon: React.Reac
   done: { color: "text-emerald-400", bg: "bg-emerald-600/25 border-emerald-500/50", icon: <CheckIcon size={12} /> },
   pending: { color: "text-amber-400", bg: "bg-amber-600/25 border-amber-500/50", icon: <ClockIcon size={12} /> },
   awaiting_payment: { color: "text-yellow-400", bg: "bg-yellow-600/25 border-yellow-500/50", icon: <AlertCircleIcon size={12} /> },
+  storno: { color: "text-red-400", bg: "bg-red-600/25 border-red-500/50", icon: <XIcon size={12} /> },
 };
 
 function parseAmount(service: string): number {
@@ -78,11 +83,9 @@ function StatsCard({
   color: string;
 }) {
   return (
-    <div className="bg-[#111] border border-[#222] rounded-lg px-4 py-3 flex flex-col gap-0.5">
+    <div className="bg-[#0f0f0f] border border-[#1e1e1e] rounded-lg px-4 py-3 flex flex-col gap-0.5">
       <span className="text-[#555] text-[10px] uppercase tracking-wider">{label}</span>
-      <span className={`text-xl font-semibold ${color}`}>
-        {value}
-      </span>
+      <span className={`text-2xl font-semibold tabular-nums ${color}`}>{value}</span>
       {sub && <span className="text-[#444] text-[11px]">{sub}</span>}
     </div>
   );
@@ -112,8 +115,11 @@ export function AdminApp() {
   const [filterPobocka, setFilterPobocka] = useState("Všechny pobočky");
   const [filterDateFrom, setFilterDateFrom] = useState("");
   const [filterDateTo, setFilterDateTo] = useState("");
+  const [filterDatePreset, setFilterDatePreset] = useState<string>("");
   const [filterJenNove, setFilterJenNove] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [openActionMenu, setOpenActionMenu] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [selectedOrder, setSelectedOrder] = useState<VoucherOrder | null>(null);
   const [showDetail, setShowDetail] = useState(false);
   const [sortCol, setSortCol] = useState<"created_at" | "name" | "branch" | "status" | "service">("created_at");
@@ -216,13 +222,40 @@ export function AdminApp() {
     });
   }, [orders, search, filterStatus, filterPobocka, filterDateFrom, filterDateTo, filterJenNove]);
 
+  const applyDatePreset = (preset: string) => {
+    setFilterDatePreset(preset);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    if (preset === "dnes") {
+      setFilterDateFrom(today.toISOString().slice(0, 10));
+      setFilterDateTo(today.toISOString().slice(0, 10));
+    } else if (preset === "tyden") {
+      const mon = new Date(today);
+      mon.setDate(mon.getDate() - ((today.getDay() + 6) % 7));
+      setFilterDateFrom(mon.toISOString().slice(0, 10));
+      setFilterDateTo(today.toISOString().slice(0, 10));
+    } else if (preset === "mesic") {
+      const first = new Date(today.getFullYear(), today.getMonth(), 1);
+      setFilterDateFrom(first.toISOString().slice(0, 10));
+      setFilterDateTo(today.toISOString().slice(0, 10));
+    } else if (preset === "30dni") {
+      const d30 = new Date(today);
+      d30.setDate(d30.getDate() - 30);
+      setFilterDateFrom(d30.toISOString().slice(0, 10));
+      setFilterDateTo(today.toISOString().slice(0, 10));
+    }
+  };
+
   const branches = useMemo(() => {
     const set = new Set(orders.map((o) => o.branch));
     return ["Všechny pobočky", ...Array.from(set).sort()];
   }, [orders]);
 
   const totalRevenue = useMemo(
-    () => orders.filter((o) => o.status !== "awaiting_payment").reduce((s, o) => s + parseAmount(o.service), 0),
+    () =>
+      orders
+        .filter((o) => o.status !== "awaiting_payment" && o.status !== "storno")
+        .reduce((s, o) => s + parseAmount(o.service), 0),
     [orders]
   );
   const counts = useMemo(
@@ -231,6 +264,7 @@ export function AdminApp() {
       vyrizeno: orders.filter((o) => o.status === "done").length,
       ceka: orders.filter((o) => o.status === "awaiting_payment").length,
       pending: orders.filter((o) => o.status === "pending").length,
+      storno: orders.filter((o) => o.status === "storno").length,
     }),
     [orders]
   );
@@ -246,9 +280,9 @@ export function AdminApp() {
   const metrics = useMemo(() => {
     const novyDnes = orders.filter((o) => o.status === "new" && new Date(o.created_at).getTime() >= todayStart).length;
     const trzbyDnes = orders
-      .filter((o) => new Date(o.created_at).getTime() >= todayStart && o.status !== "awaiting_payment")
+      .filter((o) => new Date(o.created_at).getTime() >= todayStart && o.status !== "awaiting_payment" && o.status !== "storno")
       .reduce((s, o) => s + parseAmount(o.service), 0);
-    const sHodnotou = orders.filter((o) => o.status !== "awaiting_payment");
+    const sHodnotou = orders.filter((o) => o.status !== "awaiting_payment" && o.status !== "storno");
     const prumer = sHodnotou.length
       ? Math.round(sHodnotou.reduce((s, o) => s + parseAmount(o.service), 0) / sHodnotou.length)
       : 0;
@@ -402,7 +436,73 @@ export function AdminApp() {
     setFilterPobocka("Všechny pobočky");
     setFilterDateFrom("");
     setFilterDateTo("");
+    setFilterDatePreset("");
     setFilterJenNove(false);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === sortedFiltered.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(sortedFiltered.map((o) => o.id)));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const bulkExportCsv = () => {
+    const toExport = selectedIds.size > 0 ? sortedFiltered.filter((o) => selectedIds.has(o.id)) : sortedFiltered;
+    const headers = ["ID", "Datum", "Jméno", "E-mail", "Telefon", "Služba", "Pobočka", "Stav", "Částka", "Admin poznámka"];
+    const rows = toExport.map((o) => [
+      o.id,
+      formatDate(o.created_at),
+      `${o.name} ${o.surname || ""}`.trim(),
+      o.email,
+      o.phone || "",
+      o.service,
+      o.branch,
+      statusLabels[o.status],
+      parseAmount(o.service).toString(),
+      o.admin_note || "",
+    ]);
+    const csv = [headers.join(";"), ...rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(";"))].join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `voucher-objednavky-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setSelectedIds(new Set());
+  };
+
+  const printVoucher = (o: VoucherOrder) => {
+    const w = window.open("", "_blank");
+    if (!w) return;
+    w.document.write(`
+      <!DOCTYPE html><html><head><title>Voucher ${o.id}</title>
+      <style>body{font-family:sans-serif;padding:40px;max-width:400px;margin:0 auto}
+      h1{font-size:24px;margin-bottom:8px}.meta{color:#666;font-size:12px;margin-bottom:24px}
+      .service{font-size:18px;font-weight:600;margin:16px 0}.amount{font-size:20px;color:#c9a84c}
+      </style></head><body>
+      <h1>J&J Barber Shop</h1>
+      <p class="meta">Dárkový poukaz · ${o.id.slice(0, 8)}</p>
+      <p><strong>${o.name} ${o.surname || ""}</strong></p>
+      <p class="service">${o.service}</p>
+      <p class="amount">${parseAmount(o.service).toLocaleString("cs-CZ")} Kč</p>
+      <p class="meta">Pobočka: ${o.branch}</p>
+      </body></html>
+    `);
+    w.document.close();
+    w.print();
+    w.close();
   };
 
   const exportCsv = () => {
@@ -437,12 +537,13 @@ export function AdminApp() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         if (openDropdown) setOpenDropdown(null);
+        else if (openActionMenu) setOpenActionMenu(null);
         else if (showDetail) handleCloseDetail();
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [openDropdown, showDetail, handleCloseDetail]);
+  }, [openDropdown, openActionMenu, showDetail, handleCloseDetail]);
 
   useEffect(() => {
     if (showDetail && selectedOrder && detailPanelRef.current) {
@@ -549,33 +650,37 @@ export function AdminApp() {
   return (
     <div className={`${adminLayout} min-h-screen bg-[#0a0a0a] text-white`} style={{ fontFamily: "Inter, sans-serif" }}>
       <div>
-        <header className="border-b border-[#1e1e1e] bg-[#080808] px-4 sm:px-6 py-4 flex items-center justify-between sticky top-0 z-40">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[#c9a84c] rounded-lg flex items-center justify-center">
-              <ScissorsIcon size={16} className="text-[#080808]" />
+        <header className="border-b border-[#1e1e1e] bg-[#0a0a0a] px-4 sm:px-8 py-3 flex items-center justify-between sticky top-0 z-40">
+          <div className="flex items-center gap-4">
+            <div className="w-9 h-9 bg-[#c9a84c] rounded-lg flex items-center justify-center flex-shrink-0">
+              <ScissorsIcon size={18} className="text-[#080808]" />
             </div>
             <div>
-              <h1 className="text-white" style={{ fontFamily: "Playfair Display, serif" }}>
+              <h1 className="text-white text-lg font-medium" style={{ fontFamily: "Playfair Display, serif" }}>
                 Barber Admin
               </h1>
               <span className="text-[#555] text-xs">Správa dárkových poukazů</span>
             </div>
             {role && (
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full ${
-                  isMajitel ? "bg-[#c9a84c]/20 text-[#c9a84c] border border-[#c9a84c]/30" : "bg-[#2a2a2a] text-[#8a8580]"
-                }`}
-              >
-                {isMajitel ? "Majitel" : "Barber"}
-              </span>
+              <div className="flex items-center gap-2 pl-4 border-l border-[#222]">
+                <span
+                  className={`text-xs px-2.5 py-1 rounded-md font-medium ${
+                    isMajitel ? "bg-[#c9a84c]/15 text-[#c9a84c] border border-[#c9a84c]/30" : "bg-[#1a1a1a] text-[#888] border border-[#2a2a2a]"
+                  }`}
+                >
+                  {isMajitel ? "Majitel" : "Barber"}
+                </span>
+              </div>
             )}
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {isMajitel && (
               <button
                 onClick={() => setShowAddAdmin((v) => !v)}
-                className={`text-sm px-4 py-2 rounded-lg transition-colors ${
-                  showAddAdmin ? "bg-[#c9a84c] text-[#080808]" : "text-[#666] hover:text-[#999] hover:bg-[#111]"
+                className={`text-sm px-4 py-2 rounded-lg font-medium transition-colors border ${
+                  showAddAdmin
+                    ? "bg-[#c9a84c] text-[#080808] border-[#c9a84c]"
+                    : "bg-transparent text-[#999] border-[#333] hover:border-[#444] hover:text-[#ccc]"
                 }`}
                 aria-expanded={showAddAdmin}
                 aria-label={showAddAdmin ? "Skrýt formulář pro přidání správce" : "Přidat nového správce"}
@@ -583,20 +688,23 @@ export function AdminApp() {
                 + Přidat správce
               </button>
             )}
-            <a href="/" className="text-[#666] hover:text-[#999] text-sm px-3 py-2 rounded-lg hover:bg-[#111] transition-colors">
+            <a
+              href="/"
+              className="text-[#666] hover:text-[#999] text-sm px-3 py-2 rounded-lg transition-colors"
+            >
               ← Web
             </a>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 text-[#666] hover:text-[#999] text-sm px-3 py-2 rounded-lg hover:bg-[#111] transition-colors"
+              className="text-[#666] hover:text-[#999] text-sm px-3 py-2 rounded-lg transition-colors"
+              aria-label="Odhlásit se"
             >
-              <LogOutIcon size={14} />
               Odhlásit
             </button>
           </div>
         </header>
 
-        <main className="px-4 sm:px-6 py-4 sm:py-6 max-w-[1600px] mx-auto">
+        <main className="px-4 sm:px-8 py-4 sm:py-6 max-w-[1920px] mx-auto w-full">
           {noRole && (
             <div className="mb-6 p-3 bg-[#111] border border-[#222] rounded-lg">
               <p className="text-[#666] text-sm">
@@ -645,11 +753,11 @@ export function AdminApp() {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 sm:gap-3 mb-4 sm:mb-5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-5">
                 <StatsCard
                   label="Celkové tržby"
                   value={`${totalRevenue.toLocaleString("cs-CZ")} Kč`}
-                  sub="bez čekajících"
+                  sub="bez čekajících a storno"
                   color="text-[#c9a84c]"
                 />
                 <StatsCard
@@ -687,13 +795,50 @@ export function AdminApp() {
               ) : (
                 <div className="bg-[#0d0d0d] border border-[#1e1e1e] rounded-xl overflow-hidden">
                   <div className="px-5 py-4 border-b border-[#1e1e1e] bg-[#0a0a0a] flex flex-col gap-3">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-4">
                       <h2 className="text-white font-medium text-base">
                         Objednávky voucherů
                       </h2>
-                      <span className="text-[#666] text-sm">
-                        Zobrazeno {filtered.length} z {orders.length}
-                      </span>
+                      {selectedIds.size > 0 ? (
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-[#888] text-sm">{selectedIds.size} vybráno</span>
+                          <button
+                            onClick={bulkExportCsv}
+                            className="px-3 py-1.5 text-xs bg-[#c9a84c]/20 text-[#c9a84c] border border-[#c9a84c]/40 rounded-lg hover:bg-[#c9a84c]/30 transition-colors"
+                          >
+                            Export vybraných
+                          </button>
+                          <select
+                            onChange={async (e) => {
+                              const v = e.target.value as Status;
+                              e.target.value = "";
+                              if (!v) return;
+                              for (const id of selectedIds) {
+                                await updateStatus(id, v);
+                              }
+                              setSelectedIds(new Set());
+                            }}
+                            className="px-3 py-1.5 text-xs bg-[#222] border border-[#2a2a2a] rounded-lg text-[#ccc] cursor-pointer"
+                          >
+                            <option value="">Změnit stav…</option>
+                            {(["new", "pending", "awaiting_payment", "done", "storno"] as Status[]).map((s) => (
+                              <option key={s} value={s}>
+                                {statusLabels[s]}
+                              </option>
+                            ))}
+                          </select>
+                          <button
+                            onClick={() => setSelectedIds(new Set())}
+                            className="px-3 py-1.5 text-xs text-[#666] hover:text-[#999]"
+                          >
+                            Zrušit výběr
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-[#666] text-sm">
+                          Zobrazeno {filtered.length} z {orders.length}
+                        </span>
+                      )}
                     </div>
                     <div className="flex flex-wrap items-center gap-2 overflow-x-auto pb-1 -mx-1">
                       <div className="relative">
@@ -713,7 +858,7 @@ export function AdminApp() {
                         className="bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-[#bbb] focus:outline-none focus:border-[#c9a84c]/60 cursor-pointer"
                       >
                         <option value="Vše">Všechny stavy</option>
-                        {(["new", "pending", "awaiting_payment", "done"] as Status[]).map((s) => (
+                        {(["new", "pending", "awaiting_payment", "done", "storno"] as Status[]).map((s) => (
                           <option key={s} value={s}>
                             {statusLabels[s]}
                           </option>
@@ -730,12 +875,32 @@ export function AdminApp() {
                           </option>
                         ))}
                       </select>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {[
+                          { id: "dnes", label: "Dnes" },
+                          { id: "tyden", label: "Týden" },
+                          { id: "mesic", label: "Měsíc" },
+                          { id: "30dni", label: "30 dní" },
+                        ].map((p) => (
+                          <button
+                            key={p.id}
+                            onClick={() => applyDatePreset(p.id)}
+                            className={`px-2.5 py-1.5 rounded text-xs font-medium transition-colors ${
+                              filterDatePreset === p.id
+                                ? "bg-[#c9a84c]/20 text-[#c9a84c] border border-[#c9a84c]/40"
+                                : "bg-[#141414] text-[#888] border border-[#2a2a2a] hover:text-[#bbb] hover:border-[#333]"
+                            }`}
+                          >
+                            {p.label}
+                          </button>
+                        ))}
+                      </div>
                       <div className="flex items-center gap-1">
                         <span className="text-[#555] text-xs">Od</span>
                         <input
                           type="date"
                           value={filterDateFrom}
-                          onChange={(e) => setFilterDateFrom(e.target.value)}
+                          onChange={(e) => { setFilterDateFrom(e.target.value); setFilterDatePreset(""); }}
                           className="bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-[#bbb] focus:outline-none focus:border-[#c9a84c]/60"
                         />
                       </div>
@@ -744,7 +909,7 @@ export function AdminApp() {
                         <input
                           type="date"
                           value={filterDateTo}
-                          onChange={(e) => setFilterDateTo(e.target.value)}
+                          onChange={(e) => { setFilterDateTo(e.target.value); setFilterDatePreset(""); }}
                           className="bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-sm text-[#bbb] focus:outline-none focus:border-[#c9a84c]/60"
                         />
                       </div>
@@ -785,8 +950,19 @@ export function AdminApp() {
 
                   <div className="overflow-auto max-h-[calc(100vh-380px)] sm:max-h-[calc(100vh-420px)]">
                     <table className="w-full min-w-[720px]" role="grid" aria-label="Tabulka objednávek voucherů">
-                      <thead className="sticky top-0 z-10 bg-[#0d0d0d]">
+                      <thead className="sticky top-0 z-10 bg-[#0a0a0a]">
                         <tr className="border-b border-[#1a1a1a]">
+                          {isMajitel && (
+                            <th className="w-10 px-2 py-3">
+                              <input
+                                type="checkbox"
+                                checked={selectedIds.size === sortedFiltered.length && sortedFiltered.length > 0}
+                                onChange={toggleSelectAll}
+                                className="rounded border-[#444] bg-[#0d0d0d] text-[#c9a84c] focus:ring-[#c9a84c]/50"
+                                aria-label="Vybrat vše"
+                              />
+                            </th>
+                          )}
                           <th className="px-4 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium first:pl-5">
                             ID
                           </th>
@@ -829,14 +1005,26 @@ export function AdminApp() {
                               {sortCol === "status" ? (sortAsc ? <ChevronUpIcon size={12} /> : <ChevronDownIcon size={12} />) : null}
                             </span>
                           </th>
-                          <th className="px-4 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium w-12"></th>
+                          <th className="px-2 py-3 text-left text-[11px] text-[#666] tracking-wider uppercase font-medium w-14"></th>
                         </tr>
                       </thead>
                       <tbody>
                         {sortedFiltered.length === 0 ? (
                           <tr>
-                            <td colSpan={9} className="py-16 text-center text-[#444] text-sm">
-                              Žádné výsledky nenalezeny
+                            <td colSpan={isMajitel ? 10 : 9} className="py-20 text-center">
+                              <div className="flex flex-col items-center gap-2">
+                                <span className="text-[#555] text-sm">
+                                  {orders.length === 0 ? "Zatím žádné objednávky" : "Žádné výsledky podle filtrů"}
+                                </span>
+                                {orders.length > 0 && (
+                                  <button
+                                    onClick={resetFilters}
+                                    className="text-xs text-[#c9a84c] hover:underline"
+                                  >
+                                    Zrušit filtry
+                                  </button>
+                                )}
+                              </div>
                             </td>
                           </tr>
                         ) : (
@@ -844,10 +1032,25 @@ export function AdminApp() {
                             <tr
                               key={o.id}
                               onClick={() => handleSelectOrder(o)}
-                              className={`border-b border-[#161616] hover:bg-[#141414] transition-colors group cursor-pointer ${
-                                i % 2 === 0 ? "" : "bg-[#0b0b0b]"
+                              className={`border-b border-[#1a1a1a] transition-colors group cursor-pointer ${
+                                selectedOrder?.id === o.id
+                                  ? "bg-[#1a1a1a] ring-inset ring-1 ring-[#c9a84c]/30"
+                                  : i % 2 === 0
+                                    ? "bg-[#0d0d0d] hover:bg-[#141414]"
+                                    : "bg-[#0a0a0a] hover:bg-[#141414]"
                               } ${o.status === "new" ? "border-l-2 border-l-blue-500/50" : ""}`}
                             >
+                              {isMajitel && (
+                                <td className="px-2 py-3" onClick={(e) => e.stopPropagation()}>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedIds.has(o.id)}
+                                    onChange={() => toggleSelect(o.id)}
+                                    className="rounded border-[#444] bg-[#0d0d0d] text-[#c9a84c] focus:ring-[#c9a84c]/50"
+                                    aria-label={`Vybrat ${o.name}`}
+                                  />
+                                </td>
+                              )}
                               <td className="px-4 pl-5 py-3 text-xs text-[#c9a84c] font-mono">
                                 {o.id.slice(0, 8)}…
                               </td>
@@ -898,7 +1101,7 @@ export function AdminApp() {
                                     </button>
                                     {openDropdown === o.id && (
                                       <div className="absolute left-4 top-full mt-1 bg-[#161616] border border-[#2a2a2a] rounded-lg overflow-hidden z-50 shadow-2xl min-w-[155px]">
-                                        {(["new", "pending", "awaiting_payment", "done"] as Status[]).map((s) => (
+                                        {(["new", "pending", "awaiting_payment", "done", "storno"] as Status[]).map((s) => (
                                           <button
                                             key={s}
                                             onClick={(e) => { e.stopPropagation(); updateStatus(o.id, s); }}
@@ -918,16 +1121,53 @@ export function AdminApp() {
                                   <StatusBadge status={o.status} />
                                 )}
                               </td>
-                              <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                                <div className="flex items-center gap-1">
+                              <td className="px-2 py-3" onClick={(e) => e.stopPropagation()}>
+                                <div className="flex items-center gap-0.5 relative">
                                   <button
-                                    onClick={(e) => { e.stopPropagation(); handleSelectOrder(o); }}
-                                    className="p-2 rounded text-[#555] hover:text-[#c9a84c] hover:bg-[#c9a84c]/10 transition-colors"
-                                    aria-label={`Detail objednávky ${o.name} ${o.surname || ""}`}
-                                    title="Detail"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setOpenActionMenu(openActionMenu === o.id ? null : o.id);
+                                    }}
+                                    className="p-2 rounded text-[#555] hover:text-[#c9a84c] hover:bg-[#222] transition-colors"
+                                    aria-label="Akce"
+                                    aria-expanded={openActionMenu === o.id}
                                   >
-                                    <EyeIcon size={14} aria-hidden />
+                                    <MoreVerticalIcon size={16} aria-hidden />
                                   </button>
+                                  {openActionMenu === o.id && (
+                                    <div className="absolute right-0 top-full mt-0.5 bg-[#161616] border border-[#2a2a2a] rounded-lg overflow-hidden z-50 shadow-2xl min-w-[180px] py-1">
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); handleSelectOrder(o); setOpenActionMenu(null); }}
+                                        className="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-[#222] text-[#ccc]"
+                                      >
+                                        <EyeIcon size={14} />
+                                        Detail
+                                      </button>
+                                      {isMajitel && (
+                                        <button
+                                          onClick={(e) => { e.stopPropagation(); setOpenDropdown(o.id); setOpenActionMenu(null); }}
+                                          className="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-[#222] text-[#ccc]"
+                                        >
+                                          <CheckIcon size={14} />
+                                          Změnit stav
+                                        </button>
+                                      )}
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); handleSelectOrder(o); setOpenActionMenu(null); }}
+                                        className="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-[#222] text-[#ccc]"
+                                      >
+                                        <FileTextIcon size={14} />
+                                        Poznámka
+                                      </button>
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); printVoucher(o); setOpenActionMenu(null); }}
+                                        className="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-[#222] text-[#ccc]"
+                                      >
+                                        <PrinterIcon size={14} />
+                                        Tisk voucheru
+                                      </button>
+                                    </div>
+                                  )}
                                 </div>
                               </td>
                             </tr>
@@ -943,7 +1183,11 @@ export function AdminApp() {
                     </span>
                     <span className="text-xs text-[#444]">
                       Celkem{" "}
-                      {filtered.reduce((s, o) => s + parseAmount(o.service), 0).toLocaleString("cs-CZ")} Kč (filtrováno)
+                      {filtered
+                        .filter((o) => o.status !== "storno")
+                        .reduce((s, o) => s + parseAmount(o.service), 0)
+                        .toLocaleString("cs-CZ")}{" "}
+                      Kč (filtrováno)
                     </span>
                   </div>
                 </div>
@@ -1032,8 +1276,12 @@ export function AdminApp() {
         </main>
       </div>
 
-      {openDropdown && (
-        <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} aria-hidden="true" />
+      {(openDropdown || openActionMenu) && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => { setOpenDropdown(null); setOpenActionMenu(null); }}
+          aria-hidden="true"
+        />
       )}
 
       {showDetail && selectedOrder && (
@@ -1109,7 +1357,7 @@ export function AdminApp() {
               )}
             </div>
             <div className="px-5 py-4 border-t border-[#1e1e1e] flex flex-col gap-2 flex-shrink-0">
-              {isMajitel && selectedOrder.status !== "done" && (
+              {isMajitel && selectedOrder.status !== "done" && selectedOrder.status !== "storno" && (
                 <button
                   onClick={() => { updateStatus(selectedOrder.id, "done"); handleCloseDetail(); }}
                   className="w-full py-2.5 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 rounded-lg text-sm font-medium transition-colors"
@@ -1135,6 +1383,13 @@ export function AdminApp() {
                   Bez telefonu
                 </span>
               )}
+              <button
+                onClick={() => printVoucher(selectedOrder)}
+                className="w-full py-2.5 bg-[#1a1a1a] hover:bg-[#222] border border-[#2a2a2a] text-[#ccc] rounded-lg text-sm flex items-center justify-center gap-2 transition-colors"
+              >
+                <PrinterIcon size={16} />
+                Tisk voucheru
+              </button>
             </div>
           </div>
         </>
