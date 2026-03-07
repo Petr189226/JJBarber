@@ -1,6 +1,8 @@
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from "react";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
+import { PrivacyModal } from "./components/PrivacyModal";
+import { TermsModal } from "./components/TermsModal";
 import { LanguageProvider } from "./i18n";
 import { useInView } from "./hooks/useInView";
 
@@ -31,6 +33,8 @@ function LazySection({ children, minH = "40vh" }: { children: ReactNode; minH?: 
 
 export default function App() {
   const [showFooterExtras, setShowFooterExtras] = useState(false);
+  const [privacyOpen, setPrivacyOpen] = useState(false);
+  const [termsOpen, setTermsOpen] = useState(false);
   const footerSentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -44,6 +48,17 @@ export default function App() {
     );
     obs.observe(el);
     return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const onPrivacy = () => setPrivacyOpen(true);
+    const onTerms = () => setTermsOpen(true);
+    window.addEventListener("jj-open-privacy", onPrivacy);
+    window.addEventListener("jj-open-terms", onTerms);
+    return () => {
+      window.removeEventListener("jj-open-privacy", onPrivacy);
+      window.removeEventListener("jj-open-terms", onTerms);
+    };
   }, []);
 
   return (
@@ -63,9 +78,13 @@ export default function App() {
           <Suspense fallback={null}>
             <Footer />
             <StickyBookBar />
-            <CookieBanner />
           </Suspense>
         )}
+        <Suspense fallback={null}>
+          <CookieBanner />
+        </Suspense>
+        <PrivacyModal open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
+        <TermsModal open={termsOpen} onClose={() => setTermsOpen(false)} />
       </div>
     </LanguageProvider>
   );

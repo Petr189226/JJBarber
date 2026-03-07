@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://petrchajda.cz/sitemap.xml
+Sitemap: https://jjbarbershop.cz/sitemap.xml

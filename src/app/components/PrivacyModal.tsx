@@ -13,7 +13,7 @@ export function PrivacyModal({ open, onClose }: Props) {
     <>
       <h3 className="text-[#C4BEB4] font-semibold mb-2" style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.1rem" }}>1. Správce údajů</h3>
       <p className="text-[#8A8580] mb-6" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.9rem", lineHeight: 1.7 }}>
-        Správcem osobních údajů je J&J Barber Shop (IČO a sídlo dle obchodního rejstříku). Kontakt: 777 507 662, pobočky Vršovická 7/27 a Černokostelecká 830/23, Praha 10.
+        Správcem osobních údajů je J&J Barber Shop, IČO 19452381, sídlo Vršovická 7/27, 101 00 Praha 10. Kontakt: 777 507 662, pobočky Vršovická 7/27 a Černokostelecká 830/23, Praha 10.
       </p>
 
       <h3 className="text-[#C4BEB4] font-semibold mb-2" style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.1rem" }}>2. Jaké údaje zpracováváme</h3>
@@ -50,7 +50,7 @@ export function PrivacyModal({ open, onClose }: Props) {
     <>
       <h3 className="text-[#C4BEB4] font-semibold mb-2" style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.1rem" }}>1. Data Controller</h3>
       <p className="text-[#8A8580] mb-6" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.9rem", lineHeight: 1.7 }}>
-        The data controller is J&J Barber Shop (company ID and registered office as per the commercial register). Contact: 777 507 662, branches at Vršovická 7/27 and Černokostelecká 830/23, Prague 10.
+        The data controller is J&J Barber Shop, Company ID 19452381, registered office Vršovická 7/27, 101 00 Prague 10. Contact: 777 507 662, branches at Vršovická 7/27 and Černokostelecká 830/23, Prague 10.
       </p>
 
       <h3 className="text-[#C4BEB4] font-semibold mb-2" style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.1rem" }}>2. Data We Process</h3>

@@ -133,6 +133,7 @@ export const translations: Record<string, Record<Lang, string>> = {
     en: "© 2026 J&J Barber Shop. All rights reserved.",
   },
   "footer.privacy": { cs: "Zásady ochrany osobních údajů", en: "Privacy Policy" },
+  "footer.terms": { cs: "Obchodní podmínky", en: "Terms & Conditions" },
   "cookie.message": {
     cs: "Používáme cookies pro fungování webu. Pokračováním vyjadřujete souhlas. Více v",
     en: "We use cookies for website functionality. By continuing you consent. More in",

@@ -1,20 +1,14 @@
-import { useState, useEffect } from "react";
 import { Instagram, Facebook, MapPin, Phone, Clock } from "lucide-react";
 import { useLanguage } from "../i18n";
-import { PrivacyModal } from "./PrivacyModal";
 
 const INSTAGRAM_URL = "https://www.instagram.com/jjbarbershop_vrsovicka/";
 const FACEBOOK_URL = "https://www.facebook.com/112444267014044";
 
 export function Footer() {
   const { t } = useLanguage();
-  const [privacyOpen, setPrivacyOpen] = useState(false);
 
-  useEffect(() => {
-    const handler = () => setPrivacyOpen(true);
-    window.addEventListener("jj-open-privacy", handler);
-    return () => window.removeEventListener("jj-open-privacy", handler);
-  }, []);
+  const openPrivacy = () => window.dispatchEvent(new CustomEvent("jj-open-privacy"));
+  const openTerms = () => window.dispatchEvent(new CustomEvent("jj-open-terms"));
 
   const navColumns = [
     {
@@ -153,14 +147,21 @@ export function Footer() {
           <div className="flex gap-6">
             <button
               type="button"
-              onClick={() => setPrivacyOpen(true)}
+              onClick={openPrivacy}
               className="hover:text-[#B5AEA4] transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808] rounded"
               style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem", color: "#A5A09A" }}
             >
               {t("footer.privacy")}
             </button>
+            <button
+              type="button"
+              onClick={openTerms}
+              className="hover:text-[#B5AEA4] transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808] rounded"
+              style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem", color: "#A5A09A" }}
+            >
+              {t("footer.terms")}
+            </button>
           </div>
-          <PrivacyModal open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
         </div>
       </div>
     </footer>

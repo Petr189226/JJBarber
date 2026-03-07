@@ -6,7 +6,8 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
-    "deploy-forpsi": "npm run build && node scripts/zip-for-forpsi.mjs"
+    "deploy-forpsi": "npm run build && node scripts/zip-for-forpsi.mjs",
+    "deploy-websupport": "npm run build && node scripts/zip-for-websupport.mjs"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
