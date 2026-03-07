@@ -44,6 +44,7 @@ type VoucherOrder = {
   branch: string;
   note: string | null;
   admin_note?: string | null;
+  voucher_number?: string | null;
   status: Status;
   created_at: string;
 };
@@ -490,10 +491,11 @@ export function AdminApp() {
 
   const bulkExportCsv = () => {
     const toExport = selectedIds.size > 0 ? sortedFiltered.filter((o) => selectedIds.has(o.id)) : sortedFiltered;
-    const headers = ["ID", "Datum", "Jméno", "E-mail", "Telefon", "Služba", "Pobočka", "Stav", "Částka", "Admin poznámka"];
+    const headers = ["ID", "Datum", "Č. voucheru", "Jméno", "E-mail", "Telefon", "Služba", "Pobočka", "Stav", "Částka", "Admin poznámka"];
     const rows = toExport.map((o) => [
       o.id,
       formatDate(o.created_at),
+      o.voucher_number || "",
       `${o.name} ${o.surname || ""}`.trim(),
       o.email,
       o.phone || "",
@@ -515,6 +517,23 @@ export function AdminApp() {
   };
 
   const generateVoucherPdf = async (o: VoucherOrder) => {
+    let voucherNumber = o.voucher_number ?? null;
+    if (!voucherNumber) {
+      const d = new Date();
+      const yymmdd =
+        d.getFullYear().toString().slice(-2) +
+        String(d.getMonth() + 1).padStart(2, "0") +
+        String(d.getDate()).padStart(2, "0");
+      const suffix = o.id.replace(/-/g, "").slice(0, 6).toUpperCase();
+      voucherNumber = `V-${yymmdd}-${suffix}`;
+      if (supabase) {
+        const { error } = await supabase.from("voucher_orders").update({ voucher_number: voucherNumber }).eq("id", o.id);
+        if (!error) {
+          setOrders((prev) => prev.map((ord) => (ord.id === o.id ? { ...ord, voucher_number: voucherNumber } : ord)));
+          setSelectedOrder((prev) => (prev?.id === o.id ? { ...prev, voucher_number: voucherNumber } : prev));
+        }
+      }
+    }
     const width = 800;
     const height = 500;
     const amountStr = parseAmount(o.service).toLocaleString("cs-CZ");
@@ -532,11 +551,12 @@ export function AdminApp() {
       <!DOCTYPE html><html><head><meta charset="utf-8"></head><body style="margin:0;background:#0f0f0f;">
       <div style="position:relative;width:${width}px;height:${height}px;overflow:hidden;background:#0f0f0f;">
         <img src="${window.location.origin}/voucher-card.png" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
-        <div style="position:absolute;bottom:80px;left:0;right:0;text-align:center;font-family:Georgia,serif;padding:0 60px;z-index:1;">
-          <div style="font-size:28px;font-weight:600;margin-bottom:12px;color:#ffffff;">${escapeHtml(fullName)}</div>
-          <div style="font-size:18px;margin-bottom:8px;color:#C4BEB4;">${escapeHtml(o.service)}</div>
-          <div style="font-size:24px;font-weight:600;color:#C9A84C;">${escapeHtml(amountStr)} Kč</div>
-          <div style="font-size:14px;color:#8a8a8a;margin-top:12px;">Pobočka: ${escapeHtml(o.branch)}</div>
+        <div style="position:absolute;top:24px;right:32px;font-size:12px;color:#8a8a8a;font-family:Georgia,serif;z-index:1;">Č. voucheru: ${escapeHtml(voucherNumber)}</div>
+        <div style="position:absolute;bottom:70px;left:0;right:0;text-align:center;font-family:Georgia,serif;padding:0 50px;z-index:1;line-height:1.35;">
+          <div style="font-size:20px;font-weight:600;margin:0 0 6px 0;color:#ffffff;">${escapeHtml(fullName)}</div>
+          <div style="font-size:14px;margin:0 0 6px 0;color:#C4BEB4;">${escapeHtml(o.service)}</div>
+          <div style="font-size:18px;font-weight:600;margin:0 0 8px 0;color:#C9A84C;">${escapeHtml(amountStr)} Kč</div>
+          <div style="font-size:12px;margin:0;color:#8a8a8a;">Pobočka: ${escapeHtml(o.branch)}</div>
         </div>
       </div>
       </body></html>
@@ -575,10 +595,11 @@ export function AdminApp() {
   };
 
   const exportCsv = () => {
-    const headers = ["ID", "Datum", "Jméno", "E-mail", "Telefon", "Služba", "Pobočka", "Stav", "Částka", "Admin poznámka"];
+    const headers = ["ID", "Datum", "Č. voucheru", "Jméno", "E-mail", "Telefon", "Služba", "Pobočka", "Stav", "Částka", "Admin poznámka"];
     const rows = sortedFiltered.map((o) => [
       o.id,
       formatDate(o.created_at),
+      o.voucher_number || "",
       `${o.name} ${o.surname || ""}`.trim(),
       o.email,
       o.phone || "",
@@ -1398,6 +1419,7 @@ export function AdminApp() {
             <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
               {[
                 { label: "Datum", value: formatDate(selectedOrder.created_at) },
+                { label: "Č. voucheru", value: selectedOrder.voucher_number || "–" },
                 { label: "E-mail", value: selectedOrder.email },
                 { label: "Telefon", value: selectedOrder.phone || "–" },
                 { label: "Služba", value: selectedOrder.service },
