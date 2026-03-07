@@ -15,11 +15,13 @@ if (!existsSync(dist)) {
   process.exit(1);
 }
 
-// Fallback pro /jj-backstage – když .htaccess nefunguje (skrytý soubor ve FileZilla)
-const adminDir = join(dist, 'jj-backstage');
+// Fallback pro /jj-backstage a /admin – když .htaccess nefunguje (skrytý soubor ve FileZilla)
 const indexHtml = join(dist, 'index.html');
-if (!existsSync(adminDir)) mkdirSync(adminDir, { recursive: true });
-copyFileSync(indexHtml, join(adminDir, 'index.html'));
+for (const dir of ['jj-backstage', 'admin']) {
+  const adminDir = join(dist, dir);
+  if (!existsSync(adminDir)) mkdirSync(adminDir, { recursive: true });
+  copyFileSync(indexHtml, join(adminDir, 'index.html'));
+}
 
 try {
   execSync(`cd "${dist}" && zip -r "${zipPath}" .`, { stdio: 'inherit' });

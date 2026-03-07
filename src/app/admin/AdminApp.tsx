@@ -127,7 +127,7 @@ export function AdminApp() {
     const { data, error } = await supabase.auth.signUp({
       email: newAdminEmail.trim(),
       password: newAdminPassword,
-      options: { emailRedirectTo: window.location.origin + "/jj-backstage" },
+      options: { emailRedirectTo: window.location.origin + window.location.pathname.replace(/\/$/, "") || "/jj-backstage" },
     });
     if (error) {
       setAddAdminLoading(false);
@@ -165,10 +165,10 @@ export function AdminApp() {
   const adminBg = (
     <>
       <div
-        className="fixed inset-0 bg-cover bg-center bg-no-repeat"
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat bg-[#0A0A0A]"
         style={{ backgroundImage: "url(/admin-bg.png)" }}
       />
-      <div className="fixed inset-0 bg-[#0A0A0A]/85 z-[1]" />
+      <div className="fixed inset-0 bg-gradient-to-b from-[#0A0A0A]/70 via-[#0A0A0A]/80 to-[#0A0A0A]/95 z-[1]" />
     </>
   );
 
