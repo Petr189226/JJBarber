@@ -49,7 +49,7 @@ export const translations: Record<string, Record<Lang, string>> = {
   "svc.popular": { cs: "Nejoblíbenější", en: "Most Popular" },
   "svc.currency": { cs: "Kč", en: "CZK" },
   "svc.onRequest": { cs: "Na vyžádání", en: "On request" },
-  "svc.orderVoucher": { cs: "Objednat poukaz →", en: "Order voucher →" },
+  "svc.orderVoucher": { cs: "Objednat poukaz", en: "Order voucher" },
   "svc.book": { cs: "Rezervace", en: "Booking" },
   "svc.classic.name": { cs: "Klasický střih", en: "Classic Haircut" },
   "svc.classic.desc": {

@@ -6,4 +6,6 @@ dist/
 forpsi-deploy.zip
 jj-barbershop-websupport.zip
 supabase/.temp/
+supabase/admin_roles_import.csv
+admin_roles_import.csv
 .DS_Store

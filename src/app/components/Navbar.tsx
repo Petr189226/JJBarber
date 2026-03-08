@@ -171,7 +171,7 @@ export function Navbar() {
               <button
                 className="lg:hidden text-[#C4BEB4] hover:text-[#B5AEA4] transition-colors duration-200 p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:rounded-xl"
                 onClick={() => setMobileOpen(!mobileOpen)}
-                aria-label="Toggle menu"
+                aria-label="Menu"
               >
                 {mobileOpen ? <X size={24} /> : <Menu size={24} />}
               </button>

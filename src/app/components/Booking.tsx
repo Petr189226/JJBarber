@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Phone, ExternalLink } from "lucide-react";
+import { Phone } from "lucide-react";
 import { useLanguage } from "../i18n";
 import { BookButton } from "./BookButton";
 import { RESERVIO_URL, RESERVIO_VRSOVICE, RESERVIO_STRASNICE } from "../cta-config";
@@ -111,11 +111,10 @@ export function Booking() {
                 Vršovická 7/27, 101 00 Praha 10
               </p>
               <span
-                className="inline-flex items-center gap-2 text-[#C9A84C] group-hover:gap-3 transition-all"
+                className="inline-flex items-center justify-center rounded-full px-6 py-3 bg-[#C9A84C] text-[#08080c] group-hover:bg-[#D4A74A] transition-all"
                 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.9rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
               >
                 {t("book.reserve")} – Vršovice
-                <ExternalLink size={16} />
               </span>
             </a>
             <a
@@ -131,11 +130,10 @@ export function Booking() {
                 Černokostelecká 830/23, 100 00 Praha 10
               </p>
               <span
-                className="inline-flex items-center gap-2 text-[#C9A84C] group-hover:gap-3 transition-all"
+                className="inline-flex items-center justify-center rounded-full px-6 py-3 bg-[#C9A84C] text-[#08080c] group-hover:bg-[#D4A74A] transition-all"
                 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.9rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
               >
                 {t("book.reserve")} – Strašnice
-                <ExternalLink size={16} />
               </span>
             </a>
           </div>

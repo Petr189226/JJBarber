@@ -11,13 +11,11 @@ import {
   AlertCircleIcon,
   RefreshCwIcon,
   EyeIcon,
-  Loader2Icon,
   AlertTriangleIcon,
   PhoneOffIcon,
   DownloadIcon,
   MoreVerticalIcon,
   FileTextIcon,
-  PrinterIcon,
   Banknote,
   TrendingUp,
   Receipt,
@@ -31,8 +29,6 @@ import {
 } from "lucide-react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
-import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
 import {
   getPresetRange,
   getStartOfDayLocal,
@@ -41,6 +37,9 @@ import {
   isDateRangeValid,
   type DatePresetId,
 } from "./utils/dateFilter";
+import { VoucherPreviewModal } from "../components/VoucherPreviewModal";
+import type { VoucherData } from "../components/VoucherTemplate";
+import { formatServiceDisplay } from "../utils/formatService";
 
 type Status = "new" | "pending" | "done" | "awaiting_payment" | "storno";
 
@@ -87,12 +86,6 @@ const statusConfig: Record<Status, { color: string; bg: string; icon: React.Reac
 function parseAmount(service: string): number {
   const m = service.match(/(\d+)\s*Kč/);
   return m ? parseInt(m[1], 10) : 0;
-}
-
-function escapeHtml(text: string): string {
-  const div = document.createElement("div");
-  div.textContent = text;
-  return div.innerHTML;
 }
 
 function StatusBadge({ status }: { status: Status }) {
@@ -195,7 +188,16 @@ export function AdminApp() {
   const [adminNote, setAdminNote] = useState("");
   const [savingNote, setSavingNote] = useState(false);
   const [fetchError, setFetchError] = useState("");
+  const [voucherPreviewOrder, setVoucherPreviewOrder] = useState<VoucherOrder | null>(null);
   const detailPanelRef = useRef<HTMLDivElement>(null);
+
+  const orderToVoucherData = (o: VoucherOrder): VoucherData => ({
+    firstName: o.name || "",
+    lastName: o.surname || "",
+    service: o.service || "",
+    branch: o.branch || "",
+    voucherNumber: o.voucher_number || o.id.slice(0, 8) || "—",
+  });
 
   const ADMIN_LOGIN_DOMAIN = "@admin.local";
 
@@ -656,7 +658,7 @@ export function AdminApp() {
       `${o.name} ${o.surname || ""}`.trim(),
       o.email,
       o.phone || "",
-      o.service,
+      formatServiceDisplay(o.service),
       o.branch,
       statusLabels[o.status],
       parseAmount(o.service).toString(),
@@ -673,96 +675,6 @@ export function AdminApp() {
     setSelectedIds(new Set());
   };
 
-  const generateVoucherPdf = async (o: VoucherOrder) => {
-    let voucherNumber = o.voucher_number ?? null;
-    if (!voucherNumber) {
-      const d = new Date();
-      const yymmdd =
-        d.getFullYear().toString().slice(-2) +
-        String(d.getMonth() + 1).padStart(2, "0") +
-        String(d.getDate()).padStart(2, "0");
-      const suffix = o.id.replace(/-/g, "").slice(0, 6).toUpperCase();
-      voucherNumber = `V-${yymmdd}-${suffix}`;
-      if (supabase) {
-        const { error } = await supabase.from("voucher_orders").update({ voucher_number: voucherNumber }).eq("id", o.id);
-        if (!error) {
-          setOrders((prev) => prev.map((ord) => (ord.id === o.id ? { ...ord, voucher_number: voucherNumber } : ord)));
-          setSelectedOrder((prev) => (prev?.id === o.id ? { ...prev, voucher_number: voucherNumber } : prev));
-        }
-      }
-    }
-    const width = 1024;
-    const height = 682;
-    const surname = (o.surname || "").trim();
-    const layout = {
-      voucherNo: { left: 178, bottom: 533 },
-      nameLeft: 418,
-      nameBottom: 271,
-      surnameLeft: 628,
-      surnameBottom: 273,
-      serviceLeft: 437,
-      serviceBottom: 221,
-      serviceRight: 98,
-      branchLeft: 781,
-      branchBottom: 534,
-    };
-    const iframe = document.createElement("iframe");
-    iframe.setAttribute("style", "position:fixed;left:-9999px;top:0;width:" + width + "px;height:" + height + "px;border:none;");
-    document.body.appendChild(iframe);
-    const doc = iframe.contentDocument ?? iframe.contentWindow?.document;
-    if (!doc) {
-      document.body.removeChild(iframe);
-      throw new Error("Nepodařilo se vytvořit iframe pro generování voucheru");
-    }
-    doc.open();
-    doc.write(`
-      <!DOCTYPE html><html><head><meta charset="utf-8">
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap">
-      </head><body style="margin:0;background:#0f0f0f;">
-      <div style="position:relative;width:${width}px;height:${height}px;overflow:hidden;background:#0f0f0f;">
-        <img src="${window.location.origin}/voucher-card.png?v=2" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:fill;" />
-        <div style="position:absolute;left:${layout.voucherNo.left}px;bottom:${layout.voucherNo.bottom}px;font-size:11px;color:#8a8a8a;font-family:'Playfair Display',serif;z-index:1;">Č. voucheru: ${escapeHtml(voucherNumber)}</div>
-        <div style="position:absolute;left:${layout.nameLeft}px;bottom:${layout.nameBottom}px;font-size:20px;font-weight:600;line-height:1;color:#ffffff;font-family:'Playfair Display',serif;z-index:1;">${escapeHtml(o.name)}</div>
-        <div style="position:absolute;left:${layout.surnameLeft}px;bottom:${layout.surnameBottom}px;font-size:20px;font-weight:600;line-height:1;color:#ffffff;font-family:'Playfair Display',serif;z-index:1;">${escapeHtml(surname || "–")}</div>
-        <div style="position:absolute;left:${layout.serviceLeft}px;right:${layout.serviceRight}px;bottom:${layout.serviceBottom}px;font-size:17px;line-height:1;color:#C4BEB4;font-family:'Playfair Display',serif;z-index:1;">${escapeHtml(o.service)}</div>
-        <div style="position:absolute;left:${layout.branchLeft}px;bottom:${layout.branchBottom}px;font-size:12px;color:#8a8a8a;font-family:'Playfair Display',serif;z-index:1;">Pobočka: ${escapeHtml(o.branch)}</div>
-      </div>
-      </body></html>
-    `);
-    doc.close();
-    const container = doc.body;
-    const img = container.querySelector("img");
-    const imgLoaded = img
-      ? new Promise<void>((resolve, reject) => {
-          if ((img as HTMLImageElement).complete) resolve();
-          else {
-            (img as HTMLImageElement).onload = () => resolve();
-            (img as HTMLImageElement).onerror = () => reject(new Error("Nepodařilo se načíst obrázek voucheru"));
-          }
-        })
-      : Promise.resolve();
-    try {
-      await imgLoaded;
-      if (doc.fonts?.ready) await doc.fonts.ready;
-      await new Promise((r) => setTimeout(r, 150));
-      const canvas = await html2canvas(container, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#0f0f0f",
-        logging: false,
-      });
-      document.body.removeChild(iframe);
-      const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: [width, height] });
-      pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, width, height);
-      const safeName = `${o.name}-${o.surname || ""}`.trim().replace(/\s+/g, "-").replace(/[^\w\u00C0-\u024F\-]/gi, "") || "voucher";
-      pdf.save(`voucher-${safeName}.pdf`);
-    } catch (e) {
-      if (iframe.parentNode) document.body.removeChild(iframe);
-      throw e;
-    }
-  };
-
   const exportCsv = () => {
     const headers = ["ID", "Datum", "Č. voucheru", "Jméno", "E-mail", "Telefon", "Služba", "Pobočka", "Stav", "Částka", "Admin poznámka"];
     const rows = sortedFiltered.map((o) => [
@@ -772,7 +684,7 @@ export function AdminApp() {
       `${o.name} ${o.surname || ""}`.trim(),
       o.email,
       o.phone || "",
-      o.service,
+      formatServiceDisplay(o.service),
       o.branch,
       statusLabels[o.status],
       parseAmount(o.service).toString(),
@@ -853,7 +765,7 @@ export function AdminApp() {
             Admin není nakonfigurován
           </h1>
           <p className="text-gray-600 text-sm leading-relaxed">
-            Přidej VITE_SUPABASE_URL a VITE_SUPABASE_ANON_KEY do .env. Viz .env.example.
+            V .env chybí VITE_SUPABASE_URL a VITE_SUPABASE_ANON_KEY.
           </p>
         </div>
       </div>
@@ -1064,7 +976,7 @@ export function AdminApp() {
           {noRole && (
             <div className="mb-6 p-3 bg-amber-50 border border-amber-200 rounded-lg">
               <p className="text-gray-700 text-sm">
-                Nemáte přiřazenou roli. Přidejte svůj účet do tabulky <code className="text-gray-600">admin_roles</code> v Supabase s rolí <code className="text-gray-600">majitel</code> nebo <code className="text-gray-600">barber</code>.
+                Účet nemá roli v tabulce <code className="text-gray-600">admin_roles</code> (majitel / barber).
               </p>
             </div>
           )}
@@ -1621,8 +1533,8 @@ export function AdminApp() {
                                   "–"
                                 )}
                               </td>
-                              <td className="px-4 py-3 text-xs text-gray-700 max-w-[180px] truncate" title={o.service}>
-                                {o.service}
+                              <td className="px-4 py-3 text-xs text-gray-700 max-w-[180px] truncate" title={formatServiceDisplay(o.service)}>
+                                {formatServiceDisplay(o.service)}
                               </td>
                               <td className="px-4 py-3 text-xs text-gray-700">{o.branch}</td>
                               <td className="px-4 py-3 relative">
@@ -1709,10 +1621,10 @@ export function AdminApp() {
                                         Poznámka
                                       </button>
                                       <button
-                                        onClick={(e) => { e.stopPropagation(); generateVoucherPdf(o).catch((err) => alert(err?.message ?? "Chyba při generování PDF")); setOpenActionMenu(null); }}
+                                        onClick={(e) => { e.stopPropagation(); setVoucherPreviewOrder(o); setOpenActionMenu(null); }}
                                         className="w-full text-left px-3 py-2 text-xs flex items-center gap-2 hover:bg-gray-50 text-gray-700"
                                       >
-                                        <PrinterIcon size={14} />
+                                        <Receipt size={14} />
                                         Vygenerovat voucher
                                       </button>
                                     </div>
@@ -1818,6 +1730,14 @@ export function AdminApp() {
         </div>
       )}
 
+      {voucherPreviewOrder && (
+        <VoucherPreviewModal
+          open={true}
+          data={orderToVoucherData(voucherPreviewOrder)}
+          onClose={() => setVoucherPreviewOrder(null)}
+        />
+      )}
+
       {(openDropdown || openActionMenu) && (
         <div
           className="fixed inset-0 z-40"
@@ -1860,7 +1780,7 @@ export function AdminApp() {
                 { label: "Č. voucheru", value: selectedOrder.voucher_number || "–" },
                 { label: "E-mail", value: selectedOrder.email },
                 { label: "Telefon", value: selectedOrder.phone || "–" },
-                { label: "Služba", value: selectedOrder.service },
+                { label: "Služba", value: formatServiceDisplay(selectedOrder.service) },
                 { label: "Pobočka", value: selectedOrder.branch },
                 { label: "Částka", value: `${parseAmount(selectedOrder.service).toLocaleString("cs-CZ")} Kč` },
               ].map((row) => (
@@ -1908,6 +1828,14 @@ export function AdminApp() {
                   Označit jako vyřízené
                 </button>
               )}
+              <button
+                type="button"
+                onClick={() => { setVoucherPreviewOrder(selectedOrder); }}
+                className="w-full flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-medium border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <FileTextIcon size={18} />
+                Vygenerovat voucher
+              </button>
               <a
                 href={`mailto:${selectedOrder.email}`}
                 className="w-full rounded-xl py-2.5 text-center text-sm font-bold text-[#08080c] transition-all"
@@ -1927,13 +1855,6 @@ export function AdminApp() {
                   Bez telefonu
                 </span>
               )}
-              <button
-                onClick={() => generateVoucherPdf(selectedOrder).catch((err) => alert(err?.message ?? "Chyba při generování PDF"))}
-                className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white py-2.5 text-sm text-gray-700 transition-colors hover:bg-gray-50"
-              >
-                <PrinterIcon size={16} />
-                Vygenerovat voucher
-              </button>
             </div>
           </div>
         </>

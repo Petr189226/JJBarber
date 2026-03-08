@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { MapPin, Clock, ExternalLink } from "lucide-react";
+import { MapPin, Clock } from "lucide-react";
 import { useLanguage } from "../i18n";
 import { RESERVIO_VRSOVICE, RESERVIO_STRASNICE } from "../cta-config";
 
@@ -40,7 +40,6 @@ function MiniMap({ loc, openLabel }: { loc: { name: string; mapImage: string; ma
         >
           {openLabel}
         </span>
-        <ExternalLink size={11} className="text-[#B5AEA4] group-hover/map:text-[#C4BEB4] transition-colors duration-200 flex-shrink-0 ml-2" />
       </div>
     </a>
   );
@@ -60,11 +59,10 @@ function ReserveLink({ href, label, redirectLabel }: { href: string; label: stri
     <a
       href={href}
       onClick={handleClick}
-      className={`inline-flex items-center gap-2 px-6 py-3 border border-[#3A3A3A] text-[#B5AEA4] bg-transparent hover:border-white/20 hover:text-[#C4BEB4] hover:bg-white/[0.03] hover:-translate-y-0.5 rounded-xl transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none ${clicked ? "scale-[0.98] opacity-90 pointer-events-none" : "active:scale-[0.98]"}`}
+      className={`inline-flex items-center justify-center px-6 py-3 rounded-full bg-[#C9A84C] text-[#08080c] hover:bg-[#D4A74A] transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#C9A84C]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none ${clicked ? "scale-[0.98] opacity-90 pointer-events-none" : "active:scale-[0.98]"}`}
       style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
     >
       {clicked ? redirectLabel : label}
-      <ExternalLink size={14} />
     </a>
   );
 }
