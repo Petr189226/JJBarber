@@ -1,4 +1,4 @@
-import { formatServiceDisplay } from "../utils/formatService";
+import { formatServiceForVoucher } from "../utils/formatService";
 
 export interface VoucherData {
   firstName: string;
@@ -35,7 +35,7 @@ const DiamondOrnament = () => (
 
 export function VoucherTemplate({ data, printRef }: VoucherTemplateProps) {
   const isEmpty = !data.firstName && !data.lastName && !data.service && !data.branch;
-  const serviceDisplay = formatServiceDisplay(data.service || "");
+  const serviceDisplay = formatServiceForVoucher(data.service || "");
 
   return (
     <div
@@ -141,7 +141,7 @@ export function VoucherTemplate({ data, printRef }: VoucherTemplateProps) {
             <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "9px", letterSpacing: "3px", color: "#8B7355", textTransform: "uppercase", marginBottom: "5px" }}>
               Služba
             </div>
-            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "15px", color: "#1C1712", fontWeight: 600, lineHeight: 1.3, minHeight: "20px" }}>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "15px", color: "#1C1712", fontWeight: 600, lineHeight: 1.4, minHeight: "20px" }}>
               {isEmpty ? (
                 <span style={{ color: "#C9A96E", opacity: 0.4, fontSize: "13px", fontStyle: "italic" }}>Název služby</span>
               ) : (

@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import {
-  ScissorsIcon,
   SearchIcon,
   LogOutIcon,
   ChevronDownIcon,
@@ -26,6 +25,8 @@ import {
   UserCog,
   Settings,
   ClipboardList,
+  Loader2Icon,
+  Columns3,
 } from "lucide-react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import type { User } from "@supabase/supabase-js";
@@ -66,6 +67,19 @@ type AdminAccount = {
   email: string;
   last_sign_in_at?: string | null;
 };
+
+type ColumnId = "id" | "created_at" | "name" | "email" | "phone" | "service" | "branch" | "status";
+
+const allColumns: { id: ColumnId; label: string }[] = [
+  { id: "id", label: "ID" },
+  { id: "created_at", label: "Datum" },
+  { id: "name", label: "Jméno" },
+  { id: "email", label: "E-mail" },
+  { id: "phone", label: "Telefon" },
+  { id: "service", label: "Služba" },
+  { id: "branch", label: "Pobočka" },
+  { id: "status", label: "Stav" },
+];
 
 const statusLabels: Record<Status, string> = {
   new: "Nový",
@@ -190,6 +204,8 @@ export function AdminApp() {
   const [fetchError, setFetchError] = useState("");
   const [voucherPreviewOrder, setVoucherPreviewOrder] = useState<VoucherOrder | null>(null);
   const detailPanelRef = useRef<HTMLDivElement>(null);
+  const [visibleColumns, setVisibleColumns] = useState<ColumnId[]>(allColumns.map((c) => c.id));
+  const [columnsMenuOpen, setColumnsMenuOpen] = useState(false);
 
   const orderToVoucherData = (o: VoucherOrder): VoucherData => ({
     firstName: o.name || "",
@@ -631,6 +647,16 @@ export function AdminApp() {
     setFilterJenNove(false);
   };
 
+  const toggleColumn = (id: ColumnId) => {
+    setVisibleColumns((prev) => {
+      if (prev.includes(id)) {
+        if (prev.length === 1) return prev; // vždy nechat aspoň jeden sloupec
+        return prev.filter((c) => c !== id);
+      }
+      return [...prev, id];
+    });
+  };
+
   const toggleSelectAll = () => {
     if (selectedIds.size === sortedFiltered.length) {
       setSelectedIds(new Set());
@@ -709,12 +735,13 @@ export function AdminApp() {
       if (e.key === "Escape") {
         if (openDropdown) setOpenDropdown(null);
         else if (openActionMenu) setOpenActionMenu(null);
+        else if (columnsMenuOpen) setColumnsMenuOpen(false);
         else if (showDetail) handleCloseDetail();
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [openDropdown, openActionMenu, showDetail, handleCloseDetail]);
+  }, [openDropdown, openActionMenu, columnsMenuOpen, showDetail, handleCloseDetail]);
 
   useEffect(() => {
     if (showDetail && selectedOrder && detailPanelRef.current) {
@@ -786,11 +813,11 @@ export function AdminApp() {
       <div className={`${adminLayout} flex items-center justify-center p-6 bg-gradient-to-br from-gray-50 to-gray-100/50`}>
         <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
           <div className="mb-6 flex justify-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl shadow-md" style={{ background: "linear-gradient(135deg, #C9A84C, #E8C96A)", boxShadow: "0 4px 20px rgba(201,168,76,0.35)" }}>
-              <ScissorsIcon size={22} className="text-[#08080c]" strokeWidth={2.5} />
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl shadow-md" style={{ background: "linear-gradient(135deg, #C9A84C, #E8C96A)", boxShadow: "0 4px 20px rgba(201,168,76,0.35)", fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.25rem", color: "#08080c" }}>
+              J<span style={{ fontStyle: "italic" }}>&</span>J
             </div>
           </div>
-          <h1 className="text-center text-xl font-semibold text-gray-900">Barber Admin</h1>
+          <h1 className="text-center text-xl font-semibold text-gray-900" style={{ fontFamily: "'Playfair Display', serif" }}>J&J Barber Shop</h1>
           <p className="mt-1 mb-8 text-center text-sm text-gray-500">Přihlášení pro správu voucherů</p>
 
           <form onSubmit={handleLogin} className="space-y-4">
@@ -832,6 +859,8 @@ export function AdminApp() {
   const goldLight = "rgba(201,168,76,0.12)";
   const goldBorder = "rgba(201,168,76,0.25)";
 
+  const tableColsCount = (isMajitel ? 1 : 0) + visibleColumns.length + 1;
+
   return (
     <>
     <div className={`${adminLayout} min-h-screen bg-[#f6f6f8] text-gray-900`} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
@@ -842,16 +871,16 @@ export function AdminApp() {
         <div className="flex items-center gap-3 px-5 pt-7 pb-6">
           <div
             className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl"
-            style={{ background: "linear-gradient(135deg, #C9A84C, #E8C96A)", boxShadow: "0 4px 14px rgba(201,168,76,0.35)" }}
+            style={{ background: "linear-gradient(135deg, #C9A84C, #E8C96A)", boxShadow: "0 4px 14px rgba(201,168,76,0.35)", fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "0.95rem", color: "#08080c" }}
           >
-            <ScissorsIcon size={17} className="text-[#08080c]" strokeWidth={2.5} />
+            J<span style={{ fontStyle: "italic" }}>&</span>J
           </div>
-          <div>
-            <div className="text-sm font-extrabold tracking-wider text-gray-900" style={{ letterSpacing: "0.08em" }}>
-              BARBER
+          <div className="min-w-0">
+            <div className="text-sm font-bold text-gray-900 truncate" style={{ fontFamily: "'Playfair Display', serif", letterSpacing: "0.02em" }}>
+              J&J Barber Shop
             </div>
-            <div className="text-[10px] font-medium uppercase tracking-widest text-gray-500" style={{ letterSpacing: "0.15em" }}>
-              Admin Panel
+            <div className="text-[10px] font-medium uppercase tracking-widest text-gray-500" style={{ letterSpacing: "0.12em" }}>
+              Admin
             </div>
           </div>
         </div>
@@ -1238,7 +1267,7 @@ export function AdminApp() {
                   <span className="sr-only">Načítám objednávky…</span>
                 </div>
               ) : (
-                <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
                   <div className="flex flex-col gap-3 border-b border-gray-200 bg-white px-6 py-4">
                     <div className="flex flex-wrap items-center justify-between gap-4">
                       <h3 className="text-lg font-semibold text-gray-900">
@@ -1398,6 +1427,19 @@ export function AdminApp() {
                         Reset
                       </button>
                       <button
+                        type="button"
+                        onClick={() => setColumnsMenuOpen((v) => !v)}
+                        className={`flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-medium transition-colors ${
+                          columnsMenuOpen
+                            ? "border-blue-300 bg-blue-50 text-blue-700"
+                            : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+                        }`}
+                        aria-expanded={columnsMenuOpen}
+                      >
+                        <Columns3 size={14} />
+                        <span className="hidden sm:inline">Sloupce</span>
+                      </button>
+                      <button
                         onClick={exportCsv}
                         className="flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-bold text-[#08080c] transition-all hover:shadow-md"
                         style={{ background: "linear-gradient(135deg, #C9A84C, #E8C96A)", boxShadow: "0 4px 14px rgba(201,168,76,0.25)" }}
@@ -1409,7 +1451,29 @@ export function AdminApp() {
                     </div>
                   </div>
 
-                  <div className="max-h-[calc(100vh-380px)] overflow-auto sm:max-h-[calc(100vh-420px)]">
+                  {columnsMenuOpen && (
+                    <div className="border-t border-gray-100 px-1 pt-3 pb-2 flex flex-wrap items-center gap-2 bg-white">
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 mr-1">
+                        Sloupce tabulky:
+                      </span>
+                      {allColumns.map((col) => (
+                        <label
+                          key={col.id}
+                          className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 text-xs text-gray-700 cursor-pointer hover:border-blue-300 hover:bg-blue-50"
+                        >
+                          <input
+                            type="checkbox"
+                            className="h-3.5 w-3.5 rounded border-gray-300 text-blue-600 focus:ring-0"
+                            checked={visibleColumns.includes(col.id)}
+                            onChange={() => toggleColumn(col.id)}
+                          />
+                          <span>{col.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="max-h-[calc(100vh-320px)] overflow-auto sm:max-h-[calc(100vh-360px)]">
                     <table className="w-full min-w-[720px]" role="grid" aria-label="Tabulka objednávek voucherů">
                       <thead className="sticky top-0 z-10 border-b border-gray-200 bg-gray-50/50">
                         <tr>
@@ -1424,55 +1488,83 @@ export function AdminApp() {
                               />
                             </th>
                           )}
-                          <th className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold first:pl-5">
-                            ID
-                          </th>
-                          <th
-                            className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold cursor-pointer hover:text-gray-900 select-none"
-                            onClick={() => { setSortCol("created_at"); setSortAsc((v) => !v); }}
-                          >
-                            <span className="inline-flex items-center gap-1">
-                              DATUM
-                              {sortCol === "created_at" ? (sortAsc ? <ChevronUpIcon size={12} /> : <ChevronDownIcon size={12} />) : null}
-                            </span>
-                          </th>
-                          <th
-                            className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold cursor-pointer hover:text-gray-900 select-none"
-                            onClick={() => { setSortCol("name"); setSortAsc((v) => !v); }}
-                          >
-                            <span className="inline-flex items-center gap-1">
-                              JMÉNO
-                              {sortCol === "name" ? (sortAsc ? <ChevronUpIcon size={12} /> : <ChevronDownIcon size={12} />) : null}
-                            </span>
-                          </th>
-                          <th className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold">E-MAIL</th>
-                          <th className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold">TELEFON</th>
-                          <th className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold">SLUŽBA</th>
-                          <th
-                            className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold cursor-pointer hover:text-gray-900 select-none"
-                            onClick={() => { setSortCol("branch"); setSortAsc((v) => !v); }}
-                          >
-                            <span className="inline-flex items-center gap-1">
-                              POBOČKA
-                              {sortCol === "branch" ? (sortAsc ? <ChevronUpIcon size={12} /> : <ChevronDownIcon size={12} />) : null}
-                            </span>
-                          </th>
-                          <th
-                            className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold cursor-pointer hover:text-gray-900 select-none"
-                            onClick={() => { setSortCol("status"); setSortAsc((v) => !v); }}
-                          >
-                            <span className="inline-flex items-center gap-1">
-                              STAV
-                              {sortCol === "status" ? (sortAsc ? <ChevronUpIcon size={12} /> : <ChevronDownIcon size={12} />) : null}
-                            </span>
-                          </th>
+                          {visibleColumns.includes("id") && (
+                            <th className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold first:pl-5">
+                              ID
+                            </th>
+                          )}
+                          {visibleColumns.includes("created_at") && (
+                            <th
+                              className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold cursor-pointer hover:text-gray-900 select-none"
+                              onClick={() => {
+                                setSortCol("created_at");
+                                setSortAsc((v) => !v);
+                              }}
+                            >
+                              <span className="inline-flex items-center gap-1">
+                                DATUM
+                                {sortCol === "created_at" ? (sortAsc ? <ChevronUpIcon size={12} /> : <ChevronDownIcon size={12} />) : null}
+                              </span>
+                            </th>
+                          )}
+                          {visibleColumns.includes("name") && (
+                            <th
+                              className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold cursor-pointer hover:text-gray-900 select-none"
+                              onClick={() => {
+                                setSortCol("name");
+                                setSortAsc((v) => !v);
+                              }}
+                            >
+                              <span className="inline-flex items-center gap-1">
+                                JMÉNO
+                                {sortCol === "name" ? (sortAsc ? <ChevronUpIcon size={12} /> : <ChevronDownIcon size={12} />) : null}
+                              </span>
+                            </th>
+                          )}
+                          {visibleColumns.includes("email") && (
+                            <th className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold">E-MAIL</th>
+                          )}
+                          {visibleColumns.includes("phone") && (
+                            <th className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold">TELEFON</th>
+                          )}
+                          {visibleColumns.includes("service") && (
+                            <th className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold">SLUŽBA</th>
+                          )}
+                          {visibleColumns.includes("branch") && (
+                            <th
+                              className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold cursor-pointer hover:text-gray-900 select-none"
+                              onClick={() => {
+                                setSortCol("branch");
+                                setSortAsc((v) => !v);
+                              }}
+                            >
+                              <span className="inline-flex items-center gap-1">
+                                POBOČKA
+                                {sortCol === "branch" ? (sortAsc ? <ChevronUpIcon size={12} /> : <ChevronDownIcon size={12} />) : null}
+                              </span>
+                            </th>
+                          )}
+                          {visibleColumns.includes("status") && (
+                            <th
+                              className="px-4 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold cursor-pointer hover:text-gray-900 select-none"
+                              onClick={() => {
+                                setSortCol("status");
+                                setSortAsc((v) => !v);
+                              }}
+                            >
+                              <span className="inline-flex items-center gap-1">
+                                STAV
+                                {sortCol === "status" ? (sortAsc ? <ChevronUpIcon size={12} /> : <ChevronDownIcon size={12} />) : null}
+                              </span>
+                            </th>
+                          )}
                           <th className="px-2 py-3 text-left text-[11px] text-gray-700 tracking-wider uppercase font-semibold w-14"></th>
                         </tr>
                       </thead>
                       <tbody>
                         {sortedFiltered.length === 0 ? (
                           <tr>
-                            <td colSpan={isMajitel ? 10 : 9} className="py-20 text-center">
+                            <td colSpan={tableColsCount} className="py-20 text-center">
                               <div className="flex flex-col items-center gap-2">
                                 <span className="text-gray-700 text-sm">
                                   {orders.length === 0 ? "Zatím žádné objednávky" : "Žádné výsledky podle filtrů"}
@@ -1512,32 +1604,52 @@ export function AdminApp() {
                                   />
                                 </td>
                               )}
-                              <td className="px-4 py-3 pl-5 font-mono text-xs text-blue-600">
-                                {o.id.slice(0, 8)}…
-                              </td>
-                              <td className="px-4 py-3 text-xs text-gray-700 whitespace-nowrap">{formatDate(o.created_at)}</td>
-                              <td className="px-4 py-3 text-sm text-gray-900 font-medium whitespace-nowrap">
-                                {o.name} {o.surname || ""}
-                              </td>
-                              <td className="px-4 py-3 text-xs text-gray-700">
-                                <a href={`mailto:${o.email}`} className="transition-colors hover:text-[#b8860b]">
-                                  {o.email}
-                                </a>
-                              </td>
-                              <td className="whitespace-nowrap px-4 py-3 text-xs text-gray-700">
-                                {o.phone ? (
-                                  <a href={`tel:${o.phone}`} className="transition-colors hover:text-[#b8860b]">
-                                    {o.phone}
+                              {visibleColumns.includes("id") && (
+                                <td className="px-4 py-3 pl-5 font-mono text-xs text-blue-600">
+                                  {o.id.slice(0, 8)}…
+                                </td>
+                              )}
+                              {visibleColumns.includes("created_at") && (
+                                <td className="px-4 py-3 text-xs text-gray-700 whitespace-nowrap">
+                                  {formatDate(o.created_at)}
+                                </td>
+                              )}
+                              {visibleColumns.includes("name") && (
+                                <td className="px-4 py-3 text-sm text-gray-900 font-medium whitespace-nowrap">
+                                  {o.name} {o.surname || ""}
+                                </td>
+                              )}
+                              {visibleColumns.includes("email") && (
+                                <td className="px-4 py-3 text-xs text-gray-700">
+                                  <a href={`mailto:${o.email}`} className="transition-colors hover:text-[#b8860b]">
+                                    {o.email}
                                   </a>
-                                ) : (
-                                  "–"
-                                )}
-                              </td>
-                              <td className="px-4 py-3 text-xs text-gray-700 max-w-[180px] truncate" title={formatServiceDisplay(o.service)}>
-                                {formatServiceDisplay(o.service)}
-                              </td>
-                              <td className="px-4 py-3 text-xs text-gray-700">{o.branch}</td>
-                              <td className="px-4 py-3 relative">
+                                </td>
+                              )}
+                              {visibleColumns.includes("phone") && (
+                                <td className="whitespace-nowrap px-4 py-3 text-xs text-gray-700">
+                                  {o.phone ? (
+                                    <a href={`tel:${o.phone}`} className="transition-colors hover:text-[#b8860b]">
+                                      {o.phone}
+                                    </a>
+                                  ) : (
+                                    "–"
+                                  )}
+                                </td>
+                              )}
+                              {visibleColumns.includes("service") && (
+                                <td
+                                  className="px-4 py-3 text-xs text-gray-700 max-w-[220px] truncate"
+                                  title={formatServiceDisplay(o.service)}
+                                >
+                                  {formatServiceDisplay(o.service)}
+                                </td>
+                              )}
+                              {visibleColumns.includes("branch") && (
+                                <td className="px-4 py-3 text-xs text-gray-700">{o.branch}</td>
+                              )}
+                              {visibleColumns.includes("status") && (
+                                <td className="px-4 py-3 relative">
                                 {isMajitel ? (
                                   <>
                                     <button
@@ -1582,6 +1694,7 @@ export function AdminApp() {
                                   <StatusBadge status={o.status} />
                                 )}
                               </td>
+                              )}
                               <td className="px-2 py-3" onClick={(e) => e.stopPropagation()}>
                                 <div className="flex items-center gap-0.5 relative">
                                   <button
@@ -1741,7 +1854,10 @@ export function AdminApp() {
       {(openDropdown || openActionMenu) && (
         <div
           className="fixed inset-0 z-40"
-          onClick={() => { setOpenDropdown(null); setOpenActionMenu(null); }}
+          onClick={() => {
+            setOpenDropdown(null);
+            setOpenActionMenu(null);
+          }}
           aria-hidden="true"
         />
       )}
