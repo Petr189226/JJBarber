@@ -14,74 +14,6 @@ const barbers: Barber[] = [
   { id: "08", name: "Fila", image: "/team/fila.png" },
 ];
 
-function FounderCard({ barber, roleLabel }: { barber: Barber; roleLabel: string }) {
-  return (
-    <div className="group relative overflow-hidden rounded-xl cursor-default aspect-[3/5] sm:aspect-[9/16]">
-      <img
-        src={barber.image}
-        alt={barber.name}
-        width={800}
-        height={1000}
-        loading="lazy"
-        fetchPriority="low"
-        className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
-      />
-
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.28) 45%, transparent 70%)",
-        }}
-      />
-
-      <div className="absolute bottom-0 inset-x-0 p-6 pb-7">
-        <p
-          className="mb-1"
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: "0.7rem",
-            letterSpacing: "0.26em",
-            textTransform: "uppercase",
-            color: "#EAD4A0",
-          }}
-        >
-          {roleLabel}
-        </p>
-
-        <div className="flex items-baseline justify-between">
-          <p
-            style={{
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
-              fontSize: "1.9rem",
-              fontWeight: 400,
-              fontStyle: "italic",
-              color: "#EAE1D4",
-              lineHeight: 1,
-              letterSpacing: "0.01em",
-            }}
-          >
-            {barber.name}
-          </p>
-        </div>
-
-        <div
-          className="absolute left-0 right-0 top-0"
-          style={{
-            height: "1px",
-            background: "linear-gradient(to right, transparent, rgba(197,165,114,0.4), transparent)",
-          }}
-        />
-      </div>
-
-      <div
-        className="absolute inset-0 rounded-xl pointer-events-none opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{ boxShadow: "inset 0 0 0 1px rgba(197,165,114,0.35)" }}
-      />
-    </div>
-  );
-}
-
 function TeamMemberCard({ barber, roleLabel }: { barber: Barber; roleLabel: string }) {
   return (
     <div className="group cursor-default">
@@ -148,13 +80,7 @@ export function Team() {
   }, []);
   const { t } = useLanguage();
 
-  const { founders, team } = useMemo(() => {
-    const foundersByName = new Set(["Kuba", "Pepa"]);
-    return {
-      founders: barbers.filter((b) => foundersByName.has(b.name)),
-      team: barbers.filter((b) => !foundersByName.has(b.name)),
-    };
-  }, []);
+  const foundersByName = useMemo(() => new Set(["Kuba", "Pepa"]), []);
 
   const barberLabel = t("team.barber");
 
@@ -218,21 +144,15 @@ export function Team() {
 
         <div style={{ minHeight: contentInView ? undefined : "560px" }} aria-hidden={!contentInView}>
           {contentInView ? (
-            <>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-6">
-                {founders.map((b) => (
-                  <FounderCard key={b.id} barber={b} roleLabel={t("team.founder")} />
-                ))}
-              </div>
-
-              <div className="my-4 h-px w-full" style={{ background: "rgba(255,255,255,0.04)" }} />
-
-              <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3">
-                {team.map((b) => (
-                  <TeamMemberCard key={b.id} barber={b} roleLabel={barberLabel} />
-                ))}
-              </div>
-            </>
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4">
+              {barbers.map((barber) => (
+                <TeamMemberCard
+                  key={barber.id}
+                  barber={barber}
+                  roleLabel={foundersByName.has(barber.name) ? t("team.founder") : barberLabel}
+                />
+              ))}
+            </div>
           ) : null}
         </div>
       </div>

@@ -151,7 +151,7 @@ export function Hero() {
             <div
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "clamp(3.6rem, 10vw, 6.5rem)",
+                fontSize: "clamp(3.1rem, 9vw, 6.5rem)",
                 color: "#F5F0E8",
                 letterSpacing: "0.02em",
               }}
@@ -161,7 +161,7 @@ export function Hero() {
             <div
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "clamp(3.6rem, 10vw, 6.5rem)",
+                fontSize: "clamp(3.1rem, 9vw, 6.5rem)",
                 color: "#F5F0E8",
                 letterSpacing: "0.02em",
               }}
@@ -171,7 +171,7 @@ export function Hero() {
             <div
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "clamp(3.6rem, 10vw, 6.5rem)",
+                fontSize: "clamp(3.1rem, 9vw, 6.5rem)",
                 color: "#F5F0E8",
                 letterSpacing: "0.02em",
               }}
@@ -199,7 +199,7 @@ export function Hero() {
             style={{
               fontFamily: "'Cormorant Garamond', serif",
               fontStyle: "italic",
-              fontSize: "clamp(1.6rem, 3.5vw, 2.4rem)",
+              fontSize: "clamp(1.5rem, 3.2vw, 2.4rem)",
               color: "#E8C84A",
               lineHeight: 1.1,
               marginBottom: "20px",

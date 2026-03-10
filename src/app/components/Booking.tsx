@@ -272,7 +272,7 @@ export function Booking() {
                           top: "50%",
                           transform: "translateY(-50%)",
                           fontFamily: "'Cormorant Garamond', serif",
-                          fontSize: "6rem",
+                          fontSize: "clamp(3.8rem, 10vw, 6rem)",
                           fontWeight: 300,
                           color: isHovered ? "rgba(201,162,85,0.08)" : "rgba(201,162,85,0.04)",
                           lineHeight: 1,

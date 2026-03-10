@@ -650,7 +650,7 @@ export function AdminApp() {
   const toggleColumn = (id: ColumnId) => {
     setVisibleColumns((prev) => {
       if (prev.includes(id)) {
-        if (prev.length === 1) return prev; // vždy nechat aspoň jeden sloupec
+        if (prev.length === 1) return prev;
         return prev.filter((c) => c !== id);
       }
       return [...prev, id];
