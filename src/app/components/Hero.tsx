@@ -235,42 +235,44 @@ export function Hero() {
               </span>
             </div>
 
-            <div className="flex flex-wrap items-stretch gap-2 sm:gap-0">
-              {(["vrsovice", "strasnice"] as const).map((key) => {
-                const active = branch === key;
-                return (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() => setBranch(key)}
-                    style={{
-                      padding: "11px 22px",
-                      background: active ? "rgba(232,200,74,0.12)" : "transparent",
-                      border: active
-                        ? "1px solid #E8C84A"
-                        : "1px solid rgba(245,240,232,0.2)",
-                      borderRight: key === "vrsovice" ? "none" : undefined,
-                      color: active ? "#E8C84A" : "rgba(245,240,232,0.6)",
-                      fontFamily: "'Inter', sans-serif",
-                      fontWeight: 500,
-                      letterSpacing: "0.2em",
-                      textTransform: "uppercase",
-                      borderRadius: 0,
-                      cursor: "pointer",
-                      transition: "all 0.2s",
-                    }}
-                    className="text-[0.6rem] lg:text-[0.85rem] lg:py-3.5 lg:px-7"
-                  >
-                    {BRANCH_LABELS[key]}
-                  </button>
-                );
-              })}
+            <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-6">
+              <div className="flex flex-col gap-2 w-full max-w-[260px]">
+                {(["vrsovice", "strasnice"] as const).map((key) => {
+                  const active = branch === key;
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setBranch(key)}
+                      style={{
+                        padding: "11px 22px",
+                        background: active ? "rgba(232,200,74,0.12)" : "transparent",
+                        border: active
+                          ? "1px solid #E8C84A"
+                          : "1px solid rgba(245,240,232,0.2)",
+                        color: active ? "#E8C84A" : "rgba(245,240,232,0.7)",
+                        fontFamily: "'Inter', sans-serif",
+                        fontWeight: 500,
+                        letterSpacing: "0.2em",
+                        textTransform: "uppercase",
+                        borderRadius: 0,
+                        cursor: "pointer",
+                        transition: "background-color 0.18s ease-out, color 0.18s ease-out, border-color 0.18s ease-out",
+                        textAlign: "left",
+                      }}
+                      className="text-[0.6rem] lg:text-[0.85rem]"
+                    >
+                      {BRANCH_LABELS[key]}
+                    </button>
+                  );
+                })}
+              </div>
 
               <button
                 type="button"
                 onClick={handleReservation}
                 disabled={redirecting}
-                className="mt-3 sm:mt-0 text-[0.65rem] lg:text-[1rem] lg:py-4 lg:px-10 lg:font-bold border border-[#E8C84A]/60 bg-transparent text-[#E8C84A] hover:bg-[#E8C84A]/10 hover:border-[#E8C84A] disabled:opacity-60 disabled:cursor-not-allowed rounded-sm"
+                className="mt-1 sm:mt-0 text-[0.65rem] lg:text-[1rem] lg:py-4 lg:px-10 lg:font-bold border border-[#E8C84A]/60 bg-transparent text-[#E8C84A] hover:bg-[#E8C84A]/10 hover:border-[#E8C84A] disabled:opacity-60 disabled:cursor-not-allowed rounded-sm"
                 style={{
                   padding: "11px 30px",
                   fontFamily: "'Inter', sans-serif",
@@ -279,7 +281,6 @@ export function Hero() {
                   textTransform: "uppercase",
                   cursor: "pointer",
                   whiteSpace: "nowrap",
-                  marginLeft: "16px",
                   display: "flex",
                   alignItems: "center",
                   gap: "10px",
