@@ -51,7 +51,7 @@ function LanguageSwitcher() {
         <CurrentFlag size={18} />
         <span
           className="text-[#8A8580] group-hover:text-[#C9A84C] transition-colors duration-200"
-          style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.72rem", letterSpacing: "0.1em" }}
+          style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: "0.72rem", letterSpacing: "0.1em" }}
         >
           {current.label}
         </span>
@@ -147,7 +147,7 @@ export function Navbar() {
                         ? "text-[#C9A84C] bg-[#C9A84C]/10"
                         : "text-[#8A8580] hover:text-[#C9A84C] hover:bg-[#C9A84C]/8"
                     }`}
-                    style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.8rem", letterSpacing: "0.14em", textTransform: "uppercase" }}
+                    style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: "0.8rem", letterSpacing: "0.14em", textTransform: "uppercase" }}
                   >
                     {link.label}
                     {isActive && (
@@ -189,7 +189,7 @@ export function Navbar() {
                 href={link.href}
                 onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
                 className="text-[#8A8580] hover:text-[#C4BEB4] py-3 border-b border-[#1A1A1A] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-inset"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "1.1rem", letterSpacing: "0.15em", textTransform: "uppercase" }}
+                style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: "1.1rem", letterSpacing: "0.15em", textTransform: "uppercase" }}
               >
                 {link.label}
               </a>

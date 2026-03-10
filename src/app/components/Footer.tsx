@@ -80,7 +80,7 @@ export function Footer() {
             <div key={col.title}>
               <h3
                 className="text-[#B5AEA4] mb-5 tracking-[0.2em] uppercase"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.72rem" }}
+                style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: "0.72rem" }}
               >
                 {col.title}
               </h3>
@@ -104,7 +104,7 @@ export function Footer() {
           <div>
             <h3
               className="text-[#C9A84C] mb-5 tracking-[0.22em] uppercase"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.72rem" }}
+              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: "0.72rem" }}
             >
               {t("footer.contact")}
             </h3>

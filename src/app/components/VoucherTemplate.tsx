@@ -100,10 +100,10 @@ export function VoucherTemplate({ data, printRef }: VoucherTemplateProps) {
         <div style={{ position: "absolute", bottom: "32px", right: "20px", width: "30px", height: "30px", borderBottom: "1.5px solid #C9A96E", borderRight: "1.5px solid #C9A96E", opacity: 0.7 }} />
 
         <div style={{ textAlign: "center", marginBottom: "10px" }}>
-          <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "11px", letterSpacing: "6px", color: "#C9A96E", textTransform: "uppercase", marginBottom: "4px" }}>
+          <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "11px", letterSpacing: "6px", color: "#C9A96E", textTransform: "uppercase", marginBottom: "4px" }}>
             ✦ &nbsp; Dárkový poukaz &nbsp; ✦
           </div>
-          <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "32px", letterSpacing: "4px", color: "#1C1712", fontWeight: 600, textTransform: "uppercase", lineHeight: 1 }}>
+          <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "32px", letterSpacing: "4px", color: "#1C1712", fontWeight: 600, textTransform: "uppercase", lineHeight: 1 }}>
             Dárkový Voucher
           </div>
         </div>
@@ -116,7 +116,7 @@ export function VoucherTemplate({ data, printRef }: VoucherTemplateProps) {
           <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "10px", letterSpacing: "4px", color: "#8B7355", textTransform: "uppercase", marginBottom: "4px" }}>
             Určeno pro
           </div>
-          <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "30px", color: "#1C1712", fontWeight: 500, fontStyle: "italic", letterSpacing: "1px", minHeight: "38px" }}>
+          <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "30px", color: "#1C1712", fontWeight: 500, fontStyle: "italic", letterSpacing: "1px", minHeight: "38px" }}>
             {isEmpty ? (
               <span style={{ color: "#C9A96E", opacity: 0.5 }}>Jméno Příjmení</span>
             ) : (
@@ -153,7 +153,7 @@ export function VoucherTemplate({ data, printRef }: VoucherTemplateProps) {
             <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "9px", letterSpacing: "3px", color: "#8B7355", textTransform: "uppercase", marginBottom: "5px" }}>
               Pobočka
             </div>
-            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: "15px", color: "#1C1712", fontWeight: 600, lineHeight: 1.3, minHeight: "20px" }}>
+            <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "15px", color: "#1C1712", fontWeight: 600, lineHeight: 1.3, minHeight: "20px" }}>
               {isEmpty ? (
                 <span style={{ color: "#C9A96E", opacity: 0.4, fontSize: "13px", fontStyle: "italic" }}>Název pobočky</span>
               ) : (
@@ -189,7 +189,7 @@ export function VoucherTemplate({ data, printRef }: VoucherTemplateProps) {
           <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "9px", letterSpacing: "2px", color: "#8B7355", textTransform: "uppercase" }}>
             č.
           </span>
-          <span style={{ fontFamily: "'Playfair Display', serif", fontSize: "13px", letterSpacing: "3px", color: "#C9A96E", fontWeight: 600 }}>
+          <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "13px", letterSpacing: "3px", color: "#C9A96E", fontWeight: 600 }}>
             {data.voucherNumber || "—"}
           </span>
         </div>

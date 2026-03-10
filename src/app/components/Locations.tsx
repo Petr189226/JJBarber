@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { MapPin, Clock } from "lucide-react";
 import { useLanguage } from "../i18n";
 import { RESERVIO_VRSOVICE, RESERVIO_STRASNICE } from "../cta-config";
@@ -10,7 +10,8 @@ function MiniMap({ loc, openLabel }: { loc: { name: string; mapImage: string; ma
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`Otevřít mapu pobočky ${loc.name}`}
-      className="block relative w-full h-[120px] md:h-[130px] rounded-xl overflow-hidden border border-[#1F1F1F] hover:border-white/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] transition-all duration-200 group/map cursor-pointer"
+      className="block relative w-full rounded-xl overflow-hidden border border-[#252525] hover:border-[#3a341f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C9A255]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B0B0B] transition-all duration-200 group/map cursor-pointer"
+      style={{ height: "120px" }}
     >
       <img
         src={loc.mapImage}
@@ -19,24 +20,19 @@ function MiniMap({ loc, openLabel }: { loc: { name: string; mapImage: string; ma
         height={130}
         loading="lazy"
         fetchPriority="low"
-        className="w-full h-full object-cover brightness-[0.6] group-hover/map:brightness-[0.75] transition-all duration-300"
+        className="w-full h-full object-cover brightness-[0.65] group-hover/map:brightness-[0.8] transition-all duration-300"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/50 via-transparent to-[#0A0A0A]/8" />
-      <svg
-        width="20"
-        height="28"
-        viewBox="0 0 20 28"
-        fill="none"
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full z-10 drop-shadow-[0_2px_6px_rgba(201,168,76,0.5)] group-hover/map:scale-110 transition-transform duration-200"
-        aria-hidden
-      >
-        <path d="M10 0C4.477 0 0 4.477 0 10c0 7.5 10 18 10 18s10-10.5 10-18c0-5.523-4.477-10-10-10z" fill="#8A8580" />
-        <circle cx="10" cy="10" r="4" fill="#0A0A0A" />
-      </svg>
-      <div className="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-[#0A0A0A]/70 to-transparent flex items-center justify-between">
+      <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/70 via-transparent to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 px-4 py-2 flex items-center justify-between">
         <span
-          className="text-[#B5AEA4] group-hover/map:text-[#C4BEB4] transition-colors duration-200 truncate"
-          style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.7rem" }}
+          className="truncate"
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "0.7rem",
+            letterSpacing: "0.16em",
+            textTransform: "uppercase",
+            color: "rgba(245,240,232,0.85)",
+          }}
         >
           {openLabel}
         </span>
@@ -59,11 +55,199 @@ function ReserveLink({ href, label, redirectLabel }: { href: string; label: stri
     <a
       href={href}
       onClick={handleClick}
-      className={`inline-flex items-center justify-center px-6 py-3 rounded-full bg-[#C9A84C] text-[#08080c] hover:bg-[#D4A74A] transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#C9A84C]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none ${clicked ? "scale-[0.98] opacity-90 pointer-events-none" : "active:scale-[0.98]"}`}
-      style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
+      className={`inline-flex items-center justify-center px-7 py-3 rounded-full bg-[#C9A255] text-[#08080c] hover:bg-[#B8913E] transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#C9A255]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none ${clicked ? "scale-[0.98] opacity-90 pointer-events-none" : "active:scale-[0.98]"}`}
+      style={{
+        fontFamily: "'Inter', sans-serif",
+        fontWeight: 600,
+        fontSize: "0.7rem",
+        letterSpacing: "0.18em",
+        textTransform: "uppercase",
+      }}
     >
       {clicked ? redirectLabel : label}
     </a>
+  );
+}
+
+interface LocationModel {
+  id: string;
+  name: string;
+  address: string;
+  image: string;
+  hours: string[];
+  reservioUrl: string;
+  mapImage: string;
+  mapLink: string;
+  accent: string;
+}
+
+function LocationCard({ loc, reserveLabel, redirectLabel, openLabel }: { loc: LocationModel; reserveLabel: string; redirectLabel: string; openLabel: string }) {
+  const isClosedText = (text: string) => /zavřeno/i.test(text);
+
+  return (
+    <div className="group relative flex flex-col">
+      <div className="flex items-center gap-4 mb-6">
+        <span
+          style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: "clamp(3.5rem, 6vw, 5.5rem)",
+            lineHeight: 1,
+            color: "rgba(201,162,85,0.14)",
+            letterSpacing: "-0.02em",
+            fontWeight: 300,
+            userSelect: "none",
+          }}
+        >
+          {loc.id}
+        </span>
+        <div
+          className="hidden md:block"
+          style={{
+            flex: 1,
+            height: "1px",
+            background: "linear-gradient(to right, rgba(201,162,85,0.6), transparent)",
+          }}
+        />
+      </div>
+
+      <div
+        className="relative overflow-hidden rounded-2xl mb-8"
+        style={{
+          aspectRatio: "16/10",
+        }}
+      >
+        <img
+          src={loc.image}
+          alt={`JJ Barber shop – ${loc.name}`}
+          className="w-full h-full object-cover"
+          style={{
+            transform: "scale(1)",
+            transition: "transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94), filter 0.8s ease",
+            filter: "brightness(0.78)",
+          }}
+        />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "linear-gradient(to top, rgba(8,8,8,0.75) 0%, rgba(8,8,8,0.35) 40%, transparent 70%)",
+          }}
+        />
+        <div className="absolute bottom-5 left-6 flex items-center gap-3">
+          <div style={{ width: "28px", height: "1px", background: "#C9A255" }} />
+          <span
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: "0.65rem",
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              color: "rgba(245,240,232,0.8)",
+            }}
+          >
+            {loc.accent}
+          </span>
+        </div>
+      </div>
+
+      <div className="mb-2">
+        <p
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "0.65rem",
+            letterSpacing: "0.2em",
+            color: "#C9A255",
+            textTransform: "uppercase",
+            marginBottom: "6px",
+          }}
+        >
+          JJ Barber shop
+        </p>
+        <h3
+          style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: "clamp(2.1rem, 3.4vw, 2.7rem)",
+            fontWeight: 300,
+            color: "#F5F0E8",
+            lineHeight: 1.1,
+            letterSpacing: "-0.01em",
+            marginBottom: "1.3rem",
+          }}
+        >
+          {loc.name}
+        </h3>
+      </div>
+
+      <div
+        style={{
+          height: "1px",
+          background: "rgba(255,255,255,0.07)",
+          marginBottom: "1.5rem",
+        }}
+      />
+
+      <div className="flex items-start gap-3 mb-4" style={{ color: "#E0DAD4" }}>
+        <span className="mt-[3px] text-[#C9A255]">
+          <MapPin size={16} />
+        </span>
+        <span
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "0.9rem",
+            lineHeight: 1.8,
+            letterSpacing: "0.02em",
+          }}
+        >
+          {loc.address}
+        </span>
+      </div>
+
+      <div className="mb-6">
+        <MiniMap loc={loc} openLabel={openLabel} />
+      </div>
+
+      <div className="mb-6 space-y-2">
+        {loc.hours.map((line) => {
+          const [days, time] = line.split("  ");
+          const closed = isClosedText(line) || isClosedText(time || "");
+          return (
+            <div
+              key={line}
+              className="flex items-center justify-between border-b border-white/5 last:border-b-0 py-2.5"
+            >
+              <div className="flex items-center gap-2" style={{ color: "rgba(245,240,232,0.78)" }}>
+                <Clock size={13} />
+                <span
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontSize: "0.75rem",
+                    letterSpacing: "0.03em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {days || line}
+                </span>
+              </div>
+              {time && (
+                <span
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: "0.9rem",
+                    color: closed ? "rgba(245,240,232,0.5)" : "#F5F0E8",
+                    fontStyle: closed ? "italic" as const : "normal",
+                    letterSpacing: "0.03em",
+                  }}
+                >
+                  {time}
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3 mt-auto">
+        <ReserveLink href={loc.reservioUrl} label={reserveLabel} redirectLabel={redirectLabel} />
+      </div>
+    </div>
   );
 }
 
@@ -78,8 +262,9 @@ export function Locations() {
   const anim = "transition-all duration-500 ease-out";
   const { t } = useLanguage();
 
-  const locations = [
+  const locations: LocationModel[] = [
     {
+      id: "01",
       name: "Vršovice",
       address: "Vršovická 7/27, 101 00 Praha 10",
       image: "/location-vrsovice.png",
@@ -87,8 +272,10 @@ export function Locations() {
       reservioUrl: RESERVIO_VRSOVICE,
       mapImage: "/map-vrsovice.webp",
       mapLink: "https://www.google.com/maps/place/?q=place_id:ChIJj7OHo66TC0cR9_vNnPEtFtA",
+      accent: "Lokace v srdci Vršovic",
     },
     {
+      id: "02",
       name: "Strašnice",
       address: "Černokostelecká 830/23, 100 00 Praha 10",
       image: "/location-strasnice.png",
@@ -96,6 +283,7 @@ export function Locations() {
       reservioUrl: RESERVIO_STRASNICE,
       mapImage: "/map-strasnice.webp",
       mapLink: "https://www.google.com/maps/search/?api=1&query=JJ+Barber+Shop+Strašnice+Černokostelecká+Praha+10",
+      accent: "Moderní prostor ve Strašnicích",
     },
   ];
 
@@ -106,85 +294,63 @@ export function Locations() {
           <div
             className={`flex items-center gap-3 mb-5 ${anim} ${inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-5"}`}
           >
-            <div className="w-8 h-px bg-[#8A8580]" />
+            <div className="w-10 h-px bg-[#C9A255]" />
             <span
-              className="text-[#8A8580] tracking-[0.25em] uppercase"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.75rem" }}
+              className="tracking-[0.25em] uppercase"
+              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: "0.7rem", color: "#C9A255" }}
             >
               {t("loc.label")}
             </span>
           </div>
-          <h2
-            className={`text-[#C4BEB4] mb-8 ${anim} ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
-            style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 1.2, transitionDelay: inView ? "50ms" : undefined }}
+          <div
+            className={`grid gap-8 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] items-end ${anim} ${
+              inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
+            }`}
+            style={{ transitionDelay: inView ? "40ms" : undefined }}
           >
-            {t("loc.heading")}
-          </h2>
-          <p
-            className={`text-[#B5AEA4] max-w-2xl ${anim} ${inView ? "opacity-100" : "opacity-0"}`}
-            style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.9rem", lineHeight: 1.8, transitionDelay: inView ? "100ms" : undefined }}
-          >
-            {t("loc.description")}
-          </p>
+            <h2
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "clamp(3rem, 6vw, 4.8rem)",
+                fontWeight: 300,
+                color: "#F5F0E8",
+                lineHeight: 1.05,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              Naše
+              <br />
+              <em style={{ fontStyle: "italic", color: "#C9A255" }}>{t("loc.heading")}</em>
+            </h2>
+            <p
+              className="border-l-2 border-[rgba(201,162,85,0.45)] pl-6"
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: 400,
+                fontSize: "0.92rem",
+                color: "rgba(245,240,232,0.86)",
+                lineHeight: 1.9,
+                transitionDelay: inView ? "120ms" : undefined,
+              }}
+            >
+              {t("loc.description")}
+            </p>
+          </div>
         </div>
 
         <div style={{ minHeight: contentInView ? undefined : "520px" }} aria-hidden={!contentInView}>
           {contentInView ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {locations.map((loc, i) => (
-            <div
-              key={loc.name}
-              className="bg-[#111111] border border-white/[0.05] hover:border-white/[0.08] rounded-xl overflow-hidden transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_8px_32px_rgba(0,0,0,0.35)] group opacity-100 translate-y-0"
-              style={{ animationDelay: `${i * 80}ms` }}
-            >
-              <div className="aspect-[16/10] overflow-hidden">
-                <img
-                  src={loc.image}
-                  alt={`Interiér JJ Barber shop ${loc.name}`}
-                  width={800}
-                  height={500}
-                  loading="lazy"
-                  fetchPriority="low"
-                  className={`w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500 ease-out ${i === 1 ? "brightness-[0.96]" : ""}`}
+            <div className="grid gap-10 md:grid-cols-2" style={{ alignItems: "flex-start" }}>
+              {locations.map((loc) => (
+                <LocationCard
+                  key={loc.id}
+                  loc={loc}
+                  reserveLabel={`${t("loc.reserve")} – ${loc.name}`}
+                  redirectLabel={t("cta.redirecting")}
+                  openLabel={t("loc.openMaps")}
                 />
-              </div>
-              <div className="p-8">
-                <h3
-                  className="text-[#C4BEB4] mb-6"
-                  style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.5rem" }}
-                >
-                  JJ Barber shop – {loc.name}
-                </h3>
-                <div className="flex items-start gap-3 mb-4">
-                  <MapPin size={18} className="text-[#8A8580] flex-shrink-0 mt-0.5" />
-                  <span
-                    className="text-[#B5AEA4]"
-                    style={{ fontFamily: "'Inter', sans-serif", fontWeight: 400, fontSize: "0.95rem", lineHeight: 1.6 }}
-                  >
-                    {loc.address}
-                  </span>
-                </div>
-                <div className="mb-5">
-                  <MiniMap loc={loc} openLabel={t("loc.openMaps")} />
-                </div>
-                <ul className="space-y-2 mb-8">
-                  {loc.hours.map((line) => (
-                    <li key={line} className="flex items-center gap-3">
-                      <Clock size={14} className="text-[#8A8580] flex-shrink-0" />
-                      <span
-                        className="text-[#B5AEA4]"
-                        style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.88rem" }}
-                      >
-                        {line}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <ReserveLink href={loc.reservioUrl} label={`${t("loc.reserve")} – ${loc.name}`} redirectLabel={t("cta.redirecting")} />
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
           ) : null}
         </div>
       </div>

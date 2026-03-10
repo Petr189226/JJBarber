@@ -82,7 +82,7 @@ function FounderCard({ barber, roleLabel }: { barber: Barber; roleLabel: string 
   );
 }
 
-function TeamMemberCard({ barber }: { barber: Barber }) {
+function TeamMemberCard({ barber, roleLabel }: { barber: Barber; roleLabel: string }) {
   return (
     <div className="group cursor-default">
       <div className="relative overflow-hidden rounded-xl aspect-square">
@@ -107,7 +107,7 @@ function TeamMemberCard({ barber }: { barber: Barber }) {
         />
       </div>
 
-      <div className="mt-3 flex items-baseline justify-between px-[2px]">
+      <div className="mt-3 px-[2px]">
         <p
           className="transition-colors duration-300"
           style={{
@@ -115,11 +115,23 @@ function TeamMemberCard({ barber }: { barber: Barber }) {
             fontSize: "1.3rem",
             fontWeight: 400,
             fontStyle: "italic",
-            color: "#C8BFB4",
+            color: "#F5F0E8",
             lineHeight: 1,
           }}
         >
           {barber.name}
+        </p>
+        <p
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "0.58rem",
+            letterSpacing: "0.22em",
+            textTransform: "uppercase",
+            color: "rgba(197,165,114,0.85)",
+            marginTop: "4px",
+          }}
+        >
+          {roleLabel}
         </p>
       </div>
     </div>
@@ -143,6 +155,8 @@ export function Team() {
       team: barbers.filter((b) => !foundersByName.has(b.name)),
     };
   }, []);
+
+  const barberLabel = t("team.barber");
 
   return (
     <section id="team" className="py-8 md:py-12 lg:py-20 bg-[#0A0A0A] scroll-mt-24">
@@ -186,7 +200,7 @@ export function Team() {
             style={{
               fontFamily: "'Inter', sans-serif",
               fontSize: "0.88rem",
-              color: "#5A5450",
+            color: "rgba(245,240,232,0.78)",
               lineHeight: 1.7,
               maxWidth: "36ch",
               transitionDelay: inView ? "100ms" : undefined,
@@ -215,7 +229,7 @@ export function Team() {
 
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
                 {team.map((b) => (
-                  <TeamMemberCard key={b.id} barber={b} />
+                  <TeamMemberCard key={b.id} barber={b} roleLabel={barberLabel} />
                 ))}
               </div>
             </>

@@ -1,182 +1,312 @@
-import { useEffect, useRef, useState } from "react";
-import { Quote, Star, ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Star } from "lucide-react";
 import { useLanguage } from "../i18n";
 
 const reviews = [
-  { name: "Vojtěch Kunetka", initials: "VK", rating: 5, text: "Chodím do J&J pravidelně a vždy jsem spokojený. Je v podstatě jedno, ke komu se objednáte, všichni jsou dobří. Navíc za skvělou cenu. Doporučuji!" },
-  { name: "David Omáčka", initials: "DO", rating: 5, text: "Nejlepší barber, kterého jsem kdy zkusil. Chodím sem již cca 4 roky a nikdy jsem nebyl jinde! Doporučuji zakladatele Kubu! Velmi slušný, příjemný a udělá v podstatě jakýkoliv účes za zlomek ceny konkurence. Díky kluci" },
-  { name: "Tomáš Tuca", initials: "TT", rating: 5, text: "Našel jsem dle recenzí a nezklamali 🙂 Max. spokojenost, profi přístup a celkově sympatické prostředí. Výborně ostříhán a hlavně vousy upraveny přesně dle představ! Rád se budu vracet!" },
-  { name: "bald mfka", initials: "bM", rating: 5, text: "Barbershop na vysoké úrovni, poměr cena kvalita se nedá s žádným jiným barbershopem, který jsem vyzkoušel srovnat (vyzkoušel jsem jich nespočet, pač jsem nikde nenašel to pravé) čili v JJ jsem to našel." },
-  { name: "Pavel Rajdl", initials: "PR", rating: 5, text: "Super barber shop. Jestli zvažujete kam jít, tak jedině sem. Dneska jsem byl poprvé a vím kam budu chodit. Barber Milan byl naprostý profík." },
-  { name: "Jan Andrle", initials: "JA", rating: 5, text: "Absolutní spokojenost 👍 sice jsem chvíli čekal, ale každá práce vyžaduje svůj čas. Fajn přístup, super kvalita střihu a cena bezkonkurenční 💪👏" },
-  { name: "Petr Chajda", initials: "PC", rating: 5, text: "Do JJ chodím už delší dobu a vždycky odcházím maximálně spokojený. Skvělá atmosféra, profesionální přístup a hlavně precizní práce. Kluci si dávají záležet na detailech a přesně ví, co dělají. Poměr cena/výkon je za mě bezkonkurenční. Rozhodně doporučuju!" },
-  { name: "Karel Vyhn", initials: "KV", rating: 5, text: "Jak již píší lidé co navštívili předem mnou, maximální spokojenost. Takhle má ta služba vypadat, vše pro zákazníka, nic není problém. Výsledek práce na vysoké úrovni." },
+  { id: "01", name: "Vojtěch Kunetka", initials: "VK", rating: 5, text: "Chodím do J&J pravidelně a vždy jsem spokojený. Je v podstatě jedno, ke komu se objednáte, všichni jsou dobří. Navíc za skvělou cenu. Doporučuji!" },
+  { id: "02", name: "David Omáčka", initials: "DO", rating: 5, text: "Nejlepší barber, kterého jsem kdy zkusil. Chodím sem již cca 4 roky a nikdy jsem nebyl jinde! Doporučuji zakladatele Kubu! Velmi slušný, příjemný a udělá v podstatě jakýkoliv účes za zlomek ceny konkurence. Díky kluci" },
+  { id: "03", name: "Tomáš Tuca", initials: "TT", rating: 5, text: "Našel jsem dle recenzí a nezklamali 🙂 Max. spokojenost, profi přístup a celkově sympatické prostředí. Výborně ostříhán a hlavně vousy upraveny přesně dle představ! Rád se budu vracet!" },
+  { id: "04", name: "bald mfka", initials: "bM", rating: 5, text: "Barbershop na vysoké úrovni, poměr cena kvalita se nedá s žádným jiným barbershopem, který jsem vyzkoušel srovnat (vyzkoušel jsem jich nespočet, pač jsem nikde nenašel to pravé) čili v JJ jsem to našel." },
+  { id: "05", name: "Pavel Rajdl", initials: "PR", rating: 5, text: "Super barber shop. Jestli zvažujete kam jít, tak jedině sem. Dneska jsem byl poprvé a vím kam budu chodit. Barber Milan byl naprostý profík." },
+  { id: "06", name: "Jan Andrle", initials: "JA", rating: 5, text: "Absolutní spokojenost 👍 sice jsem chvíli čekal, ale každá práce vyžaduje svůj čas. Fajn přístup, super kvalita střihu a cena bezkonkurenční 💪👏" },
+  { id: "07", name: "Petr Chajda", initials: "PC", rating: 5, text: "Do JJ chodím už delší dobu a vždycky odcházím maximálně spokojený. Skvělá atmosféra, profesionální přístup a hlavně precizní práce. Kluci si dávají záležet na detailech a přesně ví, co dělají. Poměr cena/výkon je za mě bezkonkurenční. Rozhodně doporučuju!" },
+  { id: "08", name: "Karel Vyhn", initials: "KV", rating: 5, text: "Jak již píší lidé co navštívili předem mnou, maximální spokojenost. Takhle má ta služba vypadat, vše pro zákazníka, nic není problém. Výsledek práce na vysoké úrovni." },
 ];
+
+function StarIcon({ filled }: { filled?: boolean }) {
+  return (
+    <Star
+      size={14}
+      className={filled ? "text-[#C9A255] fill-[#C9A255]" : "text-[#3A3224]"}
+    />
+  );
+}
 
 function StarRating({ rating }: { rating: number }) {
   return (
-    <div className="flex gap-0.5">
+    <div className="flex gap-[3px]">
       {Array.from({ length: 5 }).map((_, i) => (
-        <Star key={i} size={14} className={i < rating ? "text-[#C9A84C] fill-[#C9A84C]" : "text-[#2A2A2A]"} />
+        <StarIcon key={i} filled={i < rating} />
       ))}
+    </div>
+  );
+}
+
+function ReviewCard({ review, index }: { review: (typeof reviews)[number]; index: number }) {
+  return (
+    <div
+      className="relative flex flex-col cursor-default"
+      style={{
+        padding: "2rem",
+        background: "rgba(255,255,255,0.02)",
+        border: "1px solid rgba(255,255,255,0.06)",
+        transition: "all 0.35s ease",
+      }}
+    >
+      <div
+        className="pointer-events-none"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "1px",
+          background: "linear-gradient(to right, transparent, transparent)",
+          transition: "background 0.35s ease",
+        }}
+      />
+
+      <div
+        aria-hidden
+        style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: "3.5rem",
+          lineHeight: 0.6,
+          color: "rgba(201,162,85,0.18)",
+          fontWeight: 300,
+          userSelect: "none",
+          marginBottom: "0.75rem",
+        }}
+      >
+        "
+      </div>
+
+      <p
+        style={{
+          fontFamily: "'Inter', sans-serif",
+          fontSize: "0.82rem",
+          color: "rgba(245,240,232,0.9)",
+          lineHeight: 1.9,
+          letterSpacing: "0.01em",
+          margin: 0,
+          flex: 1,
+        }}
+      >
+        {review.text}
+      </p>
+
+      <div
+        style={{
+          height: "1px",
+          background: "rgba(255,255,255,0.06)",
+          margin: "1.25rem 0 1rem",
+        }}
+      />
+
+      <div className="flex items-center gap-3">
+        <div
+          style={{
+            width: "36px",
+            height: "36px",
+            background: "rgba(201,162,85,0.15)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
+        >
+          <span
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: "0.6rem",
+              letterSpacing: "0.06em",
+              color: "#C9A255",
+              fontWeight: 500,
+            }}
+          >
+            {review.initials}
+          </span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <div
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: "0.72rem",
+              color: "#F5F0E8",
+              letterSpacing: "0.02em",
+              marginBottom: "3px",
+            }}
+          >
+            {review.name}
+          </div>
+          <StarRating rating={review.rating} />
+        </div>
+        <span
+          aria-hidden
+          style={{
+            fontFamily: "'Cormorant Garamond', serif",
+            fontSize: "1.4rem",
+            fontWeight: 300,
+            color: "rgba(201,162,85,0.16)",
+            lineHeight: 1,
+            userSelect: "none",
+          }}
+        >
+          {String(index + 1).padStart(2, "0")}
+        </span>
+      </div>
     </div>
   );
 }
 
 export function Reviews() {
   const [inView, setInView] = useState(false);
-  const [contentInView, setContentInView] = useState(false);
-  const [active, setActive] = useState(0);
   useEffect(() => {
     setInView(true);
-    const t = setTimeout(() => setContentInView(true), 100);
-    return () => clearTimeout(t);
   }, []);
   const { t } = useLanguage();
 
-  const prev = () => setActive((a) => (a - 1 + reviews.length) % reviews.length);
-  const next = () => setActive((a) => (a + 1) % reviews.length);
-
   return (
-    <section id="reviews" className="py-8 md:py-12 lg:py-20 bg-[#0F0F0F] overflow-hidden scroll-mt-24">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="mb-20">
-          <div
-            className={`flex items-center gap-3 mb-5 transition-all duration-500 ease-out ${inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-5"}`}
-          >
-            <div className="w-8 h-px bg-[#8A8580]" />
+    <section
+      id="reviews"
+      className="relative py-16 md:py-24 lg:py-28 overflow-hidden scroll-mt-24"
+      style={{ background: "#080808", borderTop: "1px solid rgba(201,162,85,0.08)" }}
+    >
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          left: "-2%",
+          top: "50%",
+          transform: "translateY(-50%)",
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: "clamp(10rem, 18vw, 18rem)",
+          fontWeight: 300,
+          color: "rgba(201,162,85,0.018)",
+          lineHeight: 1,
+          userSelect: "none",
+          pointerEvents: "none",
+          letterSpacing: "-0.04em",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {t("rev.heading")}
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="mb-12">
+          <div className="flex items-center gap-4 mb-4">
+            <div style={{ width: "40px", height: "1px", background: "#C9A255" }} />
             <span
-              className="text-[#8A8580] tracking-[0.25em] uppercase"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.75rem" }}
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: "0.62rem",
+                letterSpacing: "0.28em",
+                color: "#C9A255",
+                textTransform: "uppercase",
+              }}
             >
               {t("rev.label")}
             </span>
           </div>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6 gap-3">
-            <h2
-              className={`text-[#C4BEB4] mb-0 transition-all duration-500 ease-out ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
-              style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.2, transitionDelay: inView ? "50ms" : undefined }}
-            >
-              {t("rev.heading")}
-            </h2>
-            <div
-              className={`flex items-center gap-2 shrink-0 transition-all duration-500 ease-out ${inView ? "opacity-100" : "opacity-0"}`}
-              style={{ transitionDelay: inView ? "150ms" : undefined }}
-            >
-              <div
-                className="text-[#C4BEB4]"
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "2.5rem", lineHeight: 1 }}
+
+          <div className="grid gap-8 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] items-end">
+            <div>
+              <h2
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "clamp(3rem, 6vw, 5.4rem)",
+                  fontWeight: 300,
+                  color: "#F5F0E8",
+                  lineHeight: 1,
+                  letterSpacing: "-0.02em",
+                  margin: "0 0 1.5rem",
+                }}
               >
-                4.9
-              </div>
-              <div>
-                <StarRating rating={5} />
-                <div className="text-[#8A8580] mt-1" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem" }}>
-                  {t("rev.google")}
+                {t("rev.title1")}
+                <br />
+                <em style={{ fontStyle: "italic", color: "#C9A255" }}>{t("rev.title2")}</em>
+              </h2>
+
+              <div className="flex items-center gap-4">
+                <span
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: "3.4rem",
+                    fontWeight: 300,
+                    color: "#C9A255",
+                    lineHeight: 1,
+                    letterSpacing: "-0.02em",
+                  }}
+                >
+                  4.9
+                </span>
+                <div>
+                  <StarRating rating={5} />
+                  <span
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontSize: "0.65rem",
+                      letterSpacing: "0.18em",
+                      color: "rgba(245,240,232,0.4)",
+                      textTransform: "uppercase",
+                      display: "block",
+                      marginTop: "6px",
+                    }}
+                  >
+                    {t("rev.google")}
+                  </span>
                 </div>
               </div>
             </div>
+
+            <p
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: "0.9rem",
+                color: "rgba(245,240,232,0.86)",
+                lineHeight: 1.95,
+                letterSpacing: "0.01em",
+                margin: 0,
+                paddingBottom: "0.5rem",
+                borderLeft: "2px solid rgba(201,162,85,0.2)",
+                paddingLeft: "1.5rem",
+              }}
+            >
+              {t("rev.descriptionLong")}
+            </p>
           </div>
         </div>
 
-        <div style={{ minHeight: contentInView ? undefined : "400px" }} aria-hidden={!contentInView}>
-          {contentInView ? (
-        <>
-        <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-5">
+        <div
+          style={{
+            height: "1px",
+            background:
+              "linear-gradient(to right, rgba(201,162,85,0.4), rgba(201,162,85,0.05) 60%, transparent)",
+            marginBottom: "3.5rem",
+          }}
+        />
+
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {reviews.map((review, i) => (
-            <div
-              key={review.name}
-              className="bg-[#111111] border border-[#1F1F1F] hover:border-white/[0.08] rounded-xl p-6 transition-all duration-500 ease-out group hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.2)] flex flex-col opacity-100 translate-y-0"
-            >
-              <Quote size={22} className="text-[#8A8580]/60 mb-4" />
-              <p
-                className="text-[#B5AEA4] mb-6 leading-relaxed flex-1"
-                style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.875rem", lineHeight: 1.9 }}
-              >
-                "{review.text}"
-              </p>
-              <div className="flex items-center gap-3 pt-4 border-t border-[#1F1F1F] mt-auto">
-                <div className="w-10 h-10 rounded-full bg-[#1A1A1A] border border-[#2A2A2A] flex items-center justify-center flex-shrink-0">
-                  <span className="text-[#B5AEA4]" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.8rem" }}>
-                    {review.initials}
-                  </span>
-                </div>
-                <div className="min-w-0">
-                  <div className="text-[#C4BEB4] truncate" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "0.9rem" }}>
-                    {review.name}
-                  </div>
-                  <div className="text-[#8A8580] truncate" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem" }}>
-                    {t("rev.role")}
-                  </div>
-                </div>
-              </div>
-              <StarRating rating={review.rating} />
-            </div>
+            <ReviewCard key={review.id} review={review} index={i} />
           ))}
         </div>
 
-        <div className="md:hidden">
-          <div
-            key={active}
-            className="bg-[#111111] border border-[#1F1F1F] rounded-xl p-6 transition-opacity duration-300"
+        <div className="mt-10 flex items-center justify-center gap-6">
+          <div className="hidden md:block flex-1 h-px bg-[rgba(255,255,255,0.04)]" />
+          <a
+            href="https://www.google.com/maps/search/?api=1&query=JJ+Barber+Shop"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "10px",
+              padding: "0.7rem 1.75rem",
+              border: "1px solid rgba(201,162,85,0.3)",
+              color: "rgba(201,162,85,0.7)",
+              fontFamily: "'Inter', sans-serif",
+              fontSize: "0.65rem",
+              letterSpacing: "0.18em",
+              textTransform: "uppercase",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
           >
-              <Quote size={22} className="text-[#8A8580]/60 mb-4" />
-              <p
-                className="text-[#B5AEA4] mb-6 leading-relaxed"
-                style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.9rem", lineHeight: 1.6 }}
-              >
-                "{reviews[active].text}"
-              </p>
-              <div className="flex items-center gap-3 pt-4 border-t border-[#1F1F1F]">
-                <div className="w-10 h-10 rounded-full bg-[#1A1A1A] border border-[#2A2A2A] flex items-center justify-center">
-                  <span className="text-[#B5AEA4]" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.8rem" }}>
-                    {reviews[active].initials}
-                  </span>
-                </div>
-                <div>
-                  <div className="text-[#C4BEB4]" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "0.9rem" }}>
-                    {reviews[active].name}
-                  </div>
-                  <div className="text-[#8A8580]" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem" }}>
-                    {t("rev.role")}
-                  </div>
-                </div>
-              </div>
-              <StarRating rating={reviews[active].rating} />
-            </div>
-
-          <div className="flex items-center justify-between mt-6">
-            <button
-              type="button"
-              onClick={prev}
-              className="w-10 h-10 border border-[#2A2A2A] hover:border-white/15 rounded-xl flex items-center justify-center text-[#C4BEB4] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]"
-              aria-label={t("rev.prev")}
-            >
-              <ChevronLeft size={18} aria-hidden />
-            </button>
-            <div className="flex gap-2">
-              {reviews.map((_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => setActive(i)}
-                  aria-label={`${t("rev.goTo")} ${i + 1}`}
-                  className={`h-1 rounded-full transition-all duration-200 cursor-pointer ${i === active ? "w-8 bg-[#8A8580]" : "w-3 bg-[#2A2A2A]"}`}
-                />
-              ))}
-            </div>
-            <button
-              type="button"
-              onClick={next}
-              className="w-10 h-10 border border-[#2A2A2A] hover:border-white/15 rounded-xl flex items-center justify-center text-[#C4BEB4] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]"
-              aria-label={t("rev.next")}
-            >
-              <ChevronRight size={18} aria-hidden />
-            </button>
-          </div>
-        </div>
-        </>
-          ) : null}
+            {t("rev.allOnGoogle")}
+          </a>
+          <div className="hidden md:block flex-1 h-px bg-[rgba(255,255,255,0.04)]" />
         </div>
       </div>
     </section>

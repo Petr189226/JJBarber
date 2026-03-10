@@ -788,7 +788,7 @@ export function AdminApp() {
     return (
       <div className={`${adminLayout} flex items-center justify-center p-6 bg-gradient-to-br from-gray-50 to-gray-100/50`}>
         <div className="max-w-md text-center">
-          <h1 className="text-gray-800 text-xl mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h1 className="text-gray-800 text-xl mb-4" style={{ fontFamily: "'Cormorant Garamond', serif" }}>
             Admin není nakonfigurován
           </h1>
           <p className="text-gray-600 text-sm leading-relaxed">
@@ -801,7 +801,11 @@ export function AdminApp() {
 
   if (loading) {
     return (
-      <div className={`${adminLayout} flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100/50`} role="status" aria-live="polite">
+      <div
+        className={`${adminLayout} flex items-center justify-center bg-gradient-to-br from-gray-900 via-[#1A1410] to-black`}
+        role="status"
+        aria-live="polite"
+      >
         <div className="w-8 h-8 border-2 border-[#C9A84C] border-t-transparent rounded-full animate-spin" aria-hidden />
         <span className="sr-only">Načítám…</span>
       </div>
@@ -810,42 +814,177 @@ export function AdminApp() {
 
   if (!user) {
     return (
-      <div className={`${adminLayout} flex items-center justify-center p-6 bg-gradient-to-br from-gray-50 to-gray-100/50`}>
-        <div className="w-full max-w-sm rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
-          <div className="mb-6 flex justify-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl shadow-md" style={{ background: "linear-gradient(135deg, #C9A84C, #E8C96A)", boxShadow: "0 4px 20px rgba(201,168,76,0.35)", fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.25rem", color: "#08080c" }}>
-              J<span style={{ fontStyle: "italic" }}>&</span>J
+      <div
+        className={`${adminLayout} flex items-center justify-center p-4 relative overflow-hidden`}
+        style={{ background: "linear-gradient(135deg, #0F0C09 0%, #1A1410 50%, #0F0C09 100%)" }}
+      >
+        <div className="absolute inset-0 pointer-events-none">
+          <div
+            className="absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full opacity-10"
+            style={{
+              background: "radial-gradient(circle, #BFA046 0%, transparent 70%)",
+              transform: "translate(-50%, -50%)",
+            }}
+          />
+          <div
+            className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full opacity-80"
+            style={{
+              background: "radial-gradient(circle, #BFA046 0%, transparent 70%)",
+              transform: "translate(50%, 50%)",
+            }}
+          />
+          <svg
+            className="absolute inset-0 w-full h-full opacity-[0.03]"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <pattern id="admin-diag" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+                <line x1="0" y1="40" x2="40" y2="0" stroke="#BFA046" strokeWidth="1" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#admin-diag)" />
+          </svg>
+        </div>
+
+        <div className="relative w-full max-w-[420px]">
+          <div
+            className="h-[2px] w-16 mx-auto mb-8"
+            style={{ background: "linear-gradient(90deg, transparent, #BFA046, transparent)" }}
+          />
+
+          <div
+            className="rounded-2xl p-8 shadow-2xl"
+            style={{
+              background: "linear-gradient(145deg, #1E1A14 0%, #181410 100%)",
+              border: "1px solid rgba(191, 160, 70, 0.2)",
+              boxShadow: "0 32px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05)",
+            }}
+          >
+            <div className="flex flex-col items-center mb-8">
+              <div
+                className="rounded-2xl flex items-center justify-center mb-5 shadow-lg"
+                style={{
+                  background: "linear-gradient(135deg, #D4B970 0%, #9A7F30 100%)",
+                  width: "72px",
+                  height: "72px",
+                  boxShadow: "0 8px 32px rgba(191, 160, 70, 0.35)",
+                }}
+              >
+                <span
+                  className="text-[#1A1410] text-xl"
+                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}
+                >
+                  J&J
+                </span>
+              </div>
+
+              <h1
+                className="text-[#F5F0E8] text-center mb-1"
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontWeight: 600,
+                  fontSize: "1.4rem",
+                  lineHeight: 1.3,
+                }}
+              >
+                J&J Barber Shop
+              </h1>
+              <p className="text-[#7A7468] text-sm tracking-wide">
+                Admin — Správa voucherů
+              </p>
+            </div>
+
+            <form onSubmit={handleLogin} className="space-y-4">
+              {!adminEmailFromEnv?.trim() && (
+                <div>
+                  <label
+                    className="block text-[#A09890] text-xs uppercase tracking-wider mb-2"
+                    style={{ fontFamily: "'Inter', sans-serif" }}
+                  >
+                    E-mail
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="vas@email.com"
+                    className="w-full text-[#F5F0E8] rounded-xl px-4 py-3 focus:outline-none transition-all placeholder:text-[#3A3530]"
+                    style={{
+                      background: "rgba(255,255,255,0.04)",
+                      border: "1px solid rgba(191,160,70,0.15)",
+                      fontFamily: "'Inter', sans-serif",
+                    }}
+                    autoComplete="email"
+                  />
+                </div>
+              )}
+
+              <div>
+                <label
+                  className="block text-[#A09890] text-xs uppercase tracking-wider mb-2"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
+                >
+                  Heslo
+                </label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full text-[#F5F0E8] rounded-xl px-4 py-3 focus:outline-none transition-all placeholder:text-[#3A3530]"
+                  style={{
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(191,160,70,0.15)",
+                    fontFamily: "'Inter', sans-serif",
+                  }}
+                  autoComplete="current-password"
+                />
+              </div>
+
+              {loginError && (
+                <div
+                  className="text-red-400 text-sm px-4 py-3 rounded-xl"
+                  style={{
+                    background: "rgba(239,68,68,0.08)",
+                    border: "1px solid rgba(239,68,68,0.25)",
+                  }}
+                >
+                  {loginError}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loginLoading}
+                className="w-full rounded-xl py-3.5 text-[#1A1410] transition-all duration-200 disabled:opacity-60 mt-2"
+                style={{
+                  background: loginLoading
+                    ? "#9A7F30"
+                    : "linear-gradient(135deg, #D4B970 0%, #BFA046 50%, #9A7F30 100%)",
+                  fontFamily: "'Inter', sans-serif",
+                  fontWeight: 600,
+                  letterSpacing: "0.05em",
+                  boxShadow: "0 4px 24px rgba(191, 160, 70, 0.3)",
+                }}
+              >
+                {loginLoading ? "Přihlašuji…" : "Přihlásit se"}
+              </button>
+            </form>
+
+            <div
+              className="mt-8 pt-6"
+              style={{ borderTop: "1px solid rgba(191,160,70,0.1)" }}
+            >
+              <p className="text-center text-[#3A3530] text-xs tracking-wide">
+                © 2026 J&J Barber Shop — Všechna práva vyhrazena
+              </p>
             </div>
           </div>
-          <h1 className="text-center text-xl font-semibold text-gray-900" style={{ fontFamily: "'Playfair Display', serif" }}>J&J Barber Shop</h1>
-          <p className="mt-1 mb-8 text-center text-sm text-gray-500">Přihlášení pro správu voucherů</p>
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            {!adminEmailFromEnv?.trim() && (
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="E-mail"
-                required
-                className={inputClass}
-                autoComplete="email"
-              />
-            )}
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Heslo"
-              required
-              className={inputClass}
-              autoComplete="current-password"
-            />
-            {loginError && <p className="text-sm text-red-500">{loginError}</p>}
-            <button type="submit" disabled={loginLoading} className={`w-full ${btnClass}`} style={btnPrimaryStyle}>
-              {loginLoading ? "Přihlašuji…" : "Přihlásit"}
-            </button>
-          </form>
+          <div
+            className="h-[2px] w-16 mx-auto mt-8"
+            style={{ background: "linear-gradient(90deg, transparent, #BFA046, transparent)" }}
+          />
         </div>
       </div>
     );
@@ -863,48 +1002,86 @@ export function AdminApp() {
 
   return (
     <>
-    <div className={`${adminLayout} min-h-screen bg-[#f6f6f8] text-gray-900`} style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+    <div
+      className={`${adminLayout} min-h-screen bg-[#F5F3EE] text-[#1A1611]`}
+      style={{ fontFamily: "'Inter', sans-serif" }}
+    >
       <aside
-        className="fixed left-0 top-0 z-40 hidden h-screen w-[220px] flex-col border-r border-gray-200/80 bg-white shadow-sm md:flex"
-        style={{ boxShadow: "2px 0 24px rgba(0,0,0,0.04)" }}
+        className="fixed left-0 top-0 z-40 hidden h-screen w-[230px] flex-col md:flex"
+        style={{
+          background: "#141210",
+          borderRight: "1px solid rgba(191,160,70,0.12)",
+          boxShadow: "2px 0 24px rgba(0,0,0,0.35)",
+        }}
       >
         <div className="flex items-center gap-3 px-5 pt-7 pb-6">
           <div
-            className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl"
-            style={{ background: "linear-gradient(135deg, #C9A84C, #E8C96A)", boxShadow: "0 4px 14px rgba(201,168,76,0.35)", fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "0.95rem", color: "#08080c" }}
+            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl"
+            style={{
+              background: "linear-gradient(135deg, #D4B970 0%, #9A7F30 100%)",
+              boxShadow: "0 6px 18px rgba(191,160,70,0.45)",
+              fontFamily: "'Cormorant Garamond', serif",
+              fontWeight: 700,
+              fontSize: "1rem",
+              color: "#1A1410",
+            }}
           >
             J<span style={{ fontStyle: "italic" }}>&</span>J
           </div>
           <div className="min-w-0">
-            <div className="text-sm font-bold text-gray-900 truncate" style={{ fontFamily: "'Playfair Display', serif", letterSpacing: "0.02em" }}>
+            <div
+              className="text-sm font-bold truncate"
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                letterSpacing: "0.04em",
+                color: "#F5F0E8",
+              }}
+            >
               J&J Barber Shop
             </div>
-            <div className="text-[10px] font-medium uppercase tracking-widest text-gray-500" style={{ letterSpacing: "0.12em" }}>
-              Admin
+            <div
+              className="text-[10px] font-medium uppercase tracking-widest"
+              style={{ letterSpacing: "0.12em", color: "#5A5450" }}
+            >
+              Admin panel
             </div>
           </div>
         </div>
-        <div className="mx-5 mb-4 h-px bg-gray-200" />
+        <div className="mx-5 mb-4 h-px" style={{ background: "rgba(191,160,70,0.12)" }} />
         <div className="px-5 pb-2">
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-400" style={{ letterSpacing: "0.2em" }}>
+          <span
+            className="text-[10px] font-semibold uppercase tracking-widest"
+            style={{ letterSpacing: "0.2em", color: "#3A3530" }}
+          >
             Menu
           </span>
         </div>
-        <nav className="flex-1 space-y-0.5 px-3">
+        <nav className="flex-1 space-y-0.5 px-3 overflow-y-auto">
           <button
             type="button"
             onClick={() => setAdminSection("orders")}
             className={`relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition-colors ${
               adminSection === "orders"
-                ? "font-semibold text-[#C9A84C]"
-                : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                ? "font-semibold text-[#D4B970]"
+                : "text-[#6A6460] hover:text-[#A09890]"
             }`}
-            style={adminSection === "orders" ? { background: goldLight } : undefined}
+            style={
+              adminSection === "orders"
+                ? { background: "rgba(191,160,70,0.12)" }
+                : { background: "transparent" }
+            }
           >
             {adminSection === "orders" && (
-              <span className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-[#C9A84C]" />
+              <span
+                className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full"
+                style={{ background: "#BFA046" }}
+              />
             )}
-            <ClipboardList size={15} strokeWidth={adminSection === "orders" ? 2.5 : 1.8} />
+            <ClipboardList
+              size={15}
+              strokeWidth={adminSection === "orders" ? 2.3 : 1.7}
+              className={adminSection === "orders" ? "text-[#D4B970]" : "group-hover:text-[#A09890]"}
+            />
             Objednávky
           </button>
           {isMajitel && (
@@ -913,30 +1090,44 @@ export function AdminApp() {
               onClick={() => setAdminSection("administration")}
               className={`relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition-colors ${
                 adminSection === "administration"
-                  ? "font-semibold text-[#C9A84C]"
-                  : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                  ? "font-semibold text-[#D4B970]"
+                  : "text-[#6A6460] hover:text-[#A09890]"
               }`}
-              style={adminSection === "administration" ? { background: goldLight } : undefined}
+              style={
+                adminSection === "administration"
+                  ? { background: "rgba(191,160,70,0.12)" }
+                  : { background: "transparent" }
+              }
             >
               {adminSection === "administration" && (
-                <span className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-[#C9A84C]" />
+                <span
+                  className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full"
+                  style={{ background: "#BFA046" }}
+                />
               )}
-              <Settings size={15} strokeWidth={adminSection === "administration" ? 2.5 : 1.8} />
+              <Settings
+                size={15}
+                strokeWidth={adminSection === "administration" ? 2.3 : 1.7}
+                className={adminSection === "administration" ? "text-[#D4B970]" : "group-hover:text-[#A09890]"}
+              />
               Administrace
             </button>
           )}
         </nav>
-        <div className="space-y-0.5 border-t border-gray-200 px-3 pb-6 pt-4">
+        <div
+          className="space-y-0.5 px-3 pb-6 pt-4"
+          style={{ borderTop: "1px solid rgba(191,160,70,0.08)" }}
+        >
           <a
             href="/"
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-[#6A6460] transition-colors hover:text-[#A09890]"
           >
             <span className="hidden sm:inline">← Web</span>
           </a>
           <button
             type="button"
             onClick={handleLogout}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-[#6A6460] transition-colors hover:text-red-400"
             aria-label="Odhlásit se"
           >
             <LogOutIcon size={15} strokeWidth={1.8} />
@@ -945,31 +1136,42 @@ export function AdminApp() {
         </div>
       </aside>
 
-      <div className="min-h-screen flex flex-col md:ml-[220px]">
+      <div className="min-h-screen flex flex-col md:ml-[230px]">
         <header
-          className="sticky top-0 z-30 flex items-center justify-between border-b border-gray-200/80 bg-white/90 px-6 py-4 backdrop-blur-md"
-          style={{ boxShadow: "0 1px 0 rgba(0,0,0,0.04)" }}
+          className="sticky top-0 z-30 flex items-center justify-between px-6 py-3 backdrop-blur-md"
+          style={{
+            background: "#FFFFFF",
+            borderBottom: "1px solid #EAE5DC",
+          }}
         >
           <div>
-            <div className="mb-0.5 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-gray-400">
-              <span>Admin</span>
-              <span className="text-gray-300">/</span>
-              <span className="text-gray-600">
+            <div className="mb-0.5 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest">
+              <span className="text-[#9A9490]">Admin</span>
+              <span className="text-[#C0BAB0]">/</span>
+              <span className="text-[#1A1611]">
                 {adminSection === "orders" ? "Objednávky" : "Administrace"}
               </span>
             </div>
-            <h1 className="text-base font-extrabold tracking-tight text-gray-900">
+            <h1 className="text-base font-extrabold tracking-tight text-[#1A1611]">
               {adminSection === "orders" ? "Dárkové vouchery" : "Správa účtů"}
             </h1>
           </div>
           <div className="flex items-center gap-3">
             {role && (
               <span
-                className="rounded-full border px-2.5 py-1 text-xs font-semibold"
+                className="rounded-full px-2.5 py-1 text-xs font-semibold"
                 style={
                   isMajitel
-                    ? { background: goldLight, borderColor: goldBorder, color: "#b8860b" }
-                    : { background: "#f3f4f6", borderColor: "#e5e7eb", color: "#6b7280" }
+                    ? {
+                        background: "rgba(191,160,70,0.16)",
+                        border: "1px solid rgba(191,160,70,0.5)",
+                        color: "#BFA046",
+                      }
+                    : {
+                        background: "#F3F4F6",
+                        border: "1px solid #E5E7EB",
+                        color: "#6B7280",
+                      }
                 }
               >
                 {isMajitel ? "Majitel" : "Barber"}
@@ -979,7 +1181,10 @@ export function AdminApp() {
         </header>
 
         {isMajitel && (
-          <div className="flex gap-1 border-b border-gray-200 bg-white px-4 py-2 md:hidden">
+          <div
+            className="flex gap-1 border-b bg-white px-4 py-2 md:hidden"
+            style={{ borderBottom: "1px solid #EAE5DC" }}
+          >
             <button
               type="button"
               onClick={() => setAdminSection("orders")}

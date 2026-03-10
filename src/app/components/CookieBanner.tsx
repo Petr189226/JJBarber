@@ -50,7 +50,7 @@ export function CookieBanner() {
               type="button"
               onClick={handleAccept}
               className="flex-shrink-0 px-6 py-3 bg-gradient-to-b from-[#D4B85A] to-[#C9A84C] hover:from-[#DDC268] hover:to-[#D4B85A] text-[#0A0A0A] rounded-xl font-semibold transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(201,168,76,0.25)] cursor-pointer"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: "0.85rem", letterSpacing: "0.1em", textTransform: "uppercase" }}
+              style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.85rem", letterSpacing: "0.1em", textTransform: "uppercase" }}
             >
               {t("cookie.accept")}
             </button>

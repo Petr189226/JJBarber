@@ -19,7 +19,7 @@ export function FinalCTA() {
           transition={{ duration: 0.7 }}
           className="text-[#C4BEB4]"
           style={{
-            fontFamily: "'Playfair Display', serif",
+            fontFamily: "'Cormorant Garamond', serif",
             fontWeight: 700,
             fontSize: "clamp(2rem, 4vw, 3rem)",
             lineHeight: 1.15,

@@ -24,6 +24,18 @@ const BRANCH_LABELS: Record<string, string> = {
   strasnice: "Strašnice",
 };
 
+const HERO_TICKER_ITEMS = [
+  "J&J BARBER SHOP",
+  "Vršovice",
+  "Strašnice",
+  "Tvůj barber shop",
+  "Střih",
+  "Vousy",
+  "Fade",
+  "Od 2020",
+  "Praha 10",
+];
+
 export function Hero() {
   const { t } = useLanguage();
   const [branch, setBranch] = useState(() => {
@@ -34,7 +46,6 @@ export function Hero() {
       return "vrsovice";
     }
   });
-  const [error, setError] = useState(false);
   const [redirecting, setRedirecting] = useState(false);
 
   useEffect(() => {
@@ -49,10 +60,6 @@ export function Hero() {
   };
 
   const handleReservation = () => {
-    if (!branch) {
-      setError(true);
-      return;
-    }
     setRedirecting(true);
     setTimeout(() => {
       window.open(RESERVIO_URLS[branch], "_blank");
@@ -61,7 +68,10 @@ export function Hero() {
   };
 
   return (
-    <section className="relative h-screen min-h-[700px] flex items-center justify-center overflow-hidden">
+    <section
+      className="relative flex items-center justify-center overflow-hidden scroll-mt-24"
+      style={{ height: "100svh", minHeight: "640px", backgroundColor: "#060402" }}
+    >
       <div className="absolute inset-0">
         <picture className="block w-full h-full">
           <source
@@ -80,102 +90,303 @@ export function Hero() {
             decoding="async"
           />
         </picture>
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0A0A0A]/85 via-[#0A0A0A]/55 to-[#0A0A0A]/20" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A]/90 via-transparent to-[#0A0A0A]/30 hidden md:block" />
         <div
-          className="absolute inset-0 hidden md:block"
-          style={{ background: "radial-gradient(ellipse 80% 70% at 20% 50%, rgba(10,10,10,0.45) 0%, transparent 55%)" }}
-          aria-hidden
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(108deg, rgba(6,4,2,0.96) 0%, rgba(6,4,2,0.78) 40%, rgba(6,4,2,0.2) 100%)",
+          }}
+        />
+        <div
+          className="absolute top-0 left-0 right-0 pointer-events-none"
+          style={{ height: "140px", background: "linear-gradient(to bottom, rgba(6,4,2,0.7), transparent)" }}
         />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 w-full">
-        <div className="max-w-2xl">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-8 h-px bg-[#8A8580]" />
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 w-full">
+        <div className="max-w-3xl">
+          <div className="flex items-center gap-3 mb-7">
+            <span style={{ display: "block", width: "36px", height: "1px", background: "#E8C84A" }} />
             <span
-              className="text-[#8A8580] tracking-[0.25em] uppercase"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "0.75rem" }}
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: "0.58rem",
+                fontWeight: 500,
+                letterSpacing: "0.24em",
+                textTransform: "uppercase",
+                color: "#E8C84A",
+              }}
             >
-              {t("hero.label")}
+              {t("hero.ann.label1")}
+            </span>
+            <span style={{ color: "rgba(232,200,74,0.4)", fontSize: "0.55rem" }}>/</span>
+            <span
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: "0.58rem",
+                fontWeight: 500,
+                letterSpacing: "0.24em",
+                textTransform: "uppercase",
+                color: "rgba(245,240,232,0.6)",
+              }}
+            >
+              {t("hero.ann.label2")}
+            </span>
+            <span style={{ color: "rgba(232,200,74,0.4)", fontSize: "0.55rem" }}>/</span>
+            <span
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: "0.58rem",
+                fontWeight: 500,
+                letterSpacing: "0.24em",
+                textTransform: "uppercase",
+                color: "rgba(245,240,232,0.6)",
+              }}
+            >
+              {t("hero.ann.label3")}
             </span>
           </div>
 
-          <h1
-            className="text-[#C4BEB4] mb-4 flex flex-col gap-2"
+          <div style={{ lineHeight: 0.9, marginBottom: "6px" }}>
+            <div
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "clamp(3.6rem, 10vw, 6.5rem)",
+                color: "#F5F0E8",
+                letterSpacing: "0.02em",
+              }}
+            >
+              {t("hero.big1")}
+            </div>
+            <div
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "clamp(3.6rem, 10vw, 6.5rem)",
+                color: "#F5F0E8",
+                letterSpacing: "0.02em",
+              }}
+            >
+              {t("hero.big2")}
+            </div>
+            <div
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "clamp(3.6rem, 10vw, 6.5rem)",
+                color: "#F5F0E8",
+                letterSpacing: "0.02em",
+              }}
+            >
+              {t("hero.big3")}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 my-5">
+            <div style={{ width: "52px", height: "1px", background: "#E8C84A" }} />
+            <span
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: "0.6rem",
+                letterSpacing: "0.2em",
+                textTransform: "uppercase",
+                color: "rgba(245,240,232,0.45)",
+              }}
+            >
+              J&amp;J BARBER SHOP
+            </span>
+          </div>
+
+          <div
             style={{
-              fontFamily: "'Playfair Display', serif",
-              fontWeight: 900,
-              fontSize: "clamp(3.5rem, 8vw, 6.5rem)",
-              lineHeight: 1.12,
-              letterSpacing: "-0.02em",
+              fontFamily: "'Cormorant Garamond', serif",
+              fontStyle: "italic",
+              fontSize: "clamp(1.6rem, 3.5vw, 2.4rem)",
+              color: "#E8C84A",
+              lineHeight: 1.1,
+              marginBottom: "20px",
+              letterSpacing: "0.01em",
             }}
           >
-            <span>{t("hero.headline1")}</span>
-            <span><em style={{ fontStyle: "italic", color: "#C9A84C", letterSpacing: "0.02em" }}>{t("hero.headline2")} {t("hero.headline3")}</em></span>
-          </h1>
+            {t("hero.subline")}
+          </div>
 
           <p
-            className="text-[#B5AEA4] mb-10 max-w-md"
-            style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "1rem", lineHeight: 1.8 }}
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontWeight: 300,
+              fontSize: "0.92rem",
+              color: "rgba(245,240,232,0.86)",
+              lineHeight: 1.9,
+              maxWidth: "38ch",
+              marginBottom: "32px",
+            }}
           >
             {t("hero.sub")}
           </p>
 
           <div>
-            <label
-              htmlFor="hero-branch"
-              className="mb-2 text-[#B5AEA4] text-xs tracking-[0.18em] uppercase block"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600 }}
-            >
-              {t("hero.selectPlaceholder")}
-            </label>
-            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
-              <div className="relative">
-                <select
-                  id="hero-branch"
-                  value={branch}
-                  onChange={(e) => { setBranch(e.target.value); setError(false); }}
-                  aria-label={t("hero.selectPlaceholder")}
-                  className={`appearance-none bg-[#111111] border ${error ? "border-[#C9A84C]" : "border-[#2A2A2A]"} focus-visible:border-white/25 focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:outline-none text-[#C4BEB4] rounded-xl pl-4 pr-10 py-4 outline-none transition-all duration-200 w-full sm:w-60 cursor-pointer backdrop-blur-sm`}
-                  style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.9rem" }}
-                >
-                  <option value="" disabled style={{ color: "#3A3A3A" }}>{t("hero.selectPlaceholder")}</option>
-                  <option value="vrsovice" style={{ background: "#111111", color: "#C4BEB4" }}>Vršovice</option>
-                  <option value="strasnice" style={{ background: "#111111", color: "#C4BEB4" }}>Strašnice</option>
-                </select>
-                <ChevronDown size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8A8580] pointer-events-none" />
-              </div>
-              <button
-                onClick={handleReservation}
-                disabled={!branch || redirecting}
-                className={`px-8 py-5 bg-gradient-to-b from-[#D4B85A] to-[#C9A84C] hover:from-[#DDC268] hover:to-[#D4B85A] text-[#0A0A0A] rounded-xl transition-all duration-200 ease-out shadow-[0_0_20px_rgba(212,175,55,0.15)] hover:-translate-y-0.5 hover:shadow-[0_0_24px_rgba(212,175,55,0.2),0_4px_24px_rgba(201,168,76,0.3)] hover:brightness-105 focus-visible:ring-2 focus-visible:ring-[#C9A84C]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:hover:translate-y-0 ${redirecting ? "scale-[0.98] opacity-90" : "active:scale-[0.98]"}`}
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600, fontSize: "1rem", letterSpacing: "0.18em", textTransform: "uppercase" }}
+            <div className="flex items-center gap-3 mb-3">
+              <span style={{ display: "block", width: "18px", height: "1px", background: "rgba(245,240,232,0.2)" }} />
+              <span
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: "0.6rem",
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  color: "rgba(245,240,232,0.6)",
+                }}
               >
-                {redirecting ? t("cta.redirecting") : branch ? `${t("hero.bookBranch")} – ${BRANCH_LABELS[branch]}` : t("hero.book")}
+                {t("hero.selectPlaceholder")}
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-stretch gap-0">
+              {(["vrsovice", "strasnice"] as const).map((key) => {
+                const active = branch === key;
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setBranch(key)}
+                    style={{
+                      padding: "11px 22px",
+                      background: active ? "rgba(232,200,74,0.12)" : "transparent",
+                      border: active
+                        ? "1px solid #E8C84A"
+                        : "1px solid rgba(245,240,232,0.2)",
+                      borderRight: key === "vrsovice" ? "none" : undefined,
+                      color: active ? "#E8C84A" : "rgba(245,240,232,0.6)",
+                      fontFamily: "'Inter', sans-serif",
+                      fontWeight: 500,
+                      fontSize: "0.6rem",
+                      letterSpacing: "0.2em",
+                      textTransform: "uppercase",
+                      borderRadius: 0,
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                    }}
+                  >
+                    {BRANCH_LABELS[key]}
+                  </button>
+                );
+              })}
+
+              <button
+                type="button"
+                onClick={handleReservation}
+                disabled={redirecting}
+                style={{
+                  padding: "11px 30px",
+                  background: "#E8C84A",
+                  border: "none",
+                  color: "#060402",
+                  fontFamily: "'Inter', sans-serif",
+                  fontWeight: 600,
+                  fontSize: "0.6rem",
+                  letterSpacing: "0.2em",
+                  textTransform: "uppercase",
+                  borderRadius: 0,
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                  marginLeft: "16px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  opacity: redirecting ? 0.85 : 1,
+                  transform: redirecting ? "scale(0.98)" : "scale(1)",
+                  transition: "all 0.2s ease-out",
+                }}
+              >
+                {redirecting
+                  ? t("cta.redirecting")
+                  : `${t("hero.bookBranch")} – ${BRANCH_LABELS[branch]}`}
+                <span style={{ fontSize: "0.8rem", marginTop: "-1px" }}>→</span>
               </button>
             </div>
-            {error && (
-              <p
-                className="text-[#C9A84C] mt-2"
-                style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.8rem" }}
-              >
-                {t("hero.selectError")}
-              </p>
-            )}
           </div>
         </div>
       </div>
 
       <button
+        type="button"
         onClick={scrollToServices}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-[#8A8580] hover:text-[#B5AEA4] transition-colors duration-200 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent focus-visible:rounded-xl"
+        className="absolute z-20 flex flex-col items-center gap-2"
+        style={{ bottom: "52px", left: "50%", transform: "translateX(-50%)" }}
       >
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.65rem", letterSpacing: "0.2em", textTransform: "uppercase" }}>{t("hero.scrollDown")}</span>
-        <div>
-          <ChevronDown size={20} />
-        </div>
+        <span
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: "0.6rem",
+            letterSpacing: "0.2em",
+            textTransform: "uppercase",
+            color: "rgba(245,240,232,0.5)",
+          }}
+        >
+          {t("hero.scrollDown")}
+        </span>
+        <span
+          aria-hidden
+          style={{
+            color: "rgba(245,240,232,0.3)",
+            fontSize: "0.9rem",
+            animation: "hero-bob 1.8s ease-in-out infinite",
+          }}
+        >
+          ↓
+        </span>
+        <style>
+          {`@keyframes hero-bob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(5px); }
+          }`}
+        </style>
       </button>
+
+      <div
+        className="absolute left-0 right-0 overflow-hidden z-10"
+        style={{
+          bottom: 0,
+          height: "32px",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          display: "flex",
+          alignItems: "center",
+          background: "rgba(6,4,2,0.7)",
+          backdropFilter: "blur(4px)",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            width: "max-content",
+            animation: "hero-ticker 26s linear infinite",
+          }}
+        >
+          {[0, 1, 2].flatMap((set) =>
+            HERO_TICKER_ITEMS.map((item, i) => (
+              <span
+                key={`${set}-${item}-${i}`}
+                style={{
+                  fontFamily: "'Inter', sans-serif",
+                  fontSize: "0.52rem",
+                  letterSpacing: "0.22em",
+                  textTransform: "uppercase",
+                  color: "rgba(245,240,232,0.26)",
+                  whiteSpace: "nowrap",
+                  padding: "0 20px",
+                }}
+              >
+                {item}
+                <span style={{ color: "#E8C84A", margin: "0 6px", opacity: 0.7 }}>·</span>
+              </span>
+            )),
+          )}
+        </div>
+        <style>
+          {`@keyframes hero-ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-33.333%); }
+          }`}
+        </style>
+      </div>
     </section>
   );
 }

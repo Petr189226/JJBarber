@@ -1,10 +1,5 @@
 import React from "react";
 
-/**
- * Custom barbershop icon set from Figma design.
- * Hand-crafted SVG paths — scissors, mustache, safety razor, kid head.
- */
-
 export function ScissorsBeardIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg width="50" height="50" viewBox="0 0 56 54" fill="none" {...props}>

@@ -70,7 +70,7 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
           {service.popular && (
             <span
               className="shrink-0 px-3 py-1 rounded-lg bg-[#C9A84C]/15 border border-[#C9A84C]/30 text-[#D4B85A] text-[0.65rem] tracking-[0.12em] uppercase"
-              style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 600 }}
+              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600 }}
             >
               {t("svc.popular")}
             </span>
@@ -79,7 +79,7 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
 
         <h3
           className="text-[#C4BEB4] mb-1"
-          style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.25rem" }}
+          style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: "1.25rem" }}
         >
           {t(`${service.nameKey}.name`)}
         </h3>
@@ -107,7 +107,7 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
               <>
                 <span
                   className="text-[#C9A84C]"
-                  style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "2rem", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}
+                  style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 600, fontSize: "2rem", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}
                 >
                   {service.price}
                 </span>
@@ -121,7 +121,7 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
             ) : (
               <span
                 className={onClick ? "text-[#C9A84C]" : "text-[#B5AEA4]"}
-                style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: onClick ? 600 : 400, fontSize: "0.85rem", letterSpacing: onClick ? "0.05em" : undefined }}
+                style={{ fontFamily: "'Inter', sans-serif", fontWeight: onClick ? 600 : 400, fontSize: "0.85rem", letterSpacing: onClick ? "0.05em" : undefined }}
               >
                 {onClick ? t("svc.orderVoucher") : t("svc.onRequest")}
               </span>
@@ -153,8 +153,18 @@ export function Services() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="mb-20">
           <h2
-            className={`text-[#C4BEB4] mb-8 transition-all duration-500 ease-out ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}`}
-            style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "clamp(2.2rem, 4vw, 3.2rem)", lineHeight: 1.2, transitionDelay: inView ? "50ms" : undefined }}
+            className={`mb-8 transition-all duration-500 ease-out ${
+              inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
+            }`}
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontWeight: 300,
+              fontSize: "clamp(2.8rem, 5vw, 3.8rem)",
+              color: "#F5F0E8",
+              lineHeight: 1.1,
+              letterSpacing: "-0.02em",
+              transitionDelay: inView ? "50ms" : undefined,
+            }}
           >
             {t("svc.heading")}
           </h2>

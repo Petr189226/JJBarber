@@ -108,7 +108,7 @@ export function VoucherModal({ open, onClose }: Props) {
             <div className="sticky top-0 z-10 bg-[#0D0D0D] border-b border-[#1F1F1F] px-8 py-5 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Gift size={20} className="text-[#C9A84C]" />
-                <h3 className="text-[#C4BEB4]" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.3rem" }}>
+                <h3 className="text-[#C4BEB4]" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: "1.3rem" }}>
                   {t("voucher.title")}
                 </h3>
               </div>
@@ -123,7 +123,7 @@ export function VoucherModal({ open, onClose }: Props) {
                   <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-[#C9A84C]/8 flex items-center justify-center">
                     <Gift size={28} className="text-[#C9A84C]" />
                   </div>
-                  <h3 className="text-[#C4BEB4] mb-3" style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1.3rem" }}>
+                  <h3 className="text-[#C4BEB4] mb-3" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700, fontSize: "1.3rem" }}>
                     {t("voucher.thanks")}
                   </h3>
                   <p className="text-[#6B6B6B] max-w-xs mx-auto" style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.9rem", lineHeight: 1.7 }}>
@@ -132,7 +132,7 @@ export function VoucherModal({ open, onClose }: Props) {
                   <button
                     onClick={handleClose}
                     className="mt-8 px-8 py-3 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-xl transition-all duration-200"
-                    style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
+                    style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
                   >
                     {t("voucher.close")}
                   </button>
@@ -218,7 +218,7 @@ export function VoucherModal({ open, onClose }: Props) {
                       type="submit"
                       disabled={!canSubmit}
                       className="w-full flex items-center justify-center gap-2 py-4 mt-2 bg-[#C9A84C] hover:bg-[#D4B85A] text-[#0A0A0A] rounded-xl transition-all duration-200 hover:shadow-[0_0_20px_rgba(201,168,76,0.3)] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:hover:bg-[#C9A84C]"
-                      style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: "0.9rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
+                      style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: "0.9rem", letterSpacing: "0.12em", textTransform: "uppercase" }}
                     >
                       {sending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                       {sending ? t("voucher.sending") : t("voucher.submit")}
