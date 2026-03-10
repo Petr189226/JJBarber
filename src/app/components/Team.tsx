@@ -159,9 +159,9 @@ export function Team() {
   const barberLabel = t("team.barber");
 
   return (
-    <section id="team" className="py-8 md:py-12 lg:py-20 bg-[#0A0A0A] scroll-mt-24">
-      <div className="mx-auto max-w-6xl px-6 md:px-16">
-        <div className="mb-16">
+    <section id="team" className="py-10 md:py-12 lg:py-20 bg-[#0A0A0A] scroll-mt-24">
+      <div className="mx-auto max-w-6xl px-5 sm:px-6 md:px-16">
+        <div className="mb-10 md:mb-16">
           <div
             className={`mb-5 flex items-center gap-4 transition-all duration-500 ease-out ${inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}`}
           >
@@ -219,7 +219,7 @@ export function Team() {
         <div style={{ minHeight: contentInView ? undefined : "560px" }} aria-hidden={!contentInView}>
           {contentInView ? (
             <>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-6">
                 {founders.map((b) => (
                   <FounderCard key={b.id} barber={b} roleLabel={t("team.founder")} />
                 ))}
@@ -227,7 +227,7 @@ export function Team() {
 
               <div className="my-4 h-px w-full" style={{ background: "rgba(255,255,255,0.04)" }} />
 
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-3">
                 {team.map((b) => (
                   <TeamMemberCard key={b.id} barber={b} roleLabel={barberLabel} />
                 ))}

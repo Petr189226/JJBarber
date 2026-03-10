@@ -24,7 +24,7 @@ export function VoucherSection() {
         }}
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
         {/* Dekorativní velký nápis v pozadí */}
         <div
           aria-hidden
@@ -46,7 +46,7 @@ export function VoucherSection() {
           Gift
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center relative">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center relative">
           <div
             className={`transition-all duration-700 ease-out ${
               inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-6"

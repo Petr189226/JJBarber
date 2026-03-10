@@ -150,8 +150,8 @@ export function Services() {
 
   return (
     <section id="services" className="py-8 md:py-12 lg:py-20 bg-[#0A0A0A] scroll-mt-24">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="mb-20">
+      <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+        <div className="mb-10 md:mb-20">
           <h2
             className={`mb-8 transition-all duration-500 ease-out ${
               inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
@@ -172,7 +172,7 @@ export function Services() {
 
         <div style={{ minHeight: contentInView ? undefined : "480px" }} aria-hidden={!contentInView}>
           {contentInView ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 [&>div]:h-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 [&>div]:h-full">
               {services.map((service, i) => (
                 <ServiceCard key={service.nameKey} service={service} index={i} t={t} />
               ))}

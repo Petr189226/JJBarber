@@ -37,7 +37,7 @@ function ReviewCard({ review, index }: { review: (typeof reviews)[number]; index
     <div
       className="relative flex flex-col cursor-default"
       style={{
-        padding: "2rem",
+        padding: "1.5rem",
         background: "rgba(255,255,255,0.02)",
         border: "1px solid rgba(255,255,255,0.06)",
         transition: "all 0.35s ease",
@@ -159,7 +159,7 @@ export function Reviews() {
   return (
     <section
       id="reviews"
-      className="relative py-16 md:py-24 lg:py-28 overflow-hidden scroll-mt-24"
+      className="relative py-14 md:py-24 lg:py-28 overflow-hidden scroll-mt-24"
       style={{ background: "#080808", borderTop: "1px solid rgba(201,162,85,0.08)" }}
     >
       <div

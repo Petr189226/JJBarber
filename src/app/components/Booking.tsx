@@ -233,23 +233,23 @@ export function Booking() {
                   },
                 ].map((loc) => {
                   const isHovered = hoveredCard === loc.id;
-                  return (
-                    <div
-                      key={loc.id}
-                      onMouseEnter={() => setHoveredCard(loc.id)}
-                      onMouseLeave={() => setHoveredCard(null)}
-                      style={{
-                        position: "relative",
-                        padding: "2.25rem 2.5rem",
-                        background: isHovered
-                          ? "linear-gradient(135deg, rgba(201,162,85,0.07) 0%, rgba(255,255,255,0.02) 100%)"
-                          : "rgba(255,255,255,0.025)",
-                        border: `1px solid ${isHovered ? "rgba(201,162,85,0.3)" : "rgba(255,255,255,0.06)"}`,
-                        transition: "all 0.4s ease",
-                        cursor: "default",
-                        overflow: "hidden",
-                      }}
-                    >
+                return (
+                  <div
+                    key={loc.id}
+                    onMouseEnter={() => setHoveredCard(loc.id)}
+                    onMouseLeave={() => setHoveredCard(null)}
+                    className="rounded-2xl p-5 sm:p-6 md:p-8"
+                    style={{
+                      position: "relative",
+                      background: isHovered
+                        ? "linear-gradient(135deg, rgba(201,162,85,0.07) 0%, rgba(255,255,255,0.02) 100%)"
+                        : "rgba(255,255,255,0.025)",
+                      border: `1px solid ${isHovered ? "rgba(201,162,85,0.3)" : "rgba(255,255,255,0.06)"}`,
+                      transition: "all 0.4s ease",
+                      cursor: "default",
+                      overflow: "hidden",
+                    }}
+                  >
                       <div
                         style={{
                           position: "absolute",

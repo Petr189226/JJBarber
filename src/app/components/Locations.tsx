@@ -288,9 +288,9 @@ export function Locations() {
   ];
 
   return (
-    <section id="locations" className="py-8 md:py-12 lg:py-20 bg-[#0B0B0B] overflow-hidden scroll-mt-24">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="mb-20">
+    <section id="locations" className="py-10 md:py-12 lg:py-20 bg-[#0B0B0B] overflow-hidden scroll-mt-24">
+      <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+        <div className="mb-12 md:mb-20">
           <div
             className={`flex items-center gap-3 mb-5 ${anim} ${inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-5"}`}
           >
@@ -340,7 +340,7 @@ export function Locations() {
 
         <div style={{ minHeight: contentInView ? undefined : "520px" }} aria-hidden={!contentInView}>
           {contentInView ? (
-            <div className="grid gap-10 md:grid-cols-2" style={{ alignItems: "flex-start" }}>
+            <div className="grid gap-8 md:gap-10 md:grid-cols-2" style={{ alignItems: "flex-start" }}>
               {locations.map((loc) => (
                 <LocationCard
                   key={loc.id}

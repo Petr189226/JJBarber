@@ -103,7 +103,7 @@ export function Hero() {
         />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 w-full">
+      <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-6 lg:px-12 w-full">
         <div className="max-w-3xl">
           <div className="flex items-center gap-3 mb-7">
             <span style={{ display: "block", width: "36px", height: "1px", background: "#E8C84A" }} />
