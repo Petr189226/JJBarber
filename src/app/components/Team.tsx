@@ -16,7 +16,7 @@ const barbers: Barber[] = [
 
 function FounderCard({ barber, roleLabel }: { barber: Barber; roleLabel: string }) {
   return (
-    <div className="group relative overflow-hidden rounded-xl cursor-default aspect-[3/4]">
+    <div className="group relative overflow-hidden rounded-xl cursor-default aspect-[9/16]">
       <img
         src={barber.image}
         alt={barber.name}
