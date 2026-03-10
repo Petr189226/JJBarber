@@ -1,31 +1,28 @@
 import { useEffect, useRef, useState } from "react";
-import { Scissors, ScissorsLineDashed, Slice, Star, Baby, Clock, type LucideIcon } from "lucide-react";
+import { Clock } from "lucide-react";
 import { useLanguage } from "../i18n";
+import { SERVICE_ICONS, ClassicScissorsIcon } from "./BarberIcons";
 
-const SERVICE_ICON_MAP: Record<string, LucideIcon> = {
-  "svc.classic": Scissors,
-  "svc.long": Scissors,
-  "svc.beard": ScissorsLineDashed,
-  "svc.shave": Slice,
-  "svc.combo": Star,
-  "svc.kids": Baby,
+type BarberIconComponent = React.ComponentType<React.SVGProps<SVGSVGElement>>;
+
+const SERVICE_ICON_MAP: Record<string, BarberIconComponent> = {
+  ...SERVICE_ICONS,
 };
 
-function ServiceIconBadge({ icon: Icon, popular }: { icon: LucideIcon; popular: boolean }) {
+function ServiceIconBadge({ icon: Icon, popular }: { icon: BarberIconComponent; popular: boolean }) {
   return (
     <div
-      className={`w-12 h-12 min-w-12 min-h-12 flex-shrink-0 rounded-xl flex items-center justify-center mb-6 transition-colors duration-200 ${
+      className={`w-12 h-12 min-w-12 min-h-12 flex-shrink-0 rounded-xl flex items-center justify-center mb-6 transition-colors duration-200 [&_svg]:w-[28px] [&_svg]:h-[28px] [&_svg]:shrink-0 ${
         popular
           ? "bg-[#C9A84C]/12 border border-[#C9A84C]/25"
           : "bg-[#1A1A1A] border border-[#2A2A2A] group-hover:border-white/10"
       }`}
     >
       <Icon
-        size={20}
         className={
           popular
             ? "text-[#C9A84C]"
-            : "text-[#8A8580] group-hover:text-[#B5AEA4] transition-colors duration-200"
+            : "text-[#B5AEA4] group-hover:text-[#B5AEA4] transition-colors duration-200"
         }
       />
     </div>
@@ -55,7 +52,7 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
     const id = setTimeout(() => setInView(true), index * 80);
     return () => clearTimeout(id);
   }, [index]);
-  const icon = SERVICE_ICON_MAP[service.nameKey] ?? Scissors;
+  const icon = SERVICE_ICON_MAP[service.nameKey] ?? ClassicScissorsIcon;
 
   return (
     <div
@@ -88,18 +85,18 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
         </h3>
         {service.hasDuration && (
           <span
-            className="text-[#8A8580] flex items-center gap-1.5 mb-3"
+            className="text-[#B5AEA4] flex items-center gap-1.5 mb-3"
             style={{ fontFamily: "'Inter', sans-serif", fontWeight: 400, fontSize: "0.78rem" }}
           >
-            <Clock size={12} className="text-[#8A8580] flex-shrink-0" />
+            <Clock size={12} className="text-[#B5AEA4] flex-shrink-0" />
             {t(`${service.nameKey}.duration`)}
           </span>
         )}
         {!service.hasDuration && <div className="mb-2" />}
 
         <p
-          className="text-[#B5AEA4]/70 min-h-0 flex-1 leading-relaxed"
-          style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.88rem", lineHeight: 1.8 }}
+          className="text-[#E0DAD4] min-h-0 flex-1 leading-relaxed"
+          style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: "0.9rem", lineHeight: 1.8 }}
         >
           {t(`${service.descKey}.desc`)}
         </p>
@@ -115,7 +112,7 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
                   {service.price}
                 </span>
                 <span
-                  className="text-[#8A8580] ml-1"
+                  className="text-[#B5AEA4] ml-1"
                   style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.8rem" }}
                 >
                   {t("svc.currency")}
@@ -123,7 +120,7 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
               </>
             ) : (
               <span
-                className={onClick ? "text-[#C9A84C]" : "text-[#8A8580]"}
+                className={onClick ? "text-[#C9A84C]" : "text-[#B5AEA4]"}
                 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: onClick ? 600 : 400, fontSize: "0.85rem", letterSpacing: onClick ? "0.05em" : undefined }}
               >
                 {onClick ? t("svc.orderVoucher") : t("svc.onRequest")}

@@ -13,8 +13,8 @@ export const translations: Record<string, Record<Lang, string>> = {
   "hero.headline2": { cs: "na", en: "in" },
   "hero.headline3": { cs: "Praze 10", en: "Prague 10" },
   "hero.sub": {
-    cs: "Vršovice a Strašnice. Lokální barber s charakterem.",
-    en: "Vršovice & Strašnice. A local barber with character.",
+    cs: "Vršovice a Strašnice. Řemeslo s duší, tým s charakterem — tvůj barber na desítce.",
+    en: "Vršovice & Strašnice. Craft with soul, a crew with character — your barber in Prague 10.",
   },
   "hero.selectPlaceholder": { cs: "Vyber pobočku", en: "Select branch" },
   "hero.book": { cs: "Rezervovat termín", en: "Book Now" },
@@ -29,8 +29,8 @@ export const translations: Record<string, Record<Lang, string>> = {
   "loc.label": { cs: "Kde nás najdete", en: "Where to find us" },
   "loc.heading": { cs: "Pobočky", en: "Locations" },
   "loc.description": {
-    cs: "Dvě pobočky v Praze 10. Tým, který zná řemeslo.",
-    en: "Two branches in Prague 10. A team that knows the craft.",
+    cs: "Ve Vršovicích i Strašnicích tě čeká tým, který má řemeslo v krvi. Zkušení profesionálové, přátelská atmosféra a služba na úrovni — vždy s úsměvem. Místo, kam se budeš rád vracet.",
+    en: "At our Vršovice and Strašnice branches you'll find a team that lives and breathes the craft. Experienced pros, a relaxed vibe and service you can count on — every visit. The kind of place you'll want to come back to.",
   },
   "loc.reserve": { cs: "Rezervovat", en: "Book" },
   "loc.openMaps": { cs: "Zobrazit na mapě", en: "View on map" },
@@ -40,6 +40,7 @@ export const translations: Record<string, Record<Lang, string>> = {
   "loc.sun.strasnice": { cs: "Neděle zavřeno", en: "Sunday closed" },
   "team.label": { cs: "Kdo vás ostříhá", en: "Who will cut your hair" },
   "team.heading": { cs: "tým", en: "Team" },
+  "team.founder": { cs: "Zakladatel", en: "Founder" },
   "team.description": {
     cs: "Pepa a Kuba založili barber v roce 2020. Dnes 8 barberů, jedna parta.",
     en: "Pepa and Kuba founded the barbershop in 2020. Today 8 barbers, one crew.",
