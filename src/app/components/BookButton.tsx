@@ -8,7 +8,7 @@ interface BookButtonProps {
   size?: "sm" | "md" | "lg";
   showIcon?: boolean;
   className?: string;
-  variant?: "primary" | "secondary" | "ghost" | "textLink";
+  variant?: "primary" | "secondary" | "ghost" | "nav" | "textLink";
   action?: "external" | "scroll";
   scrollTarget?: string;
 }
@@ -47,8 +47,8 @@ export function BookButton({
   };
 
   const sizeClasses = {
-    sm: "px-5 py-2.5 text-[0.82rem]",
-    md: "px-6 py-3 text-[0.85rem]",
+    sm: "px-4 py-2.5 text-[0.8rem]",
+    md: "px-6 py-3 text-[0.9rem]",
     lg: "px-10 py-5 text-[1rem]",
   };
 
@@ -56,13 +56,15 @@ export function BookButton({
 
   const baseByVariant: Record<NonNullable<BookButtonProps["variant"]>, string> = {
     primary:
-      "bg-gradient-to-b from-[#D4B85A] to-[#C9A84C] hover:from-[#DDC268] hover:to-[#D4B85A] text-[#0A0A0A] hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(201,168,76,0.2)] focus-visible:ring-[#C9A84C]/50",
+      "bg-gradient-to-b from-[#D4B85A] to-[#C9A84C] hover:from-[#DDC268] hover:to-[#D4B85A] text-[#0A0A0A] hover:-translate-y-0.5 shadow-[0_4px_20px_rgba(201,168,76,0.2)] focus-visible:ring-2 focus-visible:ring-[#C9A84C]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] rounded-xl",
     secondary:
-      "border border-[#3A3A3A] text-[#B5AEA4] bg-transparent hover:border-white/20 hover:text-[#C4BEB4] hover:bg-white/[0.03] focus-visible:ring-white/20",
+      "border border-[#3A3A3A] text-[#B5AEA4] bg-transparent hover:border-white/20 hover:text-[#C4BEB4] hover:bg-white/[0.03] focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] rounded-xl",
+    nav:
+      "border border-[#C9A84C] text-[#E8C84A] bg-transparent hover:bg-[#C9A84C]/15 hover:border-[#E8C84A] shadow-none focus-visible:ring-2 focus-visible:ring-[#C9A84C]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] rounded-lg",
     ghost:
-      "border border-[#2A2A2A] text-[#8A8580] bg-transparent hover:border-white/15 hover:text-[#C4BEB4] focus-visible:ring-white/20",
+      "border border-[#2A2A2A] text-[#8A8580] bg-transparent hover:border-white/15 hover:text-[#C4BEB4] focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] rounded-xl",
     textLink:
-      "bg-transparent text-[#8A8580] hover:text-[#B5AEA4] px-0 py-0 border-none focus-visible:ring-white/20",
+      "bg-transparent text-[#8A8580] hover:text-[#B5AEA4] px-0 py-0 border-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A]",
   };
 
   const baseClasses = baseByVariant[variant];
@@ -81,7 +83,7 @@ export function BookButton({
       href={href}
       onClick={handleClick}
       aria-disabled={clicked}
-      className={`inline-flex items-center justify-center gap-2 rounded-xl transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none ${baseClasses} ${interactiveStateClasses} ${sizeClass} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 transition-all duration-200 ease-out focus-visible:outline-none ${baseClasses} ${interactiveStateClasses} ${sizeClass} ${className}`}
       style={{
         fontFamily: "'Inter', sans-serif",
         fontWeight: 700,

@@ -25,7 +25,6 @@ export function VoucherSection() {
       />
 
       <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
-        {/* Dekorativní velký nápis v pozadí */}
         <div
           aria-hidden
           style={{
@@ -52,7 +51,6 @@ export function VoucherSection() {
               inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-6"
             }`}
           >
-            {/* Tag */}
             <div className="flex items-center gap-4 mb-6">
               <div style={{ width: "40px", height: "1px", background: "#C9A255" }} />
               <span
@@ -68,7 +66,6 @@ export function VoucherSection() {
               </span>
             </div>
 
-            {/* Heading */}
             <h2
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
@@ -85,7 +82,6 @@ export function VoucherSection() {
               <em style={{ fontStyle: "italic", color: "#C9A255" }}>J&J Barber Shop</em>
             </h2>
 
-            {/* Zlata linka */}
             <div
               style={{
                 height: "1px",
@@ -96,7 +92,6 @@ export function VoucherSection() {
               }}
             />
 
-            {/* Popis */}
             <p
               style={{
                 fontFamily: "'Inter', sans-serif",
@@ -111,7 +106,6 @@ export function VoucherSection() {
               {t("voucher.sectionDesc")}
             </p>
 
-            {/* Feature chips – ponechán jen hlavní benefit */}
             <div className="flex flex-wrap gap-3 mb-8">
               <span
                 style={{
@@ -162,7 +156,6 @@ export function VoucherSection() {
                 alignItems: "center",
               }}
             >
-              {/* Glow za kartou */}
               <div
                 style={{
                   position: "absolute",
@@ -173,7 +166,6 @@ export function VoucherSection() {
                 }}
               />
 
-              {/* Rohové linky */}
               <div
                 style={{
                   position: "absolute",
@@ -197,7 +189,6 @@ export function VoucherSection() {
                 }}
               />
 
-              {/* Voucher image – zachováno */}
               <div
                 style={{
                   position: "relative",

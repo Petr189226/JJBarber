@@ -44,14 +44,14 @@ function LanguageSwitcher() {
   return (
     <button
       onClick={toggle}
-      className="relative flex items-center gap-2 px-3 py-2 border border-[#2A2A2A] hover:border-[#C9A84C]/40 rounded-xl transition-all duration-200 cursor-pointer ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:outline-none group"
+      className="flex items-center gap-2 px-3 py-2 border border-[#2A2A2A] hover:border-[#C9A84C]/50 rounded-lg transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] group"
       aria-label={`Switch language to ${lang === "cs" ? "English" : "Czech"}`}
     >
       <div className="flex items-center gap-2">
         <CurrentFlag size={18} />
         <span
-          className="text-[#8A8580] group-hover:text-[#C9A84C] transition-colors duration-200"
-          style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: "0.72rem", letterSpacing: "0.1em" }}
+          className="text-[#8A8580] group-hover:text-[#E8C84A] transition-colors duration-200 text-[0.72rem] lg:text-[0.85rem]"
+          style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, letterSpacing: "0.1em" }}
         >
           {current.label}
         </span>
@@ -111,8 +111,8 @@ export function Navbar() {
             : "bg-transparent"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
+        <div className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20 gap-4">
             <a
               href="#"
               onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
@@ -129,7 +129,7 @@ export function Navbar() {
                   alt="J&J Barber Shop"
                   width={480}
                   height={145}
-                  className="h-9 w-auto object-contain"
+                  className="h-9 lg:h-10 w-auto object-contain"
                 />
               </picture>
             </a>
@@ -137,37 +137,43 @@ export function Navbar() {
             <nav className="hidden lg:flex items-center gap-1">
               {navLinks.map((link) => {
                 const isActive = activeSection === link.id;
+
+                const extraSpacingClass = link.id === "voucher" ? "-mr-3" : "";
+
                 return (
                   <a
                     key={link.href}
                     href={link.href}
-                    onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
-                    className={`group relative px-4 py-2.5 rounded-lg transition-all duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] ${
-                      isActive
-                        ? "text-[#C9A84C] bg-[#C9A84C]/10"
-                        : "text-[#8A8580] hover:text-[#C9A84C] hover:bg-[#C9A84C]/8"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavClick(link.href);
+                    }}
+                    className={`group relative px-4 py-2.5 text-[0.8rem] lg:text-[0.95rem] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] ${extraSpacingClass} ${
+                      isActive ? "text-[#E8C84A]" : "text-[#8A8580] hover:text-[#E8C84A]"
                     }`}
-                    style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: "0.8rem", letterSpacing: "0.14em", textTransform: "uppercase" }}
+                    style={{
+                      fontFamily: "'Inter', sans-serif",
+                      fontWeight: 600,
+                      letterSpacing: "0.14em",
+                      textTransform: "uppercase",
+                    }}
                   >
                     {link.label}
-                    {isActive && (
-                      <span className="absolute left-2 top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-full bg-[#C9A84C]" />
-                    )}
                   </a>
                 );
               })}
             </nav>
 
-            <div className="flex items-center gap-3 lg:gap-4 lg:pl-4 lg:border-l lg:border-white/[0.06]">
+            <div className="flex items-center gap-2 lg:gap-3 lg:pl-3 lg:border-l lg:border-white/[0.04]">
               <LanguageSwitcher />
-              <BookButton
-                href={RESERVIO_URL}
-                label={t("nav.book")}
-                size="sm"
-                variant="primary"
-                showIcon={false}
-                className="hidden sm:inline-flex"
-              />
+              <button
+                type="button"
+                onClick={() => window.open(RESERVIO_URL, "_blank")}
+                className="hidden sm:inline-flex items-center justify-center rounded-full bg-gradient-to-b from-[#D4B85A] to-[#C9A84C] px-5 py-2 text-[0.8rem] font-semibold tracking-[0.16em] uppercase text-[#0A0A0A] shadow-[0_4px_16px_rgba(0,0,0,0.35)] hover:from-[#DDC268] hover:to-[#D4B85A] transition-colors duration-150"
+                style={{ fontFamily: "'Inter', sans-serif" }}
+              >
+                {t("nav.book")}
+              </button>
               <button
                 className="lg:hidden text-[#C4BEB4] hover:text-[#B5AEA4] transition-colors duration-200 p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0A0A] focus-visible:rounded-xl"
                 onClick={() => setMobileOpen(!mobileOpen)}

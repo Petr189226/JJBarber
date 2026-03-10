@@ -61,8 +61,8 @@ export function Footer() {
               </picture>
             </a>
             <p
-              className="text-[#8A8580] mb-6 leading-relaxed"
-              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.85rem", lineHeight: 1.8 }}
+              className="text-[#8A8580] mb-6 leading-relaxed text-[0.85rem] lg:text-[1rem]"
+              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, lineHeight: 1.8 }}
             >
               {t("footer.brand")}
             </p>
@@ -79,8 +79,8 @@ export function Footer() {
           {navColumns.map((col) => (
             <div key={col.title}>
               <h3
-                className="text-[#B5AEA4] mb-5 tracking-[0.2em] uppercase"
-                style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: "0.72rem" }}
+                className="text-[#B5AEA4] mb-5 tracking-[0.2em] uppercase text-[0.72rem] lg:text-[0.85rem]"
+                style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}
               >
                 {col.title}
               </h3>
@@ -90,8 +90,8 @@ export function Footer() {
                     <a
                       href={link.href}
                       onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
-                      className="text-[#8A8580] hover:text-[#B5AEA4] transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808] focus-visible:rounded-xl"
-                      style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.85rem" }}
+                      className="text-[#8A8580] hover:text-[#B5AEA4] transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808] focus-visible:rounded-xl text-[0.85rem] lg:text-[1rem]"
+                      style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300 }}
                     >
                       {link.label}
                     </a>
@@ -103,33 +103,33 @@ export function Footer() {
 
           <div>
             <h3
-              className="text-[#C9A84C] mb-5 tracking-[0.22em] uppercase"
-              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: "0.72rem" }}
+              className="text-[#C9A84C] mb-5 tracking-[0.22em] uppercase text-[0.72rem] lg:text-[0.85rem]"
+              style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}
             >
               {t("footer.contact")}
             </h3>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <MapPin size={14} className="text-[#8A8580] flex-shrink-0 mt-0.5" />
-                <span className="text-[#8A8580] whitespace-pre-line" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.85rem", lineHeight: 1.6 }}>
+                <span className="text-[#8A8580] whitespace-pre-line text-[0.85rem] lg:text-[1rem]" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, lineHeight: 1.6 }}>
                   Vršovická 7/27, 101 00 Praha 10
                 </span>
               </li>
               <li className="flex items-start gap-3">
                 <MapPin size={14} className="text-[#8A8580] flex-shrink-0 mt-0.5" />
-                <span className="text-[#8A8580] whitespace-pre-line" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.85rem", lineHeight: 1.6 }}>
+                <span className="text-[#8A8580] whitespace-pre-line text-[0.85rem] lg:text-[1rem]" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, lineHeight: 1.6 }}>
                   Černokostelecká 830/23, 100 00 Praha 10
                 </span>
               </li>
               <li className="flex items-start gap-3">
                 <Phone size={14} className="text-[#8A8580] flex-shrink-0 mt-0.5" />
-                <a href="tel:+420777507662" className="text-[#8A8580] hover:text-[#B5AEA4] transition-colors duration-200 cursor-pointer" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.85rem", lineHeight: 1.6 }}>
+                <a href="tel:+420777507662" className="text-[#8A8580] hover:text-[#B5AEA4] transition-colors duration-200 cursor-pointer text-[0.85rem] lg:text-[1rem]" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, lineHeight: 1.6 }}>
                   777 507 662
                 </a>
               </li>
               <li className="flex items-start gap-3">
                 <Clock size={14} className="text-[#8A8580] flex-shrink-0 mt-0.5" />
-                <span className="text-[#8A8580]" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: "0.85rem", lineHeight: 1.6 }}>
+                <span className="text-[#8A8580] text-[0.85rem] lg:text-[1rem]" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, lineHeight: 1.6 }}>
                   {t("footer.hours")}
                 </span>
               </li>
@@ -141,8 +141,8 @@ export function Footer() {
       <div className="border-t border-[#111111]">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <span
-            className="hover:opacity-90"
-            style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem", color: "#A5A09A" }}
+            className="hover:opacity-90 text-[0.75rem] lg:text-[0.9rem]"
+            style={{ fontFamily: "'Inter', sans-serif", color: "#A5A09A" }}
           >
             {t("footer.copyright")}
           </span>
@@ -150,16 +150,16 @@ export function Footer() {
             <button
               type="button"
               onClick={openPrivacy}
-              className="hover:text-[#B5AEA4] transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808] rounded"
-              style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem", color: "#A5A09A" }}
+              className="hover:text-[#B5AEA4] transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808] rounded text-[0.75rem] lg:text-[0.9rem]"
+              style={{ fontFamily: "'Inter', sans-serif", color: "#A5A09A" }}
             >
               {t("footer.privacy")}
             </button>
             <button
               type="button"
               onClick={openTerms}
-              className="hover:text-[#B5AEA4] transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808] rounded"
-              style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.75rem", color: "#A5A09A" }}
+              className="hover:text-[#B5AEA4] transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-[#080808] rounded text-[0.75rem] lg:text-[0.9rem]"
+              style={{ fontFamily: "'Inter', sans-serif", color: "#A5A09A" }}
             >
               {t("footer.terms")}
             </button>

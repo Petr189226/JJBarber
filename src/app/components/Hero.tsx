@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
 import { useLanguage } from "../i18n";
 
 const HERO_IMAGES = {
@@ -69,8 +68,8 @@ export function Hero() {
 
   return (
     <section
-      className="relative flex items-center justify-center overflow-hidden scroll-mt-24"
-      style={{ height: "100svh", minHeight: "640px", backgroundColor: "#060402" }}
+      className="relative flex items-center justify-center overflow-hidden scroll-mt-24 min-h-[640px] lg:min-h-[720px]"
+      style={{ height: "100svh", backgroundColor: "#060402" }}
     >
       <div className="absolute inset-0">
         <picture className="block w-full h-full">
@@ -103,14 +102,14 @@ export function Hero() {
         />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-5 sm:px-6 lg:px-12 w-full">
-        <div className="max-w-3xl">
-          <div className="flex items-center gap-3 mb-7">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 sm:px-6 lg:px-12 w-full">
+        <div className="max-w-3xl lg:max-w-4xl">
+          <div className="flex items-center gap-4 sm:gap-3 mb-10 sm:mb-7">
             <span style={{ display: "block", width: "36px", height: "1px", background: "#E8C84A" }} />
             <span
+              className="text-[0.58rem] lg:text-[0.75rem]"
               style={{
                 fontFamily: "'Inter', sans-serif",
-                fontSize: "0.58rem",
                 fontWeight: 500,
                 letterSpacing: "0.24em",
                 textTransform: "uppercase",
@@ -119,11 +118,11 @@ export function Hero() {
             >
               {t("hero.ann.label1")}
             </span>
-            <span style={{ color: "rgba(232,200,74,0.4)", fontSize: "0.55rem" }}>/</span>
+            <span className="text-[0.55rem] lg:text-[0.65rem]" style={{ color: "rgba(232,200,74,0.4)" }}>/</span>
             <span
+              className="text-[0.58rem] lg:text-[0.75rem]"
               style={{
                 fontFamily: "'Inter', sans-serif",
-                fontSize: "0.58rem",
                 fontWeight: 500,
                 letterSpacing: "0.24em",
                 textTransform: "uppercase",
@@ -132,11 +131,11 @@ export function Hero() {
             >
               {t("hero.ann.label2")}
             </span>
-            <span style={{ color: "rgba(232,200,74,0.4)", fontSize: "0.55rem" }}>/</span>
+            <span className="text-[0.55rem] lg:text-[0.65rem]" style={{ color: "rgba(232,200,74,0.4)" }}>/</span>
             <span
+              className="text-[0.58rem] lg:text-[0.75rem]"
               style={{
                 fontFamily: "'Inter', sans-serif",
-                fontSize: "0.58rem",
                 fontWeight: 500,
                 letterSpacing: "0.24em",
                 textTransform: "uppercase",
@@ -147,11 +146,10 @@ export function Hero() {
             </span>
           </div>
 
-          <div style={{ lineHeight: 0.9, marginBottom: "6px" }}>
+          <div style={{ lineHeight: 0.95, marginBottom: "10px" }} className="[font-size:clamp(3.1rem,9vw,6.5rem)] lg:[font-size:clamp(3.5rem,10vw,7.5rem)]">
             <div
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "clamp(3.1rem, 9vw, 6.5rem)",
                 color: "#F5F0E8",
                 letterSpacing: "0.02em",
               }}
@@ -161,7 +159,6 @@ export function Hero() {
             <div
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "clamp(3.1rem, 9vw, 6.5rem)",
                 color: "#F5F0E8",
                 letterSpacing: "0.02em",
               }}
@@ -171,7 +168,6 @@ export function Hero() {
             <div
               style={{
                 fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "clamp(3.1rem, 9vw, 6.5rem)",
                 color: "#F5F0E8",
                 letterSpacing: "0.02em",
               }}
@@ -180,12 +176,12 @@ export function Hero() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 my-5">
-            <div style={{ width: "52px", height: "1px", background: "#E8C84A" }} />
+          <div className="flex items-center gap-4 sm:gap-4 my-8 sm:my-5">
+            <div style={{ width: "52px", height: "1px", background: "#E8C84A" }} className="lg:w-14" />
             <span
+              className="text-[0.7rem] lg:text-[0.95rem]"
               style={{
                 fontFamily: "'Inter', sans-serif",
-                fontSize: "0.7rem",
                 letterSpacing: "0.22em",
                 textTransform: "uppercase",
                 color: "rgba(245,240,232,0.9)",
@@ -196,13 +192,13 @@ export function Hero() {
           </div>
 
           <div
+            className="text-[1.5rem] lg:text-[2.75rem]"
             style={{
               fontFamily: "'Cormorant Garamond', serif",
               fontStyle: "italic",
-              fontSize: "clamp(1.5rem, 3.2vw, 2.4rem)",
               color: "#E8C84A",
               lineHeight: 1.1,
-              marginBottom: "20px",
+              marginBottom: "28px",
               letterSpacing: "0.01em",
             }}
           >
@@ -210,26 +206,26 @@ export function Hero() {
           </div>
 
           <p
+            className="text-[0.92rem] lg:text-[1.2rem]"
             style={{
               fontFamily: "'Inter', sans-serif",
               fontWeight: 300,
-              fontSize: "0.92rem",
               color: "rgba(245,240,232,0.86)",
               lineHeight: 1.9,
-              maxWidth: "38ch",
-              marginBottom: "32px",
+              maxWidth: "42ch",
+              marginBottom: "40px",
             }}
           >
             {t("hero.sub")}
           </p>
 
           <div>
-            <div className="flex items-center gap-3 mb-3">
+            <div className="flex items-center gap-3 mb-5 sm:mb-3">
               <span style={{ display: "block", width: "18px", height: "1px", background: "rgba(245,240,232,0.4)" }} />
               <span
+                className="text-[0.7rem] lg:text-[0.9rem]"
                 style={{
                   fontFamily: "'Inter', sans-serif",
-                  fontSize: "0.7rem",
                   letterSpacing: "0.22em",
                   textTransform: "uppercase",
                   color: "rgba(245,240,232,0.9)",
@@ -239,7 +235,7 @@ export function Hero() {
               </span>
             </div>
 
-            <div className="flex flex-wrap items-stretch gap-0">
+            <div className="flex flex-wrap items-stretch gap-2 sm:gap-0">
               {(["vrsovice", "strasnice"] as const).map((key) => {
                 const active = branch === key;
                 return (
@@ -257,13 +253,13 @@ export function Hero() {
                       color: active ? "#E8C84A" : "rgba(245,240,232,0.6)",
                       fontFamily: "'Inter', sans-serif",
                       fontWeight: 500,
-                      fontSize: "0.6rem",
                       letterSpacing: "0.2em",
                       textTransform: "uppercase",
                       borderRadius: 0,
                       cursor: "pointer",
                       transition: "all 0.2s",
                     }}
+                    className="text-[0.6rem] lg:text-[0.85rem] lg:py-3.5 lg:px-7"
                   >
                     {BRANCH_LABELS[key]}
                   </button>
@@ -274,17 +270,13 @@ export function Hero() {
                 type="button"
                 onClick={handleReservation}
                 disabled={redirecting}
+                className="mt-3 sm:mt-0 text-[0.65rem] lg:text-[1rem] lg:py-4 lg:px-10 lg:font-bold border border-[#E8C84A]/60 bg-transparent text-[#E8C84A] hover:bg-[#E8C84A]/10 hover:border-[#E8C84A] disabled:opacity-60 disabled:cursor-not-allowed rounded-sm"
                 style={{
                   padding: "11px 30px",
-                  background: "#E8C84A",
-                  border: "none",
-                  color: "#060402",
                   fontFamily: "'Inter', sans-serif",
                   fontWeight: 600,
-                  fontSize: "0.6rem",
-                  letterSpacing: "0.2em",
+                  letterSpacing: "0.18em",
                   textTransform: "uppercase",
-                  borderRadius: 0,
                   cursor: "pointer",
                   whiteSpace: "nowrap",
                   marginLeft: "16px",
@@ -299,7 +291,7 @@ export function Hero() {
                 {redirecting
                   ? t("cta.redirecting")
                   : `${t("hero.bookBranch")} – ${BRANCH_LABELS[branch]}`}
-                <span style={{ fontSize: "0.8rem", marginTop: "-1px" }}>→</span>
+                <span className="text-sm lg:text-xl mt-[-1px]">→</span>
               </button>
             </div>
           </div>
@@ -310,12 +302,12 @@ export function Hero() {
         type="button"
         onClick={scrollToServices}
         className="absolute z-20 flex flex-col items-center gap-2"
-        style={{ bottom: "52px", left: "50%", transform: "translateX(-50%)" }}
+        style={{ bottom: "64px", left: "50%", transform: "translateX(-50%)" }}
       >
             <span
+              className="text-[0.7rem] lg:text-[0.9rem]"
               style={{
                 fontFamily: "'Inter', sans-serif",
-                fontSize: "0.7rem",
                 letterSpacing: "0.22em",
                 textTransform: "uppercase",
                 color: "rgba(245,240,232,0.9)",
@@ -342,10 +334,9 @@ export function Hero() {
       </button>
 
       <div
-        className="absolute left-0 right-0 overflow-hidden z-10"
+        className="absolute left-0 right-0 overflow-hidden z-10 h-10 sm:h-8"
         style={{
           bottom: 0,
-          height: "32px",
           borderTop: "1px solid rgba(255,255,255,0.06)",
           display: "flex",
           alignItems: "center",
@@ -366,13 +357,13 @@ export function Hero() {
                 key={`${set}-${item}-${i}`}
                 style={{
                   fontFamily: "'Inter', sans-serif",
-                  fontSize: "0.52rem",
                   letterSpacing: "0.22em",
                   textTransform: "uppercase",
                   color: "rgba(245,240,232,0.26)",
                   whiteSpace: "nowrap",
                   padding: "0 20px",
                 }}
+                className="text-[0.52rem] lg:text-[0.65rem]"
               >
                 {item}
                 <span style={{ color: "#E8C84A", margin: "0 6px", opacity: 0.7 }}>·</span>
