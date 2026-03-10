@@ -91,12 +91,12 @@ export function Booking() {
             <p
               style={{
                 fontFamily: "'Inter', sans-serif",
-                fontSize: "0.85rem",
-                color: "rgba(245,240,232,0.45)",
-                lineHeight: 1.85,
+                fontSize: "0.95rem",
+                color: "rgba(245,240,232,0.86)",
+                lineHeight: 1.9,
                 letterSpacing: "0.01em",
                 margin: "0 0 2.5rem",
-                maxWidth: "340px",
+                maxWidth: "360px",
               }}
             >
               {t("book.description")}
@@ -143,8 +143,8 @@ export function Booking() {
                     <span
                       style={{
                         fontFamily: "'Inter', sans-serif",
-                        fontSize: "0.78rem",
-                        color: "rgba(245,240,232,0.5)",
+                        fontSize: "0.88rem",
+                        color: "rgba(245,240,232,0.9)",
                         letterSpacing: "0.01em",
                       }}
                     >
@@ -169,8 +169,8 @@ export function Booking() {
                   href="tel:+420777507662"
                   style={{
                     fontFamily: "'Inter', sans-serif",
-                    fontSize: "0.78rem",
-                    color: "rgba(245,240,232,0.5)",
+                    fontSize: "0.88rem",
+                    color: "rgba(245,240,232,0.9)",
                     textDecoration: "none",
                     letterSpacing: "0.06em",
                   }}
@@ -336,17 +336,17 @@ export function Booking() {
                           style={{
                             display: "flex",
                             alignItems: "center",
-                            gap: "0.5rem",
+                            gap: "0.55rem",
                             marginBottom: "2rem",
                           }}
                         >
-                          <MapPin size={14} />
+                          <MapPin size={15} />
                           <span
                             style={{
                               fontFamily: "'Inter', sans-serif",
-                              fontSize: "0.75rem",
-                              color: "rgba(245,240,232,0.4)",
-                              letterSpacing: "0.02em",
+                              fontSize: "0.9rem",
+                              color: "rgba(245,240,232,0.9)",
+                              letterSpacing: "0.03em",
                             }}
                           >
                             {loc.address}

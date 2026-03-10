@@ -40,10 +40,10 @@ function FounderCard({ barber, roleLabel }: { barber: Barber; roleLabel: string 
           className="mb-1"
           style={{
             fontFamily: "'Inter', sans-serif",
-            fontSize: "0.58rem",
+            fontSize: "0.7rem",
             letterSpacing: "0.26em",
             textTransform: "uppercase",
-            color: "#C5A572",
+            color: "#EAD4A0",
           }}
         >
           {roleLabel}
@@ -124,10 +124,10 @@ function TeamMemberCard({ barber, roleLabel }: { barber: Barber; roleLabel: stri
         <p
           style={{
             fontFamily: "'Inter', sans-serif",
-            fontSize: "0.58rem",
+            fontSize: "0.7rem",
             letterSpacing: "0.22em",
             textTransform: "uppercase",
-            color: "rgba(197,165,114,0.85)",
+            color: "rgba(234,212,160,0.95)",
             marginTop: "4px",
           }}
         >

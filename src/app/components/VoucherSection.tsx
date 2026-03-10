@@ -100,12 +100,12 @@ export function VoucherSection() {
             <p
               style={{
                 fontFamily: "'Inter', sans-serif",
-                fontSize: "0.9rem",
-                color: "rgba(245,240,232,0.6)",
+                fontSize: "0.95rem",
+                color: "rgba(245,240,232,0.9)",
                 lineHeight: 1.9,
                 letterSpacing: "0.01em",
                 marginBottom: "2.4rem",
-                maxWidth: "380px",
+                maxWidth: "400px",
               }}
             >
               {t("voucher.sectionDesc")}
@@ -115,12 +115,12 @@ export function VoucherSection() {
             <div className="flex flex-wrap gap-3 mb-8">
               <span
                 style={{
-                  padding: "0.4rem 0.9rem",
-                  border: "1px solid rgba(201,162,85,0.25)",
-                  color: "rgba(245,240,232,0.5)",
+                  padding: "0.5rem 1rem",
+                  border: "1px solid rgba(201,162,85,0.4)",
+                  color: "rgba(245,240,232,0.9)",
                   fontFamily: "'Inter', sans-serif",
-                  fontSize: "0.62rem",
-                  letterSpacing: "0.12em",
+                  fontSize: "0.7rem",
+                  letterSpacing: "0.14em",
                   textTransform: "uppercase",
                 }}
               >

@@ -85,10 +85,10 @@ function ServiceCard({ service, index, onClick, t }: { service: Service; index: 
         </h3>
         {service.hasDuration && (
           <span
-            className="text-[#B5AEA4] flex items-center gap-1.5 mb-3"
-            style={{ fontFamily: "'Inter', sans-serif", fontWeight: 400, fontSize: "0.78rem" }}
+            className="text-[#E0DAD4] flex items-center gap-1.5 mb-3"
+            style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: "0.85rem", letterSpacing: "0.02em" }}
           >
-            <Clock size={12} className="text-[#B5AEA4] flex-shrink-0" />
+            <Clock size={13} className="text-[#E0DAD4] flex-shrink-0" />
             {t(`${service.nameKey}.duration`)}
           </span>
         )}

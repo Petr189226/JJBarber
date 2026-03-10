@@ -23,13 +23,13 @@ function MiniMap({ loc, openLabel }: { loc: { name: string; mapImage: string; ma
         className="w-full h-full object-cover brightness-[0.65] group-hover/map:brightness-[0.8] transition-all duration-300"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-[#050505]/70 via-transparent to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 px-4 py-2 flex items-center justify-between">
+      <div className="absolute bottom-0 left-0 right-0 px-4 py-2.5 flex items-center justify-between">
         <span
           className="truncate"
           style={{
             fontFamily: "'Inter', sans-serif",
-            fontSize: "0.7rem",
-            letterSpacing: "0.16em",
+            fontSize: "0.78rem",
+            letterSpacing: "0.18em",
             textTransform: "uppercase",
             color: "rgba(245,240,232,0.85)",
           }}

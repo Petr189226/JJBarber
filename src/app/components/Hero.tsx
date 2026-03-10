@@ -94,7 +94,7 @@ export function Hero() {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(108deg, rgba(6,4,2,0.96) 0%, rgba(6,4,2,0.78) 40%, rgba(6,4,2,0.2) 100%)",
+              "linear-gradient(108deg, rgba(6,4,2,0.94) 0%, rgba(6,4,2,0.76) 40%, rgba(6,4,2,0.28) 100%)",
           }}
         />
         <div
@@ -176,7 +176,7 @@ export function Hero() {
                 letterSpacing: "0.02em",
               }}
             >
-              {t("hero.big3")}
+              {t("hero.big3").replace(/\.$/, "")}
             </div>
           </div>
 
@@ -185,10 +185,10 @@ export function Hero() {
             <span
               style={{
                 fontFamily: "'Inter', sans-serif",
-                fontSize: "0.6rem",
-                letterSpacing: "0.2em",
+                fontSize: "0.7rem",
+                letterSpacing: "0.22em",
                 textTransform: "uppercase",
-                color: "rgba(245,240,232,0.45)",
+                color: "rgba(245,240,232,0.9)",
               }}
             >
               J&amp;J BARBER SHOP
@@ -225,14 +225,14 @@ export function Hero() {
 
           <div>
             <div className="flex items-center gap-3 mb-3">
-              <span style={{ display: "block", width: "18px", height: "1px", background: "rgba(245,240,232,0.2)" }} />
+              <span style={{ display: "block", width: "18px", height: "1px", background: "rgba(245,240,232,0.4)" }} />
               <span
                 style={{
                   fontFamily: "'Inter', sans-serif",
-                  fontSize: "0.6rem",
-                  letterSpacing: "0.2em",
+                  fontSize: "0.7rem",
+                  letterSpacing: "0.22em",
                   textTransform: "uppercase",
-                  color: "rgba(245,240,232,0.6)",
+                  color: "rgba(245,240,232,0.9)",
                 }}
               >
                 {t("hero.selectPlaceholder")}
@@ -312,15 +312,15 @@ export function Hero() {
         className="absolute z-20 flex flex-col items-center gap-2"
         style={{ bottom: "52px", left: "50%", transform: "translateX(-50%)" }}
       >
-        <span
-          style={{
-            fontFamily: "'Inter', sans-serif",
-            fontSize: "0.6rem",
-            letterSpacing: "0.2em",
-            textTransform: "uppercase",
-            color: "rgba(245,240,232,0.5)",
-          }}
-        >
+            <span
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: "0.7rem",
+                letterSpacing: "0.22em",
+                textTransform: "uppercase",
+                color: "rgba(245,240,232,0.9)",
+              }}
+            >
           {t("hero.scrollDown")}
         </span>
         <span
