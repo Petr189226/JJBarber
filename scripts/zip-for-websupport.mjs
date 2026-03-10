@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { execSync } from 'child_process';
-import { existsSync, mkdirSync, copyFileSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, copyFileSync, readFileSync, writeFileSync, unlinkSync } from 'fs';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -25,6 +25,7 @@ for (const dir of ['jj-backstage', 'admin']) {
 }
 
 try {
+  if (existsSync(zipPath)) unlinkSync(zipPath);
   execSync(`cd "${dist}" && zip -r "${zipPath}" .`, { stdio: 'inherit' });
   const supabase = join(root, 'supabase');
   if (existsSync(join(supabase, 'admin_roles_import.csv'))) {
