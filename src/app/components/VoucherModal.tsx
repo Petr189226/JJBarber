@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { X, Gift, Send, Loader2 } from "lucide-react";
 import { useLanguage } from "../i18n";
-import { orders, isApiConfigured } from "@/lib/api";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 const BRANCHES = ["Vršovice", "Strašnice"];
 
@@ -52,7 +52,7 @@ export function VoucherModal({ open, onClose }: Props) {
     e.preventDefault();
     if (!canSubmit) return;
 
-    if (!isApiConfigured()) {
+    if (!isSupabaseConfigured()) {
       setError("Konfigurace chybí. Kontaktujte provozovatele.");
       return;
     }
@@ -60,22 +60,28 @@ export function VoucherModal({ open, onClose }: Props) {
     setSending(true);
     setError("");
 
-    const result = await orders.create({
-      name: form.name.trim(),
-      surname: form.surname.trim() || null,
-      email: form.email.trim(),
-      phone: form.phone.trim() || null,
-      service: form.service,
-      branch: form.branch,
-      note: form.note.trim() || null,
-    });
+    try {
+      const { error: err } = await supabase!.from("voucher_orders").insert({
+        name: form.name.trim(),
+        surname: form.surname.trim() || null,
+        email: form.email.trim(),
+        phone: form.phone.trim() || null,
+        service: form.service,
+        branch: form.branch,
+        note: form.note.trim() || null,
+      });
 
-    setSending(false);
-    if (result.error) {
-      setError(result.error);
-      return;
+      if (err) throw err;
+      setSent(true);
+    } catch (e) {
+      const msg =
+        (e && typeof e === "object" && "message" in e && String((e as { message: unknown }).message)) ||
+        (e instanceof Error ? e.message : null) ||
+        t("voucher.errorSend");
+      setError(msg);
+    } finally {
+      setSending(false);
     }
-    setSent(true);
   };
 
   const handleClose = () => {
