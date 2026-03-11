@@ -2,7 +2,7 @@
   RewriteEngine On
   RewriteBase /
   RewriteRule ^index\.html$ - [L]
-  RewriteRule ^admin/?$ admin/index.html [L]
+  RewriteRule ^admin/?$ /admin.html [L]
   RewriteRule ^jj-backstage/?$ jj-backstage/index.html [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
