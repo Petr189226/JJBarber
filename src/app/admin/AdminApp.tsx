@@ -402,19 +402,39 @@ export function AdminApp() {
   const rawLogin = (adminEmailFromEnv?.trim() || email).trim();
   const loginEmail = rawLogin.includes("@") ? rawLogin : rawLogin ? `${rawLogin.toLowerCase().replace(/\s+/g, ".")}${ADMIN_LOGIN_DOMAIN}` : "";
 
+  const authProxyUrl = (import.meta.env.VITE_AUTH_PROXY_URL as string)?.trim() || "";
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supabase || !loginEmail || !password) return;
     setLoginLoading(true);
     setLoginError("");
     try {
+      if (authProxyUrl) {
+        const res = await fetch(authProxyUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: loginEmail, password }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          setLoginError(data.error_description || data.msg || data.error || "Přihlášení se nezdařilo.");
+          return;
+        }
+        if (data.access_token && data.refresh_token) {
+          await supabase.auth.setSession({ access_token: data.access_token, refresh_token: data.refresh_token });
+        } else {
+          setLoginError("Neplatná odpověď z auth proxy.");
+        }
+        return;
+      }
       const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password });
       if (error) {
         const msg = error.message;
         const cause = (error as Error & { cause?: Error })?.cause?.message;
         setLoginError(
           msg === "Failed to fetch"
-            ? `Síťová chyba: ${cause || msg}. Zkontrolujte Supabase Dashboard → Auth → URL Configuration (Site URL, Redirect URLs). Vypněte adblocker.`
+            ? `Síťová chyba: ${cause || msg}. Zkontrolujte: (1) F12 → Console – je tam CORS? (2) Supabase Dashboard → Auth → URL Configuration – Site URL https://petrchajda.cz, Redirect URLs přidejte vaši doménu. (3) Vypněte adblocker / zkuste anonymní okno.`
             : msg
         );
       }
@@ -423,7 +443,7 @@ export function AdminApp() {
       const cause = err instanceof Error && err.cause instanceof Error ? err.cause.message : "";
       setLoginError(
         msg === "Failed to fetch"
-          ? `Síťová chyba: ${cause || msg}. Zkontrolujte Supabase URL Configuration a síťové připojení.`
+          ? `Síťová chyba: ${cause || msg}. Otevřete F12 → záložka Network, zkuste přihlásit znovu a podívejte se na červený požadavek na supabase.co (CORS / blocked?). Zkuste anonymní okno bez rozšíření.`
           : msg
       );
     } finally {

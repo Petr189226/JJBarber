@@ -1,8 +1,13 @@
+# /admin a /admin/ -> admin.html (mod_alias, funguje i když mod_rewrite ne)
+<IfModule mod_alias.c>
+  RedirectMatch 302 ^/admin/?$ /admin.html
+</IfModule>
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
   RewriteRule ^index\.html$ - [L]
-  RewriteRule ^admin/?$ /admin.html [L]
+  RewriteRule ^admin/?$ admin.html [L]
   RewriteRule ^jj-backstage/?$ jj-backstage/index.html [L]
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
