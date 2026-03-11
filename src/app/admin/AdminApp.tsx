@@ -28,8 +28,8 @@ import {
   Loader2Icon,
   Columns3,
 } from "lucide-react";
-import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import type { User } from "@supabase/supabase-js";
+import * as api from "@/lib/api";
+import type { ApiUser } from "@/lib/api";
 import {
   getPresetRange,
   getStartOfDayLocal,
@@ -154,7 +154,7 @@ function DashboardStatsCard({
 }
 
 export function AdminApp() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<ApiUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -226,37 +226,25 @@ export function AdminApp() {
   }, []);
 
   useEffect(() => {
-    if (!supabase) return;
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+    api.auth.getSession().then((u) => {
+      setUser(u ?? null);
       setLoading(false);
     });
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-    return () => subscription.unsubscribe();
   }, []);
 
-  const fetchOrders = useCallback(() => {
-    if (!user || !supabase) return;
+  const fetchOrders = useCallback(async () => {
+    if (!user) return;
     setOrdersLoading(true);
     setFetchError("");
-    supabase
-      .from("voucher_orders")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .then(({ data, error }) => {
-        setOrdersLoading(false);
-        if (error) {
-          setFetchError(error.message);
-          return;
-        }
-        const list = (data as VoucherOrder[]) ?? [];
-        setOrders(list);
-        setSelectedOrder((prev) => (prev ? list.find((o) => o.id === prev.id) ?? prev : null));
-      });
+    const { data, error } = await api.orders.list();
+    setOrdersLoading(false);
+    if (error) {
+      setFetchError(error);
+      return;
+    }
+    const list = (data ?? []) as VoucherOrder[];
+    setOrders(list);
+    setSelectedOrder((prev) => (prev ? list.find((o) => o.id === prev.id) ?? prev : null));
   }, [user]);
 
   useEffect(() => {
@@ -264,30 +252,20 @@ export function AdminApp() {
   }, [fetchOrders]);
 
   useEffect(() => {
-    if (!user || !supabase) return;
+    if (!user) return;
     const interval = setInterval(fetchOrders, 60000);
     return () => clearInterval(interval);
   }, [user, fetchOrders]);
 
   useEffect(() => {
-    if (!user || !supabase) {
+    if (!user) {
+      setRole(null);
       setRoleLoading(false);
       return;
     }
     setRoleLoading(true);
-    supabase
-      .from("admin_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .single()
-      .then(({ data }) => {
-        setRole((data?.role as AdminRole) ?? null);
-        setRoleLoading(false);
-      })
-      .catch(() => {
-        setRole(null);
-        setRoleLoading(false);
-      });
+    setRole((user.role as AdminRole) ?? null);
+    setRoleLoading(false);
   }, [user]);
 
   const dateRangeValid = isDateRangeValid(filterDateFrom, filterDateTo);
@@ -400,78 +378,42 @@ export function AdminApp() {
 
   const adminEmailFromEnv = import.meta.env.VITE_ADMIN_EMAIL as string | undefined;
   const rawLogin = (adminEmailFromEnv?.trim() || email).trim();
-  const loginEmail = rawLogin.includes("@") ? rawLogin : rawLogin ? `${rawLogin.toLowerCase().replace(/\s+/g, ".")}${ADMIN_LOGIN_DOMAIN}` : "";
-
-  const authProxyUrl = (import.meta.env.VITE_AUTH_PROXY_URL as string)?.trim() || "";
+  const loginEmail = rawLogin.includes("@") ? rawLogin : rawLogin ? rawLogin.trim().toLowerCase().replace(/\s+/g, ".") : "";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supabase || !loginEmail || !password) return;
+    if (!loginEmail || !password) return;
     setLoginLoading(true);
     setLoginError("");
-    try {
-      if (authProxyUrl) {
-        const res = await fetch(authProxyUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: loginEmail, password }),
-        });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          setLoginError(data.error_description || data.msg || data.error || "Přihlášení se nezdařilo.");
-          return;
-        }
-        if (data.access_token && data.refresh_token) {
-          await supabase.auth.setSession({ access_token: data.access_token, refresh_token: data.refresh_token });
-        } else {
-          setLoginError("Neplatná odpověď z auth proxy.");
-        }
-        return;
-      }
-      const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password });
-      if (error) {
-        const msg = error.message;
-        const cause = (error as Error & { cause?: Error })?.cause?.message;
-        setLoginError(
-          msg === "Failed to fetch"
-            ? `Síťová chyba: ${cause || msg}. Zkontrolujte: (1) F12 → Console – je tam CORS? (2) Supabase Dashboard → Auth → URL Configuration – Site URL https://petrchajda.cz, Redirect URLs přidejte vaši doménu. (3) Vypněte adblocker / zkuste anonymní okno.`
-            : msg
-        );
-      }
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      const cause = err instanceof Error && err.cause instanceof Error ? err.cause.message : "";
-      setLoginError(
-        msg === "Failed to fetch"
-          ? `Síťová chyba: ${cause || msg}. Otevřete F12 → záložka Network, zkuste přihlásit znovu a podívejte se na červený požadavek na supabase.co (CORS / blocked?). Zkuste anonymní okno bez rozšíření.`
-          : msg
-      );
-    } finally {
-      setLoginLoading(false);
+    const result = await api.auth.login(loginEmail, password);
+    setLoginLoading(false);
+    if ("error" in result) {
+      setLoginError(result.error);
+      return;
     }
+    setUser(result.user);
   };
 
   const handleLogout = async () => {
-    await supabase?.auth.signOut();
+    await api.auth.logout();
+    setUser(null);
   };
 
   const saveAdminNote = async () => {
-    if (!supabase || !selectedOrder || savingNote) return;
+    if (!selectedOrder || savingNote) return;
     setSavingNote(true);
-    try {
-      await supabase.from("voucher_orders").update({ admin_note: adminNote || null }).eq("id", selectedOrder.id);
+    const { error } = await api.orders.update(selectedOrder.id, { admin_note: adminNote || null });
+    if (!error) {
       setOrders((prev) => prev.map((o) => (o.id === selectedOrder.id ? { ...o, admin_note: adminNote || null } : o)));
       setSelectedOrder((prev) => (prev?.id === selectedOrder.id ? { ...prev, admin_note: adminNote || null } : prev));
-    } finally {
-      setSavingNote(false);
     }
+    setSavingNote(false);
   };
 
   const saveAdminNoteFor = useCallback(
     (id: string, note: string) => {
-      if (!supabase) return;
-      supabase.from("voucher_orders").update({ admin_note: note || null }).eq("id", id).then(() => {
-        setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, admin_note: note || null } : o)));
+      api.orders.update(id, { admin_note: note || null }).then(({ error }) => {
+        if (!error) setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, admin_note: note || null } : o)));
       });
     },
     []
@@ -493,56 +435,28 @@ export function AdminApp() {
   }, [selectedOrder, adminNote, saveAdminNoteFor]);
 
   const updateStatus = async (id: string, status: Status) => {
-    if (!supabase) return;
     setUpdatingId(id);
-    try {
-      await supabase.from("voucher_orders").update({ status }).eq("id", id);
+    const { error } = await api.orders.update(id, { status });
+    if (!error) {
       setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)));
       setSelectedOrder((prev) => (prev?.id === id ? { ...prev, status } : prev));
-    } finally {
-      setUpdatingId(null);
-      setOpenDropdown(null);
     }
+    setUpdatingId(null);
+    setOpenDropdown(null);
   };
-
-  const callManageAdmins = useCallback(
-    async (action: string, body: Record<string, unknown> = {}) => {
-      if (!supabase) return null;
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      const token = session?.access_token;
-      const url = import.meta.env.VITE_SUPABASE_URL;
-      if (!token || !url) return null;
-      const res = await fetch(`${url}/functions/v1/manage-admins`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ action, ...body }),
-      });
-      return { ok: res.ok, json: await res.json().catch(() => ({})) };
-    },
-    []
-  );
 
   const fetchAdminAccounts = useCallback(async () => {
     if (role !== "majitel") return;
     setAdminAccountsLoading(true);
     setManageAdminsError("");
-    const result = await callManageAdmins("list");
+    const { admins: list, error } = await api.admins.list();
     setAdminAccountsLoading(false);
-    if (!result) {
-      setManageAdminsError("Chybí přihlášení nebo konfigurace");
+    if (error) {
+      setManageAdminsError(error);
       return;
     }
-    if (!result.ok) {
-      setManageAdminsError(result.json.error || "Nepodařilo se načíst seznam");
-      return;
-    }
-    setAdminAccounts(result.json.admins ?? []);
-  }, [role, callManageAdmins]);
+    setAdminAccounts(list ?? []);
+  }, [role]);
 
   useEffect(() => {
     if (role === "majitel") fetchAdminAccounts();
@@ -553,31 +467,28 @@ export function AdminApp() {
     if (!passwordModal || newPasswordForUser.length < 6) return;
     setPasswordLoading(true);
     setPasswordError("");
-    const result = await callManageAdmins("update-password", {
-      user_id: passwordModal.user_id,
-      new_password: newPasswordForUser,
-    });
+    const result = await api.admins.updatePassword(passwordModal.user_id, newPasswordForUser);
     setPasswordLoading(false);
-    if (result?.ok) {
+    if (!result.error) {
       setPasswordModal(null);
       setNewPasswordForUser("");
       return;
     }
-    setPasswordError(result?.json?.error || "Nepodařilo se změnit heslo");
+    setPasswordError(result.error);
   };
 
   const handleDeleteAccount = async () => {
     if (!deleteConfirm) return;
     setDeleteLoading(true);
     setManageAdminsError("");
-    const result = await callManageAdmins("delete", { user_id: deleteConfirm.user_id });
+    const result = await api.admins.delete(deleteConfirm.user_id);
     setDeleteLoading(false);
-    if (result?.ok) {
+    if (!result.error) {
       setDeleteConfirm(null);
       setAdminAccounts((prev) => prev.filter((a) => a.user_id !== deleteConfirm.user_id));
       return;
     }
-    setManageAdminsError(result?.json?.error || "Nepodařilo se odstranit účet");
+    setManageAdminsError(result.error);
   };
 
   const handleChangeRole = async (e: React.FormEvent) => {
@@ -585,65 +496,39 @@ export function AdminApp() {
     if (!roleEditUserId) return;
     setRoleUpdateLoading(true);
     setManageAdminsError("");
-    const result = await callManageAdmins("update-role", {
-      user_id: roleEditUserId,
-      new_role: newRoleForUser,
-    });
+    const result = await api.admins.updateRole(roleEditUserId, newRoleForUser);
     setRoleUpdateLoading(false);
-    if (result?.ok) {
+    if (!result.error) {
       setRoleEditUserId(null);
       setAdminAccounts((prev) =>
         prev.map((a) => (a.user_id === roleEditUserId ? { ...a, role: newRoleForUser } : a))
       );
       return;
     }
-    setManageAdminsError(result?.json?.error || "Nepodařilo se změnit roli");
+    setManageAdminsError(result.error);
   };
 
   const handleAddAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
     const loginName = newAdminEmail.trim();
-    if (!supabase || !loginName || !newAdminPassword || role !== "majitel") return;
+    if (!loginName || !newAdminPassword || role !== "majitel") return;
     setAddAdminLoading(true);
     setAddAdminError("");
     setAddAdminSuccess(false);
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    const token = session?.access_token;
-    const url = import.meta.env.VITE_SUPABASE_URL;
-    if (!token || !url) {
-      setAddAdminError("Chybí přihlášení nebo konfigurace");
-      setAddAdminLoading(false);
-      return;
-    }
     const emailForApi = loginName.includes("@")
       ? loginName
       : `${loginName.toLowerCase().replace(/\s+/g, ".")}${ADMIN_LOGIN_DOMAIN}`;
-    const res = await fetch(`${url}/functions/v1/create-admin`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        email: emailForApi,
-        password: newAdminPassword,
-        role: newAdminRole,
-      }),
-    });
-    const json = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      setAddAdminError(json.error || `Chyba ${res.status}`);
-      setAddAdminLoading(false);
-      return;
+    const result = await api.admins.create(emailForApi, newAdminPassword, newAdminRole);
+    if (!result.error) {
+      setAddAdminSuccess(true);
+      setNewAdminEmail("");
+      setNewAdminPassword("");
+      setShowAddAdmin(false);
+      fetchAdminAccounts();
+    } else {
+      setAddAdminError(result.error);
     }
-    setAddAdminSuccess(true);
-    setNewAdminEmail("");
-    setNewAdminPassword("");
-    setShowAddAdmin(false);
     setAddAdminLoading(false);
-    fetchAdminAccounts();
   };
 
   const formatDate = (s: string) => {
@@ -804,7 +689,7 @@ export function AdminApp() {
     boxShadow: "0 4px 14px rgba(201,168,76,0.25), 0 1px 0 rgba(255,255,255,0.15) inset",
   };
 
-  if (!isSupabaseConfigured()) {
+  if (!api.isApiConfigured()) {
     return (
       <div className={`${adminLayout} flex items-center justify-center p-6 bg-gradient-to-br from-gray-50 to-gray-100/50`}>
         <div className="max-w-md text-center">
@@ -812,7 +697,7 @@ export function AdminApp() {
             Admin není nakonfigurován
           </h1>
           <p className="text-gray-600 text-sm leading-relaxed">
-            V .env chybí VITE_SUPABASE_URL a VITE_SUPABASE_ANON_KEY.
+            API není dostupné. Zkontrolujte, že složka api/ je na serveru a config.php je vyplněný.
           </p>
         </div>
       </div>
@@ -924,10 +809,10 @@ export function AdminApp() {
                     E-mail
                   </label>
                   <input
-                    type="email"
+                    type="text"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="vas@email.com"
+                    placeholder="majitel nebo vas@email.cz"
                     className="w-full text-[#F5F0E8] rounded-xl px-4 py-3 focus:outline-none transition-all placeholder:text-[#3A3530]"
                     style={{
                       background: "rgba(255,255,255,0.04)",
@@ -1230,7 +1115,7 @@ export function AdminApp() {
           {noRole && (
             <div className="mb-6 p-3 bg-amber-50 border border-amber-200 rounded-lg">
               <p className="text-gray-700 text-sm">
-                Účet nemá roli v tabulce <code className="text-gray-600">admin_roles</code> (majitel / barber).
+                Účet nemá přiřazenou roli (majitel / barber). Kontaktujte majitele.
               </p>
             </div>
           )}

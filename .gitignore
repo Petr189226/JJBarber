@@ -3,6 +3,7 @@ dist/
 .vercel
 .env
 .env.local
+api/config.php
 forpsi-deploy.zip
 jj-barbershop-websupport.zip
 supabase/.temp/
